@@ -38,7 +38,7 @@ export default async function Home() {
           </p>
           <div className="flex flex-row mt-2">
             <Link href="/sign-in">
-            <Button className="text-md bg-gradient-to-r from-blue-600 to-black-400 hover:from-blue-800 hover:to-black-600">
+            <Button className="text-md bg-gradient-to-r from-[#0e1c26] to-[#293b61] hover:from-[#0a141c] hover:to-[#1f2c4a]">
               Let's get started
               <ArrowUpRight className="w-4 h-4" />
             </Button>
