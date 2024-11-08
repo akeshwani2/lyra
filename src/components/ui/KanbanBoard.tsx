@@ -8,6 +8,22 @@ function KanbanBoard() {
 
     const [columns, setColumns] = useState([])
 
+    async function createNewColumn() {
+        try {
+            const response = await fetch('/api/boards', {
+                method: 'POST'
+            });
+            
+            const data = await response.json();
+            if (data.columns) {
+                setColumns(data.columns);
+                console.log("Created board:", data);
+            }
+        } catch (error) {
+            console.error("Error creating column:", error);
+        }
+    }
+
   return (
     <div className="m-auto flex min-h-screen w-full items-center overflow-x-auto overflow-y-hidden justify-center px-[40px]">
         <div className="m-auto">
@@ -18,13 +34,18 @@ function KanbanBoard() {
                 <Image src="/plus.svg" alt="plus" width={28} height={28}/>    
                 Add Column
             </Button>
+
+            {/* Display columns */}
+            {columns.map((column: any) => {
+                return (
+                    <div key={column.id} className="bg-gray-200 p-4 rounded-lg">
+                        {column.title}
+                    </div>
+                )
+            })}
         </div>
     </div>
   )
-
-  function createNewColumn() {
-    
-  }
 }
 
 export default KanbanBoard
