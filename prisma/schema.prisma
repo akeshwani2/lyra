@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,12 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Add your models here
 model Board {
   id        String   @id @default(cuid())
   title     String
-  userId    String   // For authentication
-  columns   Column[]
+  userId    String   
+  columns   Column[] @relation("BoardToColumns")  // Remove onDelete here
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -28,8 +21,8 @@ model Column {
   title     String
   order     Int
   boardId   String
-  board     Board    @relation(fields: [boardId], references: [id])
-  cards     Card[]
+  board     Board    @relation("BoardToColumns", fields: [boardId], references: [id], onDelete: Cascade)  // Keep onDelete here
+  cards     Card[]   @relation("ColumnToCards")  // Remove onDelete here
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -41,7 +34,7 @@ model Card {
   content   String   @db.Text
   order     Int
   columnId  String
-  column    Column   @relation(fields: [columnId], references: [id])
+  column    Column   @relation("ColumnToCards", fields: [columnId], references: [id], onDelete: Cascade)  // Keep onDelete here
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
