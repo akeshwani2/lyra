@@ -1,11 +1,12 @@
 'use client'
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { Loader2, Plus, Trash2, Pen, LogOut } from 'lucide-react'
+import { Loader2, Plus, Trash2, Pen, Loader } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { UserButton } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
+
 
 
 function KanbanBoard() {
@@ -18,6 +19,7 @@ function KanbanBoard() {
     const [editingCardContent, setEditingCardContent] = useState<{id: string, content: string} | null>(null);
     const [board, setBoard] = useState<{ id: string; title: string } | null>(null)
     const [editingBoardTitle, setEditingBoardTitle] = useState<{ id: string; title: string } | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
 
     // This function handles editing the column titles
@@ -74,15 +76,18 @@ function KanbanBoard() {
     }, []);
 
     async function loadBoard() {
+        setIsLoading(true);  // Start loading
         try {
             const response = await fetch('/api/boards');
             const data = await response.json();
-            setBoard({ id: data.id, title: data.title })
+            setBoard({ id: data.id, title: data.title });
             if (data.columns) {
                 setColumns(data.columns);
             }
         } catch (error) {
             console.error("Error loading board:", error);
+        } finally {
+            setIsLoading(false);  // End loading
         }
     }
 
@@ -210,6 +215,15 @@ function KanbanBoard() {
 
     return (
         <div className="flex flex-col min-h-screen w-full">
+                        {isLoading ? (
+                <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+                    <div className="flex flex-col items-center gap-4">
+                        {/* <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-400 border-t-purple-500" /> */}
+                        <Loader className="h-8 w-8 animate-spin text-purple-500" />
+                        <p className="text-gray-400 text-sm">Loading your board...</p>
+                    </div>
+                </div>
+            ) : null}
             <div className="px-[40px] py-12">
                 <div className="absolute top-4 right-8">
                     <UserButton 
