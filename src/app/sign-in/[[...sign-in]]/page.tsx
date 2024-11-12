@@ -9,13 +9,13 @@ export default function Page() {
     <div className='min-h-screen flex items-center justify-center p-5 bg-gradient-to-t from-gray-700 via-gray-900 to-black relative overflow-hidden'>
       {/* Header/Navigation */}
       <div className="absolute top-0 left-0 w-full z-20 px-12 py-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4  z-50">
           {/* Logo */}
-          <Link href="/" className="flex flex-row items-center">
-            <Image src="/logo.svg" alt="Muse Logo" width={60} height={60} />
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 text-transparent bg-clip-text pl-4">
+          <Link href="/" className="flex items-center">
+            <Image src="/logo.svg" alt="Muse Logo" width={65} height={65} />
+            <span className="text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 text-transparent bg-clip-text pl-4">
               Muse
-            </h1>
+            </span>
           </Link>
         </div>
       </div>
@@ -44,7 +44,7 @@ export default function Page() {
         {/* Right side sign-in section */}
         <div className='flex flex-col gap-4'>
           <SignIn 
-            afterSignInUrl={"/dashboard"}
+            afterSignInUrl={"/tasks"}
             appearance={{
               baseTheme: dark,
               variables: {

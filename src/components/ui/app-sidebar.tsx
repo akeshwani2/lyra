@@ -1,4 +1,4 @@
-import { Calendar, CalendarClock, FileText, Home, Inbox, Search, Settings, Table } from "lucide-react"
+import { Calendar, CalendarClock, FileText, Home, Inbox, Search, Settings, Table, ListTodo, Brain } from "lucide-react"
 import { UserButton } from "@clerk/nextjs"
 import { dark } from '@clerk/themes'
 import Image from "next/image"
@@ -21,7 +21,7 @@ const items = [
   {
     title: "Tasks",
     url: "/tasks",
-    icon: Table,
+    icon: ListTodo,
   },
   {
     title: "PDF Reader",
@@ -41,7 +41,7 @@ const items = [
   {
     title: "AI Resume",
     url: "/ai-resume",
-    icon: FileText,
+    icon: Brain,
   },
 ]
 
@@ -94,28 +94,7 @@ export function AppSidebar() {
         <SidebarContent>
           <SidebarFooter>
             <span className="text-purple-400 hover:text-purple-300">       
-              <UserButton 
-      afterSignOutUrl='/'
-      appearance={{
-        baseTheme: dark,
-        variables: {
-          colorPrimary: "#8B5CF6", // Purple accent
-        },
-        elements: {
-          // Option 1: Glassmorphism with purple accent
-          card: "bg-gray-900/40 backdrop-blur-xl border border-purple-500/20 shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)]",
-          headerTitle: "text-white",
-          headerSubtitle: "text-purple-200",
-          socialButtonsBlockButton: "bg-gray-800/60 hover:bg-gray-700/60 border border-purple-500/20",
-          formButtonPrimary: "bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600",
-          footerActionLink: "text-purple-300 hover:text-purple-200",
-          avatarBox: "w-8 h-8", // Control the size
-          userButtonAvatarBox: "w-8 h-8 !important", // Force size
-          userButtonTrigger: "focus:shadow-none", 
-          
-        }
-      }}
-      /></span>
+</span>
           </SidebarFooter>
         </SidebarContent>
       </SidebarFooter>

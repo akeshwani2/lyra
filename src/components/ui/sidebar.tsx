@@ -57,7 +57,7 @@ const SidebarProvider = React.forwardRef<
 >(
   (
     {
-      defaultOpen = true,
+      defaultOpen = false,
       open: openProp,
       onOpenChange: setOpenProp,
       className,
@@ -259,34 +259,34 @@ const Sidebar = React.forwardRef<
 )
 Sidebar.displayName = "Sidebar"
 
-const SidebarTrigger = React.forwardRef<
-  React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
+// const SidebarTrigger = React.forwardRef<
+//   React.ElementRef<typeof Button>,
+//   React.ComponentProps<typeof Button>
+// >(({ className, onClick, ...props }, ref) => {
+//   const { toggleSidebar } = useSidebar()
 
-  return (
-    <Button
-      ref={ref}
-      data-sidebar="trigger"
-      variant="ghost"
-      size="icon"
-      className={cn(
-        " w-12 text-purple-400 hover:bg-transparent hover:text-purple-300",
-        className
-      )}
-      onClick={(event) => {
-        onClick?.(event)
-        toggleSidebar()
-      }}
-      {...props}
-    >
-      <PanelLeft />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
-  )
-})
-SidebarTrigger.displayName = "SidebarTrigger"
+//   return (
+//     <Button
+//       ref={ref}
+//       data-sidebar="trigger"
+//       variant="ghost"
+//       size="icon"
+//       className={cn(
+//         " w-12 text-purple-400 hover:bg-transparent hover:text-purple-300",
+//         className
+//       )}
+//       onClick={(event) => {
+//         onClick?.(event)
+//         toggleSidebar()
+//       }}
+//       {...props}
+//     >
+//       {/* <PanelLeft /> */}
+//       <span className="sr-only">Toggle Sidebar</span>
+//     </Button>
+//   )
+// })
+// SidebarTrigger.displayName = "SidebarTrigger"
 
 const SidebarRail = React.forwardRef<
   HTMLButtonElement,
@@ -761,6 +761,6 @@ export {
   SidebarProvider,
   SidebarRail,
   SidebarSeparator,
-  SidebarTrigger,
+  // SidebarTrigger,
   useSidebar,
 }

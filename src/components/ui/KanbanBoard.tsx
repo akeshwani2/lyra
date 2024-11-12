@@ -9,40 +9,144 @@ import { dark } from '@clerk/themes'
 
 
 
+interface Card {
+    id: string;
+    content: string;
+    columnId: string;
+}
+
+interface Column {
+    id: string;
+    title: string;
+    cards: Card[];
+}
+
 function KanbanBoard() {
-    const [columns, setColumns] = useState([])
-    const [deletingColumnId, setDeletingColumnId] = useState<string | null>(null)
-    const [deletingCardId, setDeletingCardId] = useState<string | null>(null)
-    const [editingColumnId, setEditingColumnId] = useState<string | null>(null)
-    const [editingCardId, setEditingCardId] = useState<string | null>(null)
+    const [columns, setColumns] = useState<Column[]>([]);
+    const [deletingColumnId, setDeletingColumnId] = useState<string | null>(null);
+    const [deletingCardId, setDeletingCardId] = useState<string | null>(null);
+    const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
+    const [editingCardId, setEditingCardId] = useState<string | null>(null);
     const [editingColumnTitle, setEditingColumnTitle] = useState<{id: string, title: string} | null>(null);
     const [editingCardContent, setEditingCardContent] = useState<{id: string, content: string} | null>(null);
-    const [board, setBoard] = useState<{ id: string; title: string } | null>(null)
+    const [board, setBoard] = useState<{ id: string; title: string } | null>(null);
     const [editingBoardTitle, setEditingBoardTitle] = useState<{ id: string; title: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeId, setActiveId] = useState<string | null>(null);
+    const [draggingCardId, setDraggingCardId] = useState<string | null>(null);
+    const [dropTargetId, setDropTargetId] = useState<string | null>(null);
+    const [dropPosition, setDropPosition] = useState<'top' | 'bottom' | null>(null);
 
-
-    // This function handles editing the column titles
     const handleColumnTitleEdit = (columnId: string, currentTitle: string) => {
         setEditingColumnTitle({ id: columnId, title: currentTitle });
-    }
+    };
 
-    // This function handles saving the edited column titles
+    const handleDragStart = (cardId: string) => {
+        console.log('Drag started:', cardId);
+        setDraggingCardId(cardId);
+    };
+    
+    const handleDragOver = (e: React.DragEvent, columnId: string, cardId?: string) => {
+        e.preventDefault();
+        
+        if (cardId) {
+            // When dragging over a card, determine if we're on the top or bottom half
+            const cardElement = e.currentTarget as HTMLElement;
+            const rect = cardElement.getBoundingClientRect();
+            const midpoint = rect.top + rect.height / 2;
+            const position = e.clientY < midpoint ? 'top' : 'bottom';
+            
+            setDropPosition(position);
+            setDropTargetId(cardId);
+        } else {
+            // When dragging over an empty column
+            setDropPosition(null);
+            setDropTargetId(columnId);
+        }
+    };
+
+    const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
+        e.preventDefault();
+        if (!draggingCardId) return;
+
+        try {
+            const targetCard = dropTargetId !== targetColumnId ? dropTargetId : null;
+            const position = dropPosition;
+
+            const response = await fetch(`/api/cards/${draggingCardId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    columnId: targetColumnId,
+                    targetCardId: targetCard,
+                    position: position 
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to move card');
+            }
+
+            await loadBoard();
+        } catch (error) {
+            console.error("Error moving card:", error);
+        } finally {
+            setDraggingCardId(null);
+            setDropTargetId(null);
+            setDropPosition(null);
+        }
+    };
+
     const handleColumnTitleSave = async (columnId: string, newTitle: string) => {
         if (newTitle.trim() === '') return;
         await updateColumnTitle(columnId, newTitle);
         setEditingColumnTitle(null);
-    }
+    };
 
     const handleCardEdit = (cardId: string, currentContent: string) => {
         setEditingCardContent({ id: cardId, content: currentContent });
     };
 
-    const handleCardSave = async(cardId: string, newContent: string) => {
-        if (newContent.trim() === '') return;
-        await updateCardContent(cardId, newContent);
-        setEditingCardContent(null);
-    }
+    const handleCardSave = async (cardId: string, content: string) => {
+        try {
+            // If content is empty, get the current card's content
+            const currentCard = columns
+                .flatMap(col => col.cards)
+                .find(card => card.id === cardId);
+                
+            const contentToSave = content.trim() || currentCard?.content || "New Task";
+
+            const response = await fetch(`/api/cards/${cardId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: contentToSave })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update card');
+            }
+
+            // Update local state immediately
+            setColumns(prevColumns => 
+                prevColumns.map(column => ({
+                    ...column,
+                    cards: column.cards.map(card => 
+                        card.id === cardId 
+                            ? { ...card, content: contentToSave }
+                            : card
+                    )
+                }))
+            );
+
+            setEditingCardContent(null);
+        } catch (error) {
+            console.error("Error updating card:", error);
+        }
+    };
 
     const handleBoardTitleEdit = (boardId: string, currentTitle: string) => {
         setEditingBoardTitle({ id: boardId, title: currentTitle });
@@ -51,7 +155,7 @@ function KanbanBoard() {
     const handleBoardTitleSave = async (boardId: string, newTitle: string) => {
         if (newTitle.trim() === '') return;
         try {
-            const response = await fetch('/api/boards', {  // Remove the boardId from URL
+            const response = await fetch('/api/boards', {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json'
@@ -213,6 +317,17 @@ function KanbanBoard() {
         }
     }
 
+    const handleDragEnd = () => {
+        setDropTargetId(null);
+        setDropPosition(null);
+        setDraggingCardId(null);
+    };
+
+    useEffect(() => {
+        document.addEventListener('dragend', handleDragEnd);
+        return () => document.removeEventListener('dragend', handleDragEnd);
+    }, []);
+
     return (
         <div className="flex flex-col min-h-screen w-full">
                         {isLoading ? (
@@ -220,7 +335,7 @@ function KanbanBoard() {
                     <div className="flex flex-col items-center gap-4">
                         {/* <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-400 border-t-purple-500" /> */}
                         <Loader className="h-8 w-8 animate-spin text-purple-500" />
-                        <p className="text-gray-400 text-sm">Loading your board...</p>
+                        <p className="text-gray-400 text-sm">Assembling your masterpiece...</p>
                     </div>
                 </div>
             ) : null}
@@ -282,20 +397,24 @@ function KanbanBoard() {
                 </div>
             </div>
             <div className="flex-1 overflow-x-auto">
-                <div className="inline-flex gap-4 p-[40px]">
-                    <AnimatePresence mode="popLayout">
-                        {columns.map((column: any) => (
-                            <motion.div
-                                key={column.id}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.4 }}
-                                transition={{ duration: 0.3 }}
-                                className="w-[350px] h-[500px] shrink-0 bg-[#161C22] rounded-md flex flex-col"
-                            >
-                                <div className="p-3 flex justify-between items-center border-b border-gray-800">
-                                    <h3 className="text-white font-semibold flex items-center gap-2">
-                                    {editingColumnTitle?.id === column.id ? (
+
+                    <div className="inline-flex gap-4 p-[40px]">
+
+                            <AnimatePresence mode="popLayout">
+                                {columns.map((column: Column) => (
+                                    <motion.div
+                                        key={column.id}
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        exit={{ opacity: 0, scale: 0.4 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="w-[350px] h-[500px] shrink-0 bg-[#161C22] rounded-md flex flex-col"
+                                        onDragOver={(e) => handleDragOver(e, column.id)}
+                                        onDrop={(e) => handleDrop(e, column.id)}
+                                    >
+                                        <div className="p-3 flex justify-between items-center border-b border-gray-800">
+                                            <h3 className="text-white font-semibold flex items-center gap-2">
+                                            {editingColumnTitle?.id === column.id ? (
     <input
         ref={(input) => {
             if (input && editingColumnTitle && editingColumnTitle.title === "New Column") {
@@ -337,13 +456,7 @@ function KanbanBoard() {
                                         )}
                                     </h3>
                                     <div className="flex gap-2">
-                                        <Button 
-                                            className="h-auto p-1 text-gray-400 hover:text-green-400"
-                                            variant="ghost"
-                                        onClick={() => createNewCard(column.id)}
-                                        >
-                                            <Plus size={16} />
-                                        </Button>
+
                                         <Button
                                             variant="ghost"
                                             className="h-auto p-1 text-gray-400 hover:text-purple-400"
@@ -366,76 +479,105 @@ function KanbanBoard() {
                                     </div>
                                 </div>
 
-                                <div className="flex-grow p-2 flex flex-col gap-2 overflow-y-auto">
+                                <div 
+                                    className={`flex-grow p-2 flex flex-col gap-2 overflow-y-auto transition-colors duration-200 ${
+                                        dropTargetId === column.id && !column.cards?.length 
+                                            ? 'bg-purple-500/10 ring-2 ring-purple-500/20 rounded-md' 
+                                            : ''
+                                    }`}
+                                    onDragOver={(e) => {
+                                        e.preventDefault();
+                                        if (!column.cards?.length) {
+                                            setDropTargetId(column.id);
+                                            setDropPosition(null);
+                                        }
+                                    }}
+                                    onDragLeave={(e) => {
+                                        // Only clear if we're not entering a child element
+                                        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                            setDropTargetId(null);
+                                            setDropPosition(null);
+                                        }
+                                    }}
+                                    onDrop={(e) => {
+                                        handleDrop(e, column.id);
+                                        setDropTargetId(null);
+                                        setDropPosition(null);
+                                    }}
+                                >
                                     <AnimatePresence mode="popLayout">
-                                        {column.cards?.map((card: any) => (
-                                            <motion.div
+                                        {column.cards?.map((card: Card) => (
+                                            <div 
                                                 key={card.id}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: -20 }}
-                                                transition={{ duration: 0.2 }}
-                                                className="bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 hover:ring-inset hover:ring-gray-700 cursor-pointer group"
+                                                className="relative"
+                                                onDragOver={(e) => {
+                                                    e.preventDefault();
+                                                    const rect = e.currentTarget.getBoundingClientRect();
+                                                    const position = e.clientY < (rect.top + rect.height / 2) ? 'top' : 'bottom';
+                                                    setDropPosition(position);
+                                                    setDropTargetId(card.id);
+                                                }}
                                             >
-                                                <div className="flex justify-between items-center">
-                                                {editingCardContent?.id === card.id ? (
-                                                    <input
-                                                        ref={(input) => {
-                                                            if (input && editingCardContent && editingCardContent.content === "New Task") {
-                                                                input.focus();
-                                                                input.select();
-                                                            }
-                                                        }}
-                                                        type="text"
-                                                        value={editingCardContent?.content ?? card.content}
-                                                        onChange={(e) => {
-                                                            if (editingCardContent) {
-                                                                setEditingCardContent({ ...editingCardContent, content: e.target.value });
-                                                            }
-                                                        }}
-                                                        onBlur={() => {
-                                                            if (editingCardContent) {
-                                                                handleCardSave(card.id, editingCardContent.content);
-                                                            }
-                                                        }}
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' && editingCardContent) {
-                                                                handleCardSave(card.id, editingCardContent.content);
-                                                            }
-                                                            if (e.key === 'Escape') {
-                                                                setEditingCardContent(null);
-                                                            }
-                                                        }}
-                                                        className="bg-[#2D3748] px-2 py-1 rounded-md outline-none focus:ring-1 focus:ring-purple-500 w-full mr-2"
-                                                    />
-                                                ) : (
-                                                    <div className="flex justify-between items-center w-full">
-                                                        <span className="text-gray-300">{card.content}</span>
-                                                        <div className="flex gap-2">
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="opacity-0 group-hover:opacity-100 h-auto p-1 text-gray-400 hover:text-purple-400"
-                                                                onClick={() => handleCardEdit(card.id, card.content)}
-                                                            >
-                                                                <Pen size={14} />
-                                                            </Button>
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="opacity-0 group-hover:opacity-100 h-auto p-1 text-gray-400 hover:text-red-400"
-                                                                onClick={() => deleteCard(card.id)}
-                                                                disabled={deletingCardId === card.id}
-                                                            >
-                                                                {deletingCardId === card.id ? (
-                                                                    <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-400 border-t-transparent" />
-                                                                ) : (
-                                                                    <Trash2 size={14} />
-                                                                )}
-                                                            </Button>
-                                                        </div>
+                                                <motion.div
+                                                    draggable
+                                                    onDragStart={() => handleDragStart(card.id)}
+                                                    className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
+                                                        hover:ring-inset hover:ring-gray-700 cursor-move
+                                                        ${draggingCardId === card.id ? 'opacity-50' : ''}`}
+                                                >
+                                                    {editingCardContent?.id === card.id ? (
+                                                        <input
+                                                            ref={(input) => {
+                                                                if (input && editingCardContent.content === "New Task") {
+                                                                    input.focus();
+                                                                    input.select();
+                                                                }
+                                                            }}
+                                                            type="text"
+                                                            value={editingCardContent.content}
+                                                            onChange={(e) => setEditingCardContent({ 
+                                                                ...editingCardContent, 
+                                                                content: e.target.value 
+                                                            })}
+                                                            onBlur={() => handleCardSave(card.id, editingCardContent.content)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    handleCardSave(card.id, editingCardContent.content);
+                                                                }
+                                                                if (e.key === 'Escape') {
+                                                                    setEditingCardContent(null);
+                                                                }
+                                                            }}
+                                                            className="bg-[#1F2937] px-2 py-1 rounded-md outline-none focus:ring-1 focus:ring-purple-500 w-full"
+                                                            autoFocus
+                                                        />
+                                                    ) : (
+                                                        card.content
+                                                    )}
+                                                    
+                                                    <div className="absolute right-2 top-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="h-auto p-1 text-gray-400 hover:text-purple-400"
+                                                            onClick={() => handleCardEdit(card.id, card.content)}
+                                                        >
+                                                            <Pen size={16} />
+                                                        </Button>
+                                                        <Button 
+                                                            variant="ghost" 
+                                                            className="h-auto p-1 text-gray-400 hover:text-red-400"
+                                                            onClick={() => deleteCard(card.id)}
+                                                            disabled={deletingCardId === card.id}
+                                                        >
+                                                            {deletingCardId === card.id ? (
+                                                                <Loader2 className="h-4 w-4 animate-spin" />
+                                                            ) : (
+                                                                <Trash2 size={16} />
+                                                            )}
+                                                        </Button>
                                                     </div>
-                                                )}
-                                                </div>
-                                            </motion.div>
+                                                </motion.div>
+                                            </div>
                                         ))}
                                     </AnimatePresence>
                                 </div>
@@ -467,11 +609,11 @@ function KanbanBoard() {
                                 Add Column
                             </Button>
                         </motion.div>
-                    </AnimatePresence>
+                        </AnimatePresence>
                 </div>
-            </div>
         </div>
-    )
+    </div>
+    );
 }
 
-export default KanbanBoard
+export default KanbanBoard;

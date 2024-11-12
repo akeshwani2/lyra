@@ -1,4 +1,5 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
+// SidebarTrigger
 import { AppSidebar } from "@/components/ui/app-sidebar"
 
 export default function PDFLayout({
@@ -11,7 +12,7 @@ export default function PDFLayout({
       <SidebarProvider>
         <AppSidebar />
             <main className="flex-1 overflow-hidden bg-gradient-to-t from-gray-700 via-gray-900 to-black">
-            <SidebarTrigger />
+            {/* <SidebarTrigger /> */}
             <div className="h-full">
             {children}
             </div>
