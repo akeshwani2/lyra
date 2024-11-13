@@ -833,7 +833,7 @@ function KanbanBoard() {
                             className="shrink-0"
                         >
                             <Button 
-                                className="h-[500px] w-[350px] min-w-[350px] cursor-pointer rounded-md bg-[#161C22] hover:bg-[#1F2937] flex items-center justify-center gap-2 text-gray-400 hover:text-white"
+                                className="h-[500px] w-[350px] min-w-[350px] cursor-pointer rounded-md bg-[#161C22] hover:bg-[#1F2937] hover:ring-1 hover:ring-inset hover:ring-purple-500 flex items-center justify-center gap-2 text-gray-400 hover:text-white"
                                 onClick={createNewColumn}
                             >
                                 <Plus size={24} />

@@ -25,7 +25,7 @@ async function getOrCreateBoard(userId: string) {
     if (!board) {
         board = await prisma.board.create({
             data: {
-                title: "My Kanban Board",
+                title: "My First Board!",
                 userId,
             },
             include: { 
