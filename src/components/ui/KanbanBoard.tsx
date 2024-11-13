@@ -46,13 +46,15 @@ function KanbanBoard() {
         setEditingColumnTitle({ id: columnId, title: currentTitle });
     };
 
-    const handleDragStart = (cardId: string) => {
+    const handleDragStart = (cardId: string, e: React.DragEvent) => {
+        e.stopPropagation();
         console.log('Drag started:', cardId);
         setDraggingCardId(cardId);
     };
     
     const handleDragOver = (e: React.DragEvent, columnId: string, cardId?: string) => {
         e.preventDefault();
+        e.stopPropagation();
         
         if (cardId) {
             const cardElement = e.currentTarget as HTMLElement;
@@ -63,7 +65,6 @@ function KanbanBoard() {
             setDropPosition(position);
             setDropTargetId(cardId);
         } else {
-            // When dragging over an empty column or column space
             setDropPosition(null);
             setDropTargetId(columnId);
         }
@@ -71,6 +72,7 @@ function KanbanBoard() {
 
     const handleDrop = async (e: React.DragEvent, targetColumnId: string) => {
         e.preventDefault();
+        e.stopPropagation();
         if (!draggingCardId) return;
 
         try {
@@ -728,7 +730,7 @@ function KanbanBoard() {
                                                         )}
                                                         <motion.div
                                                             draggable
-                                                            onDragStart={() => handleDragStart(card.id)}
+                                                            onDragStart={(e) => handleDragStart(card.id, e)}
                                                             className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
                                                                 hover:ring-inset hover:ring-gray-700 cursor-grab
                                                                 ${draggingCardId === card.id ? 'opacity-50' : ''}`}
