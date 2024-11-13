@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut } from "lucide-react"
-import { useClerk, UserButton } from "@clerk/nextjs"
-import { dark } from '@clerk/themes'
+import { useClerk } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
