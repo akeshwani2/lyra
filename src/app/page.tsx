@@ -4,8 +4,9 @@ import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin } from "lucide-react";
+import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User } from "lucide-react";
 import Image from 'next/image'
+import { TypeAnimation } from 'react-type-animation'
 
 const DashboardPage = () => {
   const { isSignedIn } = useAuth();
@@ -66,16 +67,47 @@ const DashboardPage = () => {
         <div className="space-y-4">
           <h1 className="text-7xl font-bold">
             <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-              Your Creative Workspace 
+              Revolutionize your workflow
             </span>
           </h1>
-          <p className="text-xl text-gray-400">
-            AI-powered tools to elevate your productivity
+          <p className="text-xl text-gray-400 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
+          <TypeAnimation 
+            sequence={[
+              'Cutting-Edge AI Solutions to Amplify Your Productivity and Creative Vision',
+              2000,
+              'Seamlessly Integrate AI Technology into Your Daily Workflow',
+              2000,
+              'Elevate Your Work with Intelligent Automation and Innovation',
+              2000,
+            ]}
+            wrapper="span"
+            speed={75}
+            repeat={Infinity}
+          />         
           </p>
         </div>
 
         {/* Feature Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 px-4">
+        <div 
+            onClick={() => handleNavigation("/ai-resume")} 
+            className="group cursor-pointer"
+          >
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
+                  <FileText size={24} />
+                </div>
+                <h2 className="text-2xl font-bold text-white">AI Resume Builder</h2>
+              </div>
+              <p className="text-gray-400 text-left mb-4">
+                Create professional resumes with <span className="text-indigo-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span> powered suggestions.
+              </p>
+              <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors">
+                Build Resume <ArrowUpRight className="ml-2" />
+              </div>
+            </div>
+          </div>
           {/* Tasks Card */}
           <div 
             onClick={() => handleNavigation("/tasks")} 
@@ -98,25 +130,7 @@ const DashboardPage = () => {
           </div>
 
           {/* AI Resume Card */}
-          <div 
-            onClick={() => handleNavigation("/ai-resume")} 
-            className="group cursor-pointer"
-          >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
-                  <FileText size={24} />
-                </div>
-                <h2 className="text-2xl font-bold text-white">AI Resume</h2>
-              </div>
-              <p className="text-gray-400 text-left mb-4">
-                Create professional resumes with AI-powered suggestions.
-              </p>
-              <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors">
-                Build Resume <ArrowUpRight className="ml-2" />
-              </div>
-            </div>
-          </div>
+
 
           {/* Scheduler Card */}
           <div 
@@ -149,10 +163,13 @@ const DashboardPage = () => {
                 <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
                   <Brain size={24} />
                 </div>
-                <h2 className="text-2xl font-bold text-white">AI Chat</h2>
+                <h2 className="text-2xl font-bold text-white">AI PDF Chat</h2>
               </div>
               <p className="text-gray-400 text-left mb-4">
-                Get instant help with our AI-powered chat assistant.
+              Engage with Any PDF Seamlessly Using  <span className="text-indigo-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span>
+
+
+              
               </p>
               <div className="flex items-center text-indigo-400 group-hover:text-indigo-300 transition-colors">
                 Start Chat <ArrowUpRight className="ml-2" />
@@ -171,13 +188,13 @@ const DashboardPage = () => {
         <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-purple-500/5 blur-[100px]"></div>
         <div className="absolute bottom-1/3 right-1/3 w-[500px] h-[500px] bg-blue-500/5 blur-[100px]"></div>
       </div>
-      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground p-4 space-y-2 ">
+      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1">
         <div className="absolute left-4 flex gap-4">
           <a 
             href="https://github.com/akeshwani2/muse" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors"
+            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
           >
             <Github size={20} />
           </a>
@@ -185,15 +202,26 @@ const DashboardPage = () => {
             href="https://linkedin.com/in/arhaan-keshwani" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors"
+            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
           >
             <Linkedin size={20} />
           </a>
+          <a 
+            href="https://ak-port.vercel.app/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
+          >
+            <User size={20} />
+          </a>
         </div>
+        <div className="flex items-center justify-center pb-1 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
         <p>© 2024 Muse. All rights reserved.</p>
+        </div>
       </footer>
     </div>
   )
 }
 
 export default DashboardPage
+
