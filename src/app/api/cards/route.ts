@@ -33,7 +33,7 @@ export async function POST(request: Request) {
             data: {
                 content: content || "New Task",
                 columnId,
-                order: column.cards.length  // Put at end of column
+                order: column.cards.length
             }
         });
 

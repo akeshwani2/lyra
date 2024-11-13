@@ -18,7 +18,6 @@ export async function DELETE(
             return NextResponse.json({ error: "Card ID not provided" }, { status: 400 });
         }
         
-        // Delete the card
         await prisma.card.delete({
             where: { id: cardId }
         });
@@ -30,16 +29,21 @@ export async function DELETE(
     }
 }
 
+
 // Add PATCH handler to existing file
 export async function PATCH(
     request: Request,
     { params }: { params: { cardId: string } }
 ) {
     try {
+        const { userId } = await auth();
+        if (!userId) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         const { cardId } = params;
         const { columnId, targetCardId, position, content } = await request.json();
 
-        // Get all cards in the target column to calculate new order
         const columnCards = await prisma.card.findMany({
             where: { columnId },
             orderBy: { order: 'asc' }
@@ -50,18 +54,12 @@ export async function PATCH(
         if (targetCardId) {
             const targetCard = columnCards.find(card => card.id === targetCardId);
             if (targetCard) {
-                if (position === 'top') {
-                    newOrder = targetCard.order - 1;
-                } else {
-                    newOrder = targetCard.order + 1;
-                }
+                newOrder = position === 'top' ? targetCard.order - 1 : targetCard.order + 1;
             }
         } else {
-            // If no target card, place at beginning or end of column
             newOrder = position === 'top' ? 0 : columnCards.length;
         }
 
-        // Update the card
         const updatedCard = await prisma.card.update({
             where: { id: cardId },
             data: {
@@ -71,7 +69,6 @@ export async function PATCH(
             }
         });
 
-        // Reorder other cards if necessary
         await prisma.card.updateMany({
             where: {
                 columnId,

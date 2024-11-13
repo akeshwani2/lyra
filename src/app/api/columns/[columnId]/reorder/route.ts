@@ -12,7 +12,7 @@ export async function PATCH(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { targetColumnId, sourceIndex, targetIndex } = await request.json();
+        const { sourceIndex, targetIndex } = await request.json();
 
         // Get all columns for the board
         const sourceColumn = await prisma.column.findUnique({
