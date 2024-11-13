@@ -1,10 +1,9 @@
 "use client";
 
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuth, useUser, UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User } from "lucide-react";
+import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User, ArrowRight } from "lucide-react";
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
 import { useEffect } from 'react';
@@ -55,25 +54,24 @@ const DashboardPage = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          {!isSignedIn && (
-            <button
-              onClick={() => router.push('/sign-in')}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500
-                         text-white font-medium relative group
-                         transition-[background,transform,shadow] duration-300 ease-in-out
-                         hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
-            >
-              <span className="relative z-10">Discover Muse</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 
-                            transition-all duration-300 ease-in-out rounded-lg blur-lg -z-10"></div>
-            </button>
-          )}
-          {isSignedIn && (
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-2xl pb-1 font-bold">
-              {user?.username || user?.firstName || ''}
+          <button
+            onClick={() => isSignedIn ? router.push('/tasks') : router.push('/sign-in')}
+            className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500
+                       text-white font-medium relative group
+                       transition-[background,transform,shadow] duration-300 ease-in-out
+                       hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
+          >
+            <span className="relative z-10">
+              {isSignedIn 
+                ? `Welcome ${user?.username || user?.firstName ? (user?.username || user?.firstName) : 'back'}!`
+                : <>Explore Muse <ArrowRight className="inline ml-1" /></>
+              }
             </span>
-          )}
-          <UserButton 
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 
+                          transition-all duration-300 ease-in-out rounded-lg blur-lg -z-10"></div>
+          </button>
+
+          {/* <UserButton 
             afterSignOutUrl="/"
             appearance={{
               baseTheme: dark,
@@ -83,7 +81,7 @@ const DashboardPage = () => {
                 userButtonPopoverCard: "min-w-[240px]"
               }
             }}
-          />
+          /> */}
         </div>
       </div>
 

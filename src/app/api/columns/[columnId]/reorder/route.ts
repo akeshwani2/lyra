@@ -1,6 +1,6 @@
+import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
 import { auth } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
 
 export async function PATCH(
     request: Request,
@@ -12,77 +12,80 @@ export async function PATCH(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { columnId } = params;
-        const { targetColumnId } = await request.json();
+        const { targetColumnId, sourceIndex, targetIndex } = await request.json();
 
-        // Get both columns to swap their orders
-        const [sourceColumn, targetColumn] = await Promise.all([
-            prisma.column.findUnique({ where: { id: columnId } }),
-            prisma.column.findUnique({ where: { id: targetColumnId } })
-        ]);
+        // Get all columns for the board
+        const sourceColumn = await prisma.column.findUnique({
+            where: { id: params.columnId },
+            select: { boardId: true }
+        });
 
-        if (!sourceColumn || !targetColumn) {
-            return NextResponse.json({ error: "Column not found" }, { status: 404 });
+        if (!sourceColumn) {
+            return NextResponse.json({ error: 'Source column not found' }, { status: 404 });
         }
 
-        // Get all columns to handle reordering
-        const allColumns = await prisma.column.findMany({
+        // Get all columns for the board
+        const columns = await prisma.column.findMany({
             where: { boardId: sourceColumn.boardId },
             orderBy: { order: 'asc' }
         });
 
-        // Calculate new orders
-        const sourceOrder = sourceColumn.order;
-        const targetOrder = targetColumn.order;
-        const minOrder = Math.min(sourceOrder, targetOrder);
-        const maxOrder = Math.max(sourceOrder, targetOrder);
+        // Create updates array
+        const updates = [];
 
-        // Update all affected columns
-        await prisma.$transaction([
-            // Move source column to target position
+        // First, move all affected columns out of the way
+        if (sourceIndex < targetIndex) {
+            // Moving right
+            updates.push(
+                ...columns
+                    .filter(col => col.order > sourceIndex && col.order <= targetIndex)
+                    .map(col => 
+                        prisma.column.update({
+                            where: { id: col.id },
+                            data: { order: col.order - 1 }
+                        })
+                    )
+            );
+        } else {
+            // Moving left
+            updates.push(
+                ...columns
+                    .filter(col => col.order >= targetIndex && col.order < sourceIndex)
+                    .map(col => 
+                        prisma.column.update({
+                            where: { id: col.id },
+                            data: { order: col.order + 1 }
+                        })
+                    )
+            );
+        }
+
+        // Then move the source column to its new position
+        updates.push(
             prisma.column.update({
-                where: { id: columnId },
-                data: { order: targetOrder }
-            }),
-            // Shift other columns
-            prisma.column.updateMany({
-                where: {
-                    boardId: sourceColumn.boardId,
-                    NOT: { id: columnId },
-                    order: {
-                        gte: minOrder,
-                        lte: maxOrder
-                    }
-                },
-                data: {
-                    order: {
-                        increment: sourceOrder < targetOrder ? -1 : 1
-                    }
-                }
+                where: { id: params.columnId },
+                data: { order: targetIndex }
             })
-        ]);
+        );
 
-        // Get updated board with new column order
-        const updatedBoard = await prisma.board.findFirst({
-            where: { userId },
-            include: { 
-                columns: {
-                    include: {
-                        cards: {
-                            orderBy: { order: 'asc' }
-                        }
-                    },
+        // Execute all updates in a transaction
+        await prisma.$transaction(updates);
+
+        // Return the updated columns
+        const updatedColumns = await prisma.column.findMany({
+            where: { boardId: sourceColumn.boardId },
+            orderBy: { order: 'asc' },
+            include: {
+                cards: {
                     orderBy: { order: 'asc' }
                 }
             }
         });
 
-        return NextResponse.json(updatedBoard);
+        return NextResponse.json(updatedColumns);
+
     } catch (error) {
-        console.error("Error:", error);
-        return NextResponse.json(
-            { error: "Error reordering columns" },
-            { status: 500 }
-        );
+        console.error('Error reordering column:', error);
+        return NextResponse.json({ error: 'Failed to reorder column' }, { status: 500 });
     }
 }

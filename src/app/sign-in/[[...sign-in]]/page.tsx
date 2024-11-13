@@ -61,6 +61,7 @@ export default function Page() {
         {/* Right side sign-in section */}
         <div className='flex flex-col gap-4 min-w-[400px]'>
           <SignIn 
+            // afterSignInUrl={"/"}
             afterSignInUrl={"/tasks"}
             appearance={{
               baseTheme: dark,
