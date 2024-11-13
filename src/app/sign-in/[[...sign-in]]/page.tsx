@@ -41,8 +41,7 @@ export default function Page() {
             Sign in to Muse!
           </h1>
           <div className="h-24">
-            <p className="text-muted-foreground text-lg text-center [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-              <TypeAnimation 
+          <p className="text-muted-foreground text-lg text-center [text-shadow:0_0_15px_rgba(255,255,255,0.3)]">              <TypeAnimation 
                 sequence={[
                   'Your AI-powered academic companion to help you create and explore new academic possibilities',
                   2000,
@@ -83,7 +82,7 @@ export default function Page() {
           />
         </div>
       </div>
-      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1 pb-2">
+      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1 pb-4">
         <div className="absolute left-4 flex gap-4">
         <a 
             href="https://github.com/akeshwani2/muse" 

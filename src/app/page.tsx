@@ -102,9 +102,16 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 px-4">
         <div 
             onClick={() => handleNavigation("/ai-resume")} 
-            className="group cursor-pointer"
+            className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:4.5s]"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(96,165,250,0.3)] backdrop-blur-sm">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(96,165,250,0.3)] backdrop-blur-sm relative overflow-hidden group">
+              <div className="absolute -top-1 -right-1 w-16 h-16 rotate-45 transform translate-x-1/2 -translate-y-1/2 transition-all duration-300">
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-blue-500/20 group-hover:to-blue-500/40"></div>
+                <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/20 blur-[2px] group-hover:blur-[4px]"></div>
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-400/30 blur-[4px]"></div>
+                </div>
+              </div>
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
                   <FileText size={24} />
@@ -122,9 +129,10 @@ const DashboardPage = () => {
           {/* Tasks Card */}
           <div 
             onClick={() => handleNavigation("/tasks")} 
-            className="group cursor-pointer"
+            className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:1.5s]"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm relative overflow-hidden group">
+              <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-purple-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-purple-500/40 transition-colors duration-300"></div>
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400">
                   <ListTodo size={24} />
@@ -146,10 +154,11 @@ const DashboardPage = () => {
           {/* Scheduler Card */}
           <div 
             onClick={() => handleNavigation("/scheduler")} 
-            className="group cursor-pointer"
+            className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:3s]"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.3)] backdrop-blur-sm">
-            <div className="flex items-center gap-4 mb-4">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.3)] backdrop-blur-sm relative overflow-hidden group">
+              <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-cyan-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-cyan-500/40 transition-colors duration-300"></div>
+              <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
                   <Calendar size={24} />
                 </div>
@@ -167,9 +176,10 @@ const DashboardPage = () => {
           {/* AI Chat Card */}
           <div 
             onClick={() => handleNavigation("/ai-pdf")} 
-            className="group cursor-pointer"
+            className="group cursor-pointer animate-[float_6s_ease-in-out_infinite]"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(129,140,248,0.3)] backdrop-blur-sm">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(129,140,248,0.3)] backdrop-blur-sm relative overflow-hidden group">
+              <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-indigo-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-indigo-500/40 transition-colors duration-300"></div>
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
                   <Brain size={24} />
