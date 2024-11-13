@@ -63,6 +63,8 @@ export async function GET() {
     }
 }
 
+// ... existing imports and getOrCreateBoard function ...
+
 export async function POST() {
     try {
         const { userId } = await auth();
@@ -76,12 +78,12 @@ export async function POST() {
 
         const board = await getOrCreateBoard(userId);
 
-        // Create a new column
-        const newColumn = await prisma.column.create({
+        // Create new column and immediately use it in the query
+        await prisma.column.create({
             data: {
                 title: "New Column",
-                order: board.columns.length,  // Put at end
-                boardId: board.id            // Connect to board
+                order: board.columns.length,
+                boardId: board.id
             }
         });
 
@@ -115,8 +117,7 @@ export async function POST() {
 }
 
 export async function PATCH(
-    request: Request,
-    { params }: { params: { boardId: string } }
+    request: Request
 ) {
     try {
         const { userId } = await auth();
