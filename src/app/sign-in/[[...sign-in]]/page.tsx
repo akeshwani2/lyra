@@ -41,7 +41,7 @@ export default function Page() {
             Sign in to Muse!
           </h1>
           <div className="h-24">
-            <p className="text-muted-foreground text-lg text-center">
+            <p className="text-muted-foreground text-lg text-center [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
               <TypeAnimation 
                 sequence={[
                   'Your AI-powered academic companion to help you create and explore new academic possibilities',
@@ -83,13 +83,16 @@ export default function Page() {
           />
         </div>
       </div>
-      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1 ">
+      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1 pb-2">
         <div className="absolute left-4 flex gap-4">
-          <a 
+        <a 
             href="https://github.com/akeshwani2/muse" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors"
+            className="text-purple-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-blue-500 
+                       transition-all duration-300 
+                       [filter:drop-shadow(0_0_15px_rgba(139,92,246,0.5))_drop-shadow(0_0_15px_rgba(59,130,246,0.5))] 
+                       hover:[filter:drop-shadow(0_0_20px_rgba(139,92,246,0.8))_drop-shadow(0_0_20px_rgba(59,130,246,0.8))]"
           >
             <Github size={20} />
           </a>
@@ -97,7 +100,10 @@ export default function Page() {
             href="https://linkedin.com/in/arhaan-keshwani" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors"
+            className="text-blue-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-500 
+                       transition-all duration-300 
+                       [filter:drop-shadow(0_0_15px_rgba(59,130,246,0.5))] 
+                       hover:[filter:drop-shadow(0_0_20px_rgba(59,130,246,0.8))_drop-shadow(0_0_20px_rgba(34,211,238,0.8))]"
           >
             <Linkedin size={20} />
           </a>
@@ -105,7 +111,10 @@ export default function Page() {
             href="https://ak-port.vercel.app/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
+            className="text-amber-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 
+                       transition-all duration-300 
+                       [filter:drop-shadow(0_0_15px_rgba(245,158,11,0.5))] 
+                       hover:[filter:drop-shadow(0_0_20px_rgba(245,158,11,0.8))_drop-shadow(0_0_20px_rgba(249,115,22,0.8))]"
           >
             <User size={20} />
           </a>

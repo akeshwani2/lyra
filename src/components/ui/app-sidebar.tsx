@@ -1,9 +1,13 @@
-import { Calendar, CalendarClock, FileText, Home, Inbox, Search, Settings, Table, ListTodo, Brain } from "lucide-react"
-import { UserButton } from "@clerk/nextjs"
+"use client"
+
+import { useState, useEffect } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut } from "lucide-react"
+import { useClerk, UserButton } from "@clerk/nextjs"
 import { dark } from '@clerk/themes'
 import Image from "next/image"
 import Link from "next/link"
-
+import { cn } from "@/lib/utils"
 
 import {
   Sidebar,
@@ -16,88 +20,148 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar"
 
-// Menu items.
+// Menu items
 const items = [
   {
     title: "Tasks",
     url: "/tasks",
     icon: ListTodo,
+    activeColor: "bg-blue-500/10 text-blue-400",
+    hoverColor: "hover:bg-blue-500/5 hover:text-blue-400 !text-blue-400",
   },
   {
     title: "PDF Reader",
     url: "/ai-pdf",
     icon: FileText,
+    activeColor: "bg-green-500/10 text-green-400",
+    hoverColor: "hover:bg-green-500/5 hover:text-green-400 !text-green-400",
   },
   {
     title: "Calendar",
     url: "/calendar",
     icon: Calendar,
+    activeColor: "bg-purple-500/10 text-purple-400",
+    hoverColor: "hover:bg-purple-500/5 hover:text-purple-400 !text-purple-400",
   },
   {
     title: "Scheduler",
     url: "/scheduler",
     icon: CalendarClock,
+    activeColor: "bg-pink-500/10 text-pink-400",
+    hoverColor: "hover:bg-pink-500/5 hover:text-pink-400 !text-pink-400",
   },
   {
     title: "AI Resume",
     url: "/ai-resume",
     icon: Brain,
+    activeColor: "bg-amber-500/10 text-amber-400",
+    hoverColor: "hover:bg-amber-500/5 hover:text-amber-400 !text-amber-400",
   },
 ]
 
+// Add this new type to handle the custom styling
+type CustomSidebarMenuButton = React.ComponentProps<typeof SidebarMenuButton> & {
+  isActive?: boolean
+  customActiveClass?: string
+  customHoverClass?: string
+}
+
 export function AppSidebar() {
+  const { signOut } = useClerk()
+  const router = useRouter()
+  const pathname = usePathname()
+  const [activeTab, setActiveTab] = useState(pathname)
+
+  useEffect(() => {
+    setActiveTab(pathname)
+  }, [pathname])
+
   return (
-    <Sidebar collapsible="icon" className="border-none">
-      <SidebarContent className="bg-gray-900/95 backdrop-blur-sm">
-        <SidebarGroup>
-          <div className="flex items-center gap-2 cursor-pointer mb-10 mt-2">
-            {/* Logo - always visible */}
+    <Sidebar collapsible="icon" className="border-none w-[100px]">
+      <SidebarContent className="bg-gray-900/95 backdrop-blur-sm h-full overflow-visible">
+        <SidebarGroup className="h-full flex flex-col">
+          {/* Logo */}
+          <div className="flex justify-center py-8">
             <Link href="/">
-            <div className="shrink-0 w-8 h-8">
-              <Image 
-                src="/logo.svg"
-                alt=""
-                width={32}
-                height={32}
-                className="w-full h-full"
-                priority
-              />
-            </div>
-            </Link>
-            {/* Text - hides when collapsed */}
-            <Link href="/">
-            <span className="text-xl font-bold cursor-pointer text-purple-400 hover:text-purple-300 transition-opacity duration-200 group-data-[collapsible=icon]:opacity-0">
-              Muse
-            </span>
+              <div className="w-16 h-16">
+                <Image 
+                  src="/logo.svg"
+                  alt=""
+                  width={65}
+                  height={60}
+                  className="w-full h-full bg-gray-900 text-center rounded-lg hover:bg-gray-950 transition-colors duration-200"
+                  priority
+                />
+              </div>
             </Link>
           </div>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link href={item.url} className="flex items-center gap-3">
-                      <item.icon 
-                        className="text-purple-400 hover:text-purple-300 min-w-[20px] min-h-[20px] transition-all duration-200 group-data-[collapsible=icon]:w-3 group-data-[collapsible=icon]:h-3 w-6 h-6" 
-                        strokeWidth={2} 
-                      />
-                      <span className="text-purple-400 hover:text-purple-300">{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+
+          {/* Navigation Icons */}
+          <SidebarGroupContent className="flex-1">
+            <SidebarMenu className="flex flex-col items-center justify-evenly h-[70vh] pt-12">
+              {items.map((item, index) => {
+                const isActive = activeTab === item.url
+                return (
+                  <SidebarMenuItem key={index}>
+                    <SidebarMenuButton 
+                      asChild 
+                      className={cn(
+                        "!p-0",
+                        "!bg-transparent hover:!bg-transparent active:!bg-transparent",
+                        "data-[active=true]:!bg-transparent",
+                        "[&>*]:!bg-transparent [&>*]:hover:!bg-transparent",
+                        "!hover:bg-opacity-0"
+                      )}
+                    >
+                      <Link 
+                        href={item.url} 
+                        className={cn(
+                          "p-4 transition-colors duration-200 flex items-center justify-center w-[75px] h-[75px]",
+                          isActive 
+                            ? item.activeColor
+                            : "text-gray-400 " + item.hoverColor,
+                          "hover:text-inherit",
+                          isActive 
+                            ? "hover:text-blue-400"
+                            : item.hoverColor,
+                          "hover:!bg-transparent [&>*]:hover:!bg-transparent"
+                        )}
+                      >
+                        <item.icon 
+                          className={cn(
+                            "!w-9 !h-9 transition-colors",
+                            isActive 
+                              ? item.activeColor.split(' ')[1]
+                              : "text-gray-400",
+                            isActive 
+                              ? "group-hover:text-blue-400"
+                              : item.hoverColor.split(' ')[1]
+                          )}
+                          strokeWidth={1.5} 
+                        />
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
+
+          {/* Footer with Sign Out */}
+          <div className="flex flex-col items-center gap-4 pb-2">
+            <button 
+              onClick={() => {
+                signOut().then(() => {
+                  router.push('/')
+                })
+              }}
+              className="p-4 transition-all duration-200 flex items-center justify-center w-[75px] h-[75px] text-gray-400 hover:text-red-400 hover:bg-red-500/5"
+            >
+              <LogOut className="w-8 h-8" strokeWidth={1.5} />
+            </button>
+          </div>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-gray-900/95 backdrop-blur-sm">
-        <SidebarContent>
-          <SidebarFooter>
-            <span className="text-purple-400 hover:text-purple-300">       
-</span>
-          </SidebarFooter>
-        </SidebarContent>
-      </SidebarFooter>
     </Sidebar>
   )
 }

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Loader2, Plus, Trash2, Pen, Loader, GripVertical, Pencil } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { UserButton, useUser } from '@clerk/nextjs'
+import { UserButton, useUser, useAuth } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 
 
@@ -41,7 +41,7 @@ function KanbanBoard() {
     const [editingTitle, setEditingTitle] = useState<string>("");
     const [isEditingColumnId, setIsEditingColumnId] = useState<string | null>(null);
     const { user } = useUser();
-
+    const { isSignedIn } = useAuth();
     const handleColumnTitleEdit = (columnId: string, currentTitle: string) => {
         setEditingColumnTitle({ id: columnId, title: currentTitle });
     };
@@ -513,9 +513,11 @@ function KanbanBoard() {
             ) : null}
             <div className="px-[40px] py-12">
                 <div className="absolute top-4 right-8 flex items-center gap-3">
-                    <span className="text-gray-400">
-                        {user?.username || user?.firstName || 'User'}
-                    </span>
+                {isSignedIn && (
+            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-xl font-bold">
+              {user?.username || user?.firstName || ''}
+            </span>
+          )}
                     <UserButton 
                         afterSignOutUrl="/"
                         appearance={{
@@ -612,9 +614,9 @@ function KanbanBoard() {
                                             setDropTargetColumnId(null);
                                         }}
                                     >
-                                        <div className="p-2 flex items-center justify-between gap-2">
+                                        <div className="p-2 flex items-center justify-between gap-2 hover:bg-gray-950 transition-colors duration-200 border-b border-gray-800">
                                             <div 
-                                                className="flex items-center gap-2 flex-1 cursor-move min-w-0"
+                                                className="flex items-center gap-2 flex-1 cursor-grab min-w-0"
                                                 onMouseDown={() => handleColumnDragStart(column.id)}
                                             >
                                                 <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-300 shrink-0" />
@@ -654,7 +656,7 @@ function KanbanBoard() {
                                                         className="bg-transparent text-white font-semibold min-w-0 w-full outline-none focus:ring-1 focus:ring-purple-500/50 rounded px-1"
                                                     />
                                                 ) : (
-                                                    <span className="text-white font-semibold truncate">{column.title}</span>
+                                                    <span className="text-white font-semiboldtruncate">{column.title}</span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-1 shrink-0">
@@ -728,7 +730,7 @@ function KanbanBoard() {
                                                             draggable
                                                             onDragStart={() => handleDragStart(card.id)}
                                                             className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
-                                                                hover:ring-inset hover:ring-gray-700 cursor-move
+                                                                hover:ring-inset hover:ring-gray-700 cursor-grab
                                                                 ${draggingCardId === card.id ? 'opacity-50' : ''}`}
                                                         >
                                                             {editingCardContent?.id === card.id ? (

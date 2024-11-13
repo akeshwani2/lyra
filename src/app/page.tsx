@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
@@ -11,6 +11,8 @@ import { TypeAnimation } from 'react-type-animation'
 const DashboardPage = () => {
   const { isSignedIn } = useAuth();
   const router = useRouter();
+  const { user } = useUser();
+
 
   const handleNavigation = (path: string) => {
     if (!isSignedIn) {
@@ -41,18 +43,27 @@ const DashboardPage = () => {
           {!isSignedIn && (
             <button
               onClick={() => router.push('/sign-in')}
-              className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 text-white font-medium 
-                         hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500
+                         text-white font-medium relative group
+                         transition-[background,transform,shadow] duration-300 ease-in-out
+                         hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
             >
-              Discover Muse
+              <span className="relative z-10">Discover Muse</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 
+                            transition-all duration-300 ease-in-out rounded-lg blur-lg -z-10"></div>
             </button>
+          )}
+          {isSignedIn && (
+            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-2xl pb-1 font-bold">
+              {user?.username || user?.firstName || ''}
+            </span>
           )}
           <UserButton 
             afterSignOutUrl="/"
             appearance={{
               baseTheme: dark,
               elements: {
-                avatarBox: "w-8 h-8",
+                avatarBox: "w-10 h-10",
                 userButtonTrigger: "p-1",
                 userButtonPopoverCard: "min-w-[240px]"
               }
@@ -67,7 +78,7 @@ const DashboardPage = () => {
         <div className="space-y-4">
           <h1 className="text-7xl font-bold">
             <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-              Revolutionize your workflow
+              Revolutionize Your Workflow
             </span>
           </h1>
           <p className="text-xl text-gray-400 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
@@ -93,17 +104,17 @@ const DashboardPage = () => {
             onClick={() => handleNavigation("/ai-resume")} 
             className="group cursor-pointer"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(96,165,250,0.3)] backdrop-blur-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-blue-500/10 text-blue-400">
                   <FileText size={24} />
                 </div>
                 <h2 className="text-2xl font-bold text-white">AI Resume Builder</h2>
               </div>
-              <p className="text-gray-400 text-left mb-4">
-                Create professional resumes with <span className="text-indigo-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span> powered suggestions.
+              <p className="text-gray-400 text-left mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
+                Create professional resumes with <span className="text-blue-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span> powered suggestions.
               </p>
-              <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors">
+              <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors [text-shadow:0_0_15px_rgba(96,165,250,0.7)]">
                 Build Resume <ArrowUpRight className="ml-2" />
               </div>
             </div>
@@ -118,12 +129,12 @@ const DashboardPage = () => {
                 <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400">
                   <ListTodo size={24} />
                 </div>
-                <h2 className="text-2xl font-bold text-white">Task Board</h2>
+                <h2 className="text-2xl font-bold text-white">Kanban Board</h2>
               </div>
-              <p className="text-gray-400 text-left mb-4">
+              <p className="text-gray-400 text-left mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
                 Organize your tasks with our intuitive Kanban board system.
               </p>
-              <div className="flex items-center text-purple-400 group-hover:text-purple-300 transition-colors">
+              <div className="flex items-center text-purple-400 group-hover:text-purple-300 transition-colors [text-shadow:0_0_15px_rgba(139,92,246,0.7)]">
                 Get Started <ArrowUpRight className="ml-2" />
               </div>
             </div>
@@ -137,17 +148,17 @@ const DashboardPage = () => {
             onClick={() => handleNavigation("/scheduler")} 
             className="group cursor-pointer"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm">
-              <div className="flex items-center gap-4 mb-4">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.3)] backdrop-blur-sm">
+            <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
                   <Calendar size={24} />
                 </div>
                 <h2 className="text-2xl font-bold text-white">Scheduler</h2>
               </div>
-              <p className="text-gray-400 text-left mb-4">
+              <p className="text-gray-400 text-left mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
                 Plan your day with our intelligent scheduling assistant.
               </p>
-              <div className="flex items-center text-cyan-400 group-hover:text-cyan-300 transition-colors">
+              <div className="flex items-center text-cyan-400 group-hover:text-cyan-300 transition-colors [text-shadow:0_0_15px_rgba(34,211,238,0.7)]">
                 Schedule Now <ArrowUpRight className="ml-2" />
               </div>
             </div>
@@ -158,22 +169,41 @@ const DashboardPage = () => {
             onClick={() => handleNavigation("/ai-pdf")} 
             className="group cursor-pointer"
           >
-            <div className="p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm">
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(129,140,248,0.3)] backdrop-blur-sm">
               <div className="flex items-center gap-4 mb-4">
                 <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
                   <Brain size={24} />
                 </div>
                 <h2 className="text-2xl font-bold text-white">AI PDF Chat</h2>
               </div>
-              <p className="text-gray-400 text-left mb-4">
+              <p className="text-gray-400 text-left mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
               Engage with Any PDF Seamlessly Using  <span className="text-indigo-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span>
 
 
               
               </p>
-              <div className="flex items-center text-indigo-400 group-hover:text-indigo-300 transition-colors">
+              <div className="flex items-center text-indigo-400 group-hover:text-indigo-300 transition-colors [text-shadow:0_0_15px_rgba(129,140,248,0.7)]">
                 Start Chat <ArrowUpRight className="ml-2" />
               </div>
+              {/*           <div 
+            onClick={() => handleNavigation("/ai-pdf")} 
+            className="group cursor-pointer"
+          >
+            <div className="p-8 rounded-2xl bg-gray-900/50 border border-amber-500/20 hover:border-amber-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(245,158,11,0.3)] backdrop-blur-sm">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400">
+                  <Brain size={24} />
+                </div>
+                <h2 className="text-2xl font-bold text-white">AI PDF Chat</h2>
+              </div>
+              <p className="text-gray-400 text-left mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
+                Engage with Any PDF Seamlessly Using <span className="text-amber-400 px-1 shadow-[0_0_15px_rgba(245,158,11,0.7)] rounded">AI</span>
+              </p>
+              <div className="flex items-center text-amber-400 group-hover:text-amber-300 transition-colors [text-shadow:0_0_15px_rgba(245,158,11,0.7)]">
+                Start Chat <ArrowUpRight className="ml-2" />
+              </div>
+            </div>
+          </div> */}
             </div>
           </div>
         </div>
@@ -188,13 +218,16 @@ const DashboardPage = () => {
         <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-purple-500/5 blur-[100px]"></div>
         <div className="absolute bottom-1/3 right-1/3 w-[500px] h-[500px] bg-blue-500/5 blur-[100px]"></div>
       </div>
-      <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1">
+      <footer className="fixed bottom-0 left-0 pb-4 right-0 text-center text-muted-foreground space-y-1">
         <div className="absolute left-4 flex gap-4">
           <a 
             href="https://github.com/akeshwani2/muse" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
+            className="text-purple-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-blue-500 
+                       transition-all duration-300 
+                       [filter:drop-shadow(0_0_15px_rgba(139,92,246,0.5))_drop-shadow(0_0_15px_rgba(59,130,246,0.5))] 
+                       hover:[filter:drop-shadow(0_0_20px_rgba(139,92,246,0.8))_drop-shadow(0_0_20px_rgba(59,130,246,0.8))]"
           >
             <Github size={20} />
           </a>
@@ -202,7 +235,10 @@ const DashboardPage = () => {
             href="https://linkedin.com/in/arhaan-keshwani" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
+            className="text-blue-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-500 
+                       transition-all duration-300 
+                       [filter:drop-shadow(0_0_15px_rgba(59,130,246,0.5))] 
+                       hover:[filter:drop-shadow(0_0_20px_rgba(59,130,246,0.8))_drop-shadow(0_0_20px_rgba(34,211,238,0.8))]"
           >
             <Linkedin size={20} />
           </a>
@@ -210,7 +246,10 @@ const DashboardPage = () => {
             href="https://ak-port.vercel.app/" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="hover:text-purple-400 transition-colors [filter:drop-shadow(0_0_20px_rgba(139,92,246,0.7))_drop-shadow(0_0_20px_rgba(59,130,246,0.7))]"
+            className="text-amber-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-amber-500 hover:to-orange-500 
+                       transition-all duration-300 
+                       [filter:drop-shadow(0_0_15px_rgba(245,158,11,0.5))] 
+                       hover:[filter:drop-shadow(0_0_20px_rgba(245,158,11,0.8))_drop-shadow(0_0_20px_rgba(249,115,22,0.8))]"
           >
             <User size={20} />
           </a>
