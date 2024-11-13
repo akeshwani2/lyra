@@ -7,6 +7,7 @@ import { dark } from "@clerk/themes";
 import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User } from "lucide-react";
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
+import { useEffect } from 'react';
 
 const DashboardPage = () => {
   const { isSignedIn } = useAuth();
@@ -16,11 +17,25 @@ const DashboardPage = () => {
 
   const handleNavigation = (path: string) => {
     if (!isSignedIn) {
+      console.log('Storing path before sign-in:', path);
+      sessionStorage.setItem('redirectPath', path);
       router.push("/sign-in");
       return;
     }
     router.push(path);
   };
+
+  useEffect(() => {
+    if (isSignedIn) {
+      const redirectPath = sessionStorage.getItem('redirectPath');
+      console.log('After sign-in, redirectPath is:', redirectPath);
+      if (redirectPath) {
+        console.log('Attempting to redirect to:', redirectPath);
+        router.push(redirectPath);
+        sessionStorage.removeItem('redirectPath');
+      }
+    }
+  }, [isSignedIn, router]);
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-gray-900 to-gray-950">

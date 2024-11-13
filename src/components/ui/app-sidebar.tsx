@@ -134,7 +134,7 @@ export function AppSidebar() {
                               ? item.activeColor.split(' ')[1]
                               : "text-gray-400",
                             isActive 
-                              ? "group-hover:text-blue-400"
+                              ? "hover:text-amber-400"
                               : item.hoverColor.split(' ')[1]
                           )}
                           strokeWidth={1.5} 
@@ -150,10 +150,14 @@ export function AppSidebar() {
           {/* Footer with Sign Out */}
           <div className="flex flex-col items-center gap-4 pb-2">
             <button 
-              onClick={() => {
-                signOut().then(() => {
+              onClick={async () => {
+                try {
+                  await signOut()
+                  // Only redirect after successful sign out
                   router.push('/')
-                })
+                } catch (error) {
+                  console.error('Error signing out:', error)
+                }
               }}
               className="p-4 transition-all duration-200 flex items-center justify-center w-[75px] h-[75px] text-gray-400 hover:text-red-400 hover:bg-red-500/5"
             >

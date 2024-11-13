@@ -41,7 +41,7 @@ function KanbanBoard() {
     const [editingTitle, setEditingTitle] = useState<string>("");
     const [isEditingColumnId, setIsEditingColumnId] = useState<string | null>(null);
     const { user } = useUser();
-    const { isSignedIn } = useAuth();
+    const { isSignedIn, isLoaded } = useAuth();
     const handleColumnTitleEdit = (columnId: string, currentTitle: string) => {
         setEditingColumnTitle({ id: columnId, title: currentTitle });
     };
@@ -515,22 +515,24 @@ function KanbanBoard() {
             ) : null}
             <div className="px-[40px] py-12">
                 <div className="absolute top-4 right-8 flex items-center gap-3">
-                {isSignedIn && (
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-xl font-bold">
-              {user?.username || user?.firstName || ''}
-            </span>
-          )}
-                    <UserButton 
-                        afterSignOutUrl="/"
-                        appearance={{
-                            baseTheme: dark,
-                            elements: {
-                                avatarBox: "w-10 h-10",
-                                userButtonTrigger: "p-2",
-                                userButtonPopoverCard: "min-w-[240px]"
-                            }
-                        }}
-                    />
+                    {isLoaded && isSignedIn && (
+                        <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-xl font-bold">
+                            {user?.username || user?.firstName || ''}
+                        </span>
+                    )}
+                    {isLoaded && (
+                        <UserButton 
+                            afterSignOutUrl="/"
+                            appearance={{
+                                baseTheme: dark,
+                                elements: {
+                                    avatarBox: "w-10 h-10",
+                                    userButtonTrigger: "p-2",
+                                    userButtonPopoverCard: "min-w-[240px]"
+                                }
+                            }}
+                        />
+                    )}
                 </div>
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-4">
