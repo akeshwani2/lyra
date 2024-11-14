@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  // SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenuItem,
@@ -59,11 +59,11 @@ const items = [
 ]
 
 // Add this new type to handle the custom styling
-type CustomSidebarMenuButton = React.ComponentProps<typeof SidebarMenuButton> & {
-  isActive?: boolean
-  customActiveClass?: string
-  customHoverClass?: string
-}
+// type CustomSidebarMenuButton = React.ComponentProps<typeof SidebarMenuButton> & {
+//   isActive?: boolean
+//   customActiveClass?: string
+//   customHoverClass?: string
+// }
 
 export function AppSidebar() {
   const { signOut } = useClerk()

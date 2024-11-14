@@ -1,8 +1,8 @@
 "use client";
 
-import { useAuth, useUser, UserButton } from "@clerk/nextjs";
+import { useAuth, useUser} from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { dark } from "@clerk/themes";
+// import { dark } from "@clerk/themes";
 import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User, ArrowRight } from "lucide-react";
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'

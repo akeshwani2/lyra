@@ -1,7 +1,7 @@
 'use client'
 
-import Header from '@/app/section/Header';
-import { SignIn, useAuth } from '@clerk/nextjs'
+// import Header from '@/app/section/Header';
+import { SignIn } from '@clerk/nextjs'
 import { dark } from '@clerk/themes';
 import Link from 'next/link';
 import Image from 'next/image';

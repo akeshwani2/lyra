@@ -3,8 +3,8 @@ import localFont from "next/font/local"
 import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import "./globals.css"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/ui/app-sidebar"
+// import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+// import { AppSidebar } from "@/components/ui/app-sidebar"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
