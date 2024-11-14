@@ -536,7 +536,7 @@ function KanbanBoard() {
 
     const handleScroll = (direction: 'left' | 'right') => {
         if (containerRef.current) {
-            const scrollAmount = 400; // Adjust this value to control scroll distance
+            const scrollAmount =1500; // Adjust this value to control scroll distance
             const currentScroll = containerRef.current.scrollLeft;
             const targetScroll = direction === 'left' 
                 ? currentScroll - scrollAmount 
