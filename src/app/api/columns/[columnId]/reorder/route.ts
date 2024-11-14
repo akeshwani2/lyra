@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { columnId: string } }
+    context: { params: { columnId: string } }
 ) {
     try {
         const { userId } = await auth();
@@ -16,7 +16,7 @@ export async function PATCH(
 
         // Get all columns for the board
         const sourceColumn = await prisma.column.findUnique({
-            where: { id: params.columnId },
+            where: { id: context.params.columnId },
             select: { boardId: true }
         });
 
@@ -63,7 +63,7 @@ export async function PATCH(
         // Then move the source column to its new position
         updates.push(
             prisma.column.update({
-                where: { id: params.columnId },
+                where: { id: context.params.columnId },
                 data: { order: targetIndex }
             })
         );

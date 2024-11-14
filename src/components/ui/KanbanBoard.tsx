@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { UserButton, useUser, useAuth } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
-import { DragStartEvent } from '@dnd-kit/core';
+// import { DragStartEvent } from '@dnd-kit/core';
 
 
 interface Card {
