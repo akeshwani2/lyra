@@ -1,18 +1,16 @@
 import { prisma } from '@/app/lib/prisma'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 
-export async function DELETE(
-    request: Request,
-    { params }: { params: { columnId: string } }  // Add this parameter
-) {
+export async function DELETE(request: NextRequest) {
     try {
         const { userId } = await auth();
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { columnId } = params;  // Get columnId from params instead of URL
+        // Extract columnId from URL
+        const columnId = request.url.split('/columns/')[1].split('/')[0];
 
         if (!columnId) {
             return NextResponse.json({ error: "Column ID not provided" }, { status: 400 });
@@ -29,17 +27,16 @@ export async function DELETE(
         return NextResponse.json({ error: "Error deleting column" }, { status: 500 });
     }
 }
-export async function PATCH(
-    request: Request,
-    { params }: { params: { columnId: string } }
-) {
+
+export async function PATCH(request: NextRequest) {
     try {
         const { userId } = await auth();
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { columnId } = params;
+        // Extract columnId from URL
+        const columnId = request.url.split('/columns/')[1].split('/')[0];
         const { title } = await request.json();
 
         const updatedColumn = await prisma.column.update({
