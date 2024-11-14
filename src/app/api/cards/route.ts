@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         }
 
         // Create new card at the end of the column
-        const newCard = await prisma.card.create({
+        await prisma.card.create({
             data: {
                 content: content || "New Task",
                 columnId,

@@ -3,8 +3,7 @@ import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 
 export async function DELETE(
-    request: Request,
-    { params }: { params: { cardId: string } }
+    request: Request
 ) {
     try {
         const { userId } = await auth();
@@ -12,7 +11,8 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { cardId } = params;
+        // Get cardId from URL instead of params
+        const cardId = request.url.split('/').pop();
 
         if (!cardId) {
             return NextResponse.json({ error: "Card ID not provided" }, { status: 400 });
@@ -29,11 +29,8 @@ export async function DELETE(
     }
 }
 
-
-// Add PATCH handler to existing file
 export async function PATCH(
-    request: Request,
-    { params }: { params: { cardId: string } }
+    request: Request
 ) {
     try {
         const { userId } = await auth();
@@ -41,7 +38,8 @@ export async function PATCH(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const { cardId } = params;
+        // Get cardId from URL
+        const cardId = request.url.split('/').pop();
         const { columnId, targetCardId, position, content } = await request.json();
 
         const columnCards = await prisma.card.findMany({

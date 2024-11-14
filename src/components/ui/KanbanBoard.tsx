@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import { UserButton, useUser, useAuth } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
-
+import { DragStartEvent } from '@dnd-kit/core';
 
 
 interface Card {
@@ -46,11 +46,11 @@ function KanbanBoard() {
         setEditingColumnTitle({ id: columnId, title: currentTitle });
     };
 
-    const handleDragStart = (cardId: string, e: React.DragEvent) => {
-        e.stopPropagation();
+    const handleDragStart = (cardId: string) => {
         console.log('Drag started:', cardId);
         setDraggingCardId(cardId);
     };
+    
     
     const handleDragOver = (e: React.DragEvent, columnId: string, cardId?: string) => {
         e.preventDefault();
@@ -746,7 +746,7 @@ function KanbanBoard() {
                                                 )}
                                                 <motion.div
                                                     draggable
-                                                    onDragStart={(e) => handleDragStart(card.id, e)}
+                                                    onDragStart={() => handleDragStart(card.id)}
                                                     className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
                                                         hover:ring-inset hover:ring-gray-700 cursor-grab
                                                         ${draggingCardId === card.id ? 'opacity-50' : ''}`}
