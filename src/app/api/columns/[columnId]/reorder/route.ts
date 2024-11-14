@@ -2,20 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
 import { auth } from '@clerk/nextjs/server';
 
-export async function PATCH(
-    request: NextRequest,
-    { params }: { params: { columnId: string } }
-) {
+export async function PATCH(request: NextRequest) {
     try {
         const { userId } = await auth();
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
+        const columnId = request.url.split('/columns/')[1].split('/')[0];
         const { sourceIndex, targetIndex } = await request.json();
 
         const sourceColumn = await prisma.column.findUnique({
-            where: { id: params.columnId },
+            where: { id: columnId },
             select: { boardId: true }
         });
 
@@ -56,7 +54,7 @@ export async function PATCH(
 
         updates.push(
             prisma.column.update({
-                where: { id: params.columnId },
+                where: { id: columnId },
                 data: { order: targetIndex }
             })
         );
