@@ -95,13 +95,65 @@
   }
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+/* Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139, 92, 246, 0.15) transparent;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
-.scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 6px;
+  background: transparent;
+  transition: all 0.2s;
+  display: block !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 92, 246, 0.15);
+  border-radius: 3px;
+  transition: all 0.2s;
+  visibility: visible !important;
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(139, 92, 246, 0.4);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(139, 92, 246, 0.6);
+}
+
+/* Fade edges when content overflows */
+.custom-scrollbar::before,
+.custom-scrollbar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  pointer-events: none;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.custom-scrollbar::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+}
+
+.custom-scrollbar::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0,0,0,0.3), transparent);
+}
+
+.custom-scrollbar.overflow-left::before {
+  opacity: 1;
+}
+
+.custom-scrollbar.overflow-right::after {
+  opacity: 1;
 }

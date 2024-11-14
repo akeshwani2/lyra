@@ -1,9 +1,9 @@
 'use client'
-import React from 'react'
+import React, { useRef, useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
-import { Loader2, Plus, Trash2, Pen, Loader, GripVertical, Pencil } from 'lucide-react'
+import { Loader2, Plus, Trash2, Pen, Loader, GripVertical, Pencil, ChevronLeft, ChevronRight } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { UserButton, useUser, useAuth } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 // import { DragStartEvent } from '@dnd-kit/core';
@@ -42,6 +42,9 @@ function KanbanBoard() {
     const [isEditingColumnId, setIsEditingColumnId] = useState<string | null>(null);
     const { user } = useUser();
     const { isSignedIn, isLoaded } = useAuth();
+    const [showScrollButtons, setShowScrollButtons] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const handleColumnTitleEdit = (columnId: string, currentTitle: string) => {
         setEditingColumnTitle({ id: columnId, title: currentTitle });
     };
@@ -518,6 +521,34 @@ function KanbanBoard() {
         }
     };
 
+    const checkForOverflow = useCallback(() => {
+        if (containerRef.current) {
+            const { scrollWidth, clientWidth } = containerRef.current;
+            setShowScrollButtons(scrollWidth > clientWidth);
+        }
+    }, []);
+
+    useEffect(() => {
+        checkForOverflow();
+        window.addEventListener('resize', checkForOverflow);
+        return () => window.removeEventListener('resize', checkForOverflow);
+    }, [checkForOverflow, columns]);
+
+    const handleScroll = (direction: 'left' | 'right') => {
+        if (containerRef.current) {
+            const scrollAmount = 400; // Adjust this value to control scroll distance
+            const currentScroll = containerRef.current.scrollLeft;
+            const targetScroll = direction === 'left' 
+                ? currentScroll - scrollAmount 
+                : currentScroll + scrollAmount;
+
+            containerRef.current.scrollTo({
+                left: targetScroll,
+                behavior: 'smooth'
+            });
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen w-full">
                         {isLoading ? (
@@ -610,241 +641,267 @@ function KanbanBoard() {
                     </div>
                 </div>
             </div>
-            <div className="flex-1 overflow-x-auto scrollbar-hide">
-                <div className="inline-flex gap-4 p-[40px]">
-                    <AnimatePresence mode="popLayout">
-                        {columns.map((column: Column) => (
-                            <motion.div
-                                key={column.id}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.4 }}
-                                transition={{ duration: 0.3 }}
-                                className={`w-[350px] h-[500px] shrink-0 bg-[#161C22] rounded-md flex flex-col
-                                    ${draggingColumnId === column.id ? 'opacity-50' : ''}
-                                    ${dropTargetColumnId === column.id ? 'ring-2 ring-purple-500' : ''}`}
-                                draggable
-                                onDragStart={() => handleColumnDragStart(column.id)}
-                                onDragOver={(e) => handleColumnDragOver(e, column.id)}
-                                onDrop={(e) => handleColumnDrop(e, column.id)}
-                                onDragEnd={() => {
-                                    setDraggingColumnId(null);
-                                    setDropTargetColumnId(null);
-                                }}
-                            >
-                                <div className="p-2 flex items-center justify-between gap-2 hover:bg-gray-950 transition-colors duration-200 border-b border-gray-800">
-                                    <div 
-                                        className="flex items-center gap-2 flex-1 cursor-grab min-w-0"
-                                        onMouseDown={() => handleColumnDragStart(column.id)}
-                                    >
-                                        <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-300 shrink-0" />
-                                        {isEditingColumnId === column.id ? (
-                                            <input
-                                                ref={(input) => {
-                                                    if (input && column.title === "New Column" && editingTitle === "New Column") {
-                                                        input.focus();
-                                                        input.select();
-                                                    }
-                                                }}
-                                                type="text"
-                                                value={editingTitle}
-                                                onChange={(e) => setEditingTitle(e.target.value)}
-                                                onBlur={() => {
-                                                    if (editingTitle.trim()) {
-                                                        handleColumnTitleChange(column.id, editingTitle);
-                                                    } else {
-                                                        setIsEditingColumnId(null);
-                                                        setEditingTitle(column.title);
-                                                    }
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') {
+            <div className="flex-1 relative flex flex-col">
+                <div 
+                    ref={containerRef}
+                    className="flex-1 overflow-x-auto custom-scrollbar"
+                >
+                    <div className="inline-flex gap-4 p-[40px]">
+                        <AnimatePresence mode="popLayout">
+                            {columns.map((column: Column) => (
+                                <motion.div
+                                    key={column.id}
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.4 }}
+                                    transition={{ duration: 0.3 }}
+                                    className={`w-[350px] h-[500px] shrink-0 bg-[#161C22] rounded-md flex flex-col
+                                        ${draggingColumnId === column.id ? 'opacity-50' : ''}
+                                        ${dropTargetColumnId === column.id ? 'ring-2 ring-purple-500' : ''}`}
+                                    draggable
+                                    onDragStart={() => handleColumnDragStart(column.id)}
+                                    onDragOver={(e) => handleColumnDragOver(e, column.id)}
+                                    onDrop={(e) => handleColumnDrop(e, column.id)}
+                                    onDragEnd={() => {
+                                        setDraggingColumnId(null);
+                                        setDropTargetColumnId(null);
+                                    }}
+                                >
+                                    <div className="p-2 flex items-center justify-between gap-2 hover:bg-gray-950 transition-colors duration-200 border-b border-gray-800">
+                                        <div 
+                                            className="flex items-center gap-2 flex-1 cursor-grab min-w-0"
+                                            onMouseDown={() => handleColumnDragStart(column.id)}
+                                        >
+                                            <GripVertical className="h-5 w-5 text-gray-400 hover:text-gray-300 shrink-0" />
+                                            {isEditingColumnId === column.id ? (
+                                                <input
+                                                    ref={(input) => {
+                                                        if (input && column.title === "New Column" && editingTitle === "New Column") {
+                                                            input.focus();
+                                                            input.select();
+                                                        }
+                                                    }}
+                                                    type="text"
+                                                    value={editingTitle}
+                                                    onChange={(e) => setEditingTitle(e.target.value)}
+                                                    onBlur={() => {
                                                         if (editingTitle.trim()) {
                                                             handleColumnTitleChange(column.id, editingTitle);
                                                         } else {
                                                             setIsEditingColumnId(null);
                                                             setEditingTitle(column.title);
                                                         }
-                                                    } else if (e.key === 'Escape') {
-                                                        setIsEditingColumnId(null);
-                                                        setEditingTitle(column.title);
-                                                    }
-                                                }}
-                                                autoFocus
-                                                className="bg-transparent text-white font-semibold min-w-0 w-full outline-none focus:ring-1 focus:ring-purple-500/50 rounded px-1"
-                                            />
-                                        ) : (
-                                            <span className="text-white font-semiboldtruncate">{column.title}</span>
-                                        )}
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            if (editingTitle.trim()) {
+                                                                handleColumnTitleChange(column.id, editingTitle);
+                                                            } else {
+                                                                setIsEditingColumnId(null);
+                                                                setEditingTitle(column.title);
+                                                            }
+                                                        } else if (e.key === 'Escape') {
+                                                            setIsEditingColumnId(null);
+                                                            setEditingTitle(column.title);
+                                                        }
+                                                    }}
+                                                    autoFocus
+                                                    className="bg-transparent text-white font-semibold min-w-0 w-full outline-none focus:ring-1 focus:ring-purple-500/50 rounded px-1"
+                                                />
+                                            ) : (
+                                                <span className="text-white font-semiboldtruncate">{column.title}</span>
+                                            )}
+                                        </div>
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            <Button
+                                                onClick={() => handleAddCard(column.id)}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 hover:text-green-400"
+                                            >
+                                                <Plus className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleStartEditing(column.id, column.title)}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 hover:text-purple-400"
+                                            >
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleDeleteColumn(column.id)}
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 text-red-400 hover:text-red-300"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-1 shrink-0">
-                                        <Button
-                                            onClick={() => handleAddCard(column.id)}
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 hover:text-green-400"
-                                        >
-                                            <Plus className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleStartEditing(column.id, column.title)}
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 hover:text-purple-400"
-                                        >
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            onClick={() => handleDeleteColumn(column.id)}
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 text-red-400 hover:text-red-300"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                <div 
-                                    className={`flex-grow p-2 flex flex-col gap-2 overflow-y-auto transition-colors duration-200 ${
-                                        dropTargetId === column.id && !column.cards?.length 
-                                            ? 'bg-purple-500/10 ring-2 ring-purple-500/20 rounded-md' 
-                                            : ''
-                                    }`}
-                                    onDragOver={(e) => {
-                                        e.preventDefault();
-                                        if (!column.cards?.length) {
-                                            setDropTargetId(column.id);
-                                            setDropPosition(null);
-                                        }
-                                    }}
-                                    onDragLeave={(e) => {
-                                        // Only clear if we're not entering a child element
-                                        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                    <div 
+                                        className={`flex-grow p-2 flex flex-col gap-2 overflow-y-auto transition-colors duration-200 ${
+                                            dropTargetId === column.id && !column.cards?.length 
+                                                ? 'bg-purple-500/10 ring-2 ring-purple-500/20 rounded-md' 
+                                                : ''
+                                        }`}
+                                        onDragOver={(e) => {
+                                            e.preventDefault();
+                                            if (!column.cards?.length) {
+                                                setDropTargetId(column.id);
+                                                setDropPosition(null);
+                                            }
+                                        }}
+                                        onDragLeave={(e) => {
+                                            // Only clear if we're not entering a child element
+                                            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                                                setDropTargetId(null);
+                                                setDropPosition(null);
+                                            }
+                                        }}
+                                        onDrop={(e) => {
+                                            handleDrop(e, column.id);
                                             setDropTargetId(null);
                                             setDropPosition(null);
-                                        }
-                                    }}
-                                    onDrop={(e) => {
-                                        handleDrop(e, column.id);
-                                        setDropTargetId(null);
-                                        setDropPosition(null);
-                                    }}
-                                >
-                                    <AnimatePresence mode="popLayout">
-                                        {column.cards?.map((card: Card) => (
-                                            <div 
-                                                key={card.id}
-                                                className="relative"
-                                                onDragOver={(e) => handleDragOver(e, column.id, card.id)}
-                                                onDrop={(e) => {
-                                                    e.preventDefault();
-                                                    handleDrop(e, column.id);
-                                                }}
-                                            >
-                                                {dropTargetId === card.id && dropPosition === 'top' && (
-                                                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-purple-500 -translate-y-[2px]" />
-                                                )}
-                                                <motion.div
-                                                    draggable
-                                                    onDragStart={() => handleDragStart(card.id)}
-                                                    className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
-                                                        hover:ring-inset hover:ring-gray-700 cursor-grab
-                                                        ${draggingCardId === card.id ? 'opacity-50' : ''}`}
-                                                >
-                                                    {editingCardContent?.id === card.id ? (
-                                                        <input
-                                                            ref={(input) => {
-                                                                if (input && card.content === "New Task" && editingCardContent.content === "New Task") {
-                                                                    input.focus();
-                                                                    input.select();
-                                                                }
-                                                            }}
-                                                            type="text"
-                                                            value={editingCardContent.content}
-                                                            onChange={(e) => setEditingCardContent({ 
-                                                                ...editingCardContent, 
-                                                                content: e.target.value 
-                                                            })}
-                                                            onBlur={() => handleCardSave(card.id, editingCardContent.content)}
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter') {
-                                                                    handleCardSave(card.id, editingCardContent.content);
-                                                                }
-                                                                if (e.key === 'Escape') {
-                                                                    setEditingCardContent(null);
-                                                                }
-                                                            }}
-                                                            className="bg-[#1F2937] px-2 py-1 rounded-md outline-none focus:ring-1 focus:ring-purple-500 w-full"
-                                                            autoFocus
-                                                        />
-                                                    ) : (
-                                                        <div className="break-words whitespace-pre-wrap overflow-hidden">
-                                                            {card.content}
-                                                        </div>
-                                                    )}
-                                                    
-                                                    <div className="absolute right-2 top-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <Button
-                                                            variant="ghost"
-                                                            className="h-auto p-1 text-gray-400 hover:text-purple-400"
-                                                            onClick={() => handleCardEdit(card.id, card.content)}
-                                                        >
-                                                            <Pen size={16} />
-                                                        </Button>
-                                                        <Button 
-                                                            variant="ghost" 
-                                                            className="h-auto p-1 text-gray-400 hover:text-red-400"
-                                                            onClick={() => deleteCard(card.id)}
-                                                            disabled={deletingCardId === card.id}
-                                                        >
-                                                            {deletingCardId === card.id ? (
-                                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                            ) : (
-                                                                <Trash2 size={16} />
-                                                            )}
-                                                        </Button>
-                                                    </div>
-                                                </motion.div>
-                                                {dropTargetId === card.id && dropPosition === 'bottom' && (
-                                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500 translate-y-[2px]" />
-                                                )}
-                                            </div>
-                                        ))}
-                                    </AnimatePresence>
-                                </div>
-
-                                <div className="p-2 border-t border-gray-800">
-                                    <Button 
-                                        className="w-full flex items-center gap-2 text-gray-400 hover:text-black justify-start px-2"
-                                        variant="ghost"
-                                        onClick={() => createNewCard(column.id)}
+                                        }}
                                     >
-                                        <Plus size={16} />
-                                        Add task
-                                    </Button>
-                                </div>
-                            </motion.div>
-                        ))}
+                                        <AnimatePresence mode="popLayout">
+                                            {column.cards?.map((card: Card) => (
+                                                <div 
+                                                    key={card.id}
+                                                    className="relative"
+                                                    onDragOver={(e) => handleDragOver(e, column.id, card.id)}
+                                                    onDrop={(e) => {
+                                                        e.preventDefault();
+                                                        handleDrop(e, column.id);
+                                                    }}
+                                                >
+                                                    {dropTargetId === card.id && dropPosition === 'top' && (
+                                                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-purple-500 -translate-y-[2px]" />
+                                                    )}
+                                                    <motion.div
+                                                        draggable
+                                                        onDragStart={() => handleDragStart(card.id)}
+                                                        className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
+                                                            hover:ring-inset hover:ring-gray-700 cursor-grab
+                                                            ${draggingCardId === card.id ? 'opacity-50' : ''}`}
+                                                    >
+                                                        {editingCardContent?.id === card.id ? (
+                                                            <input
+                                                                ref={(input) => {
+                                                                    if (input && card.content === "New Task" && editingCardContent.content === "New Task") {
+                                                                        input.focus();
+                                                                        input.select();
+                                                                    }
+                                                                }}
+                                                                type="text"
+                                                                value={editingCardContent.content}
+                                                                onChange={(e) => setEditingCardContent({ 
+                                                                    ...editingCardContent, 
+                                                                    content: e.target.value 
+                                                                })}
+                                                                onBlur={() => handleCardSave(card.id, editingCardContent.content)}
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter') {
+                                                                        handleCardSave(card.id, editingCardContent.content);
+                                                                    }
+                                                                    if (e.key === 'Escape') {
+                                                                        setEditingCardContent(null);
+                                                                    }
+                                                                }}
+                                                                className="bg-[#1F2937] px-2 py-1 rounded-md outline-none focus:ring-1 focus:ring-purple-500 w-full"
+                                                                autoFocus
+                                                            />
+                                                        ) : (
+                                                            <div className="break-words whitespace-pre-wrap overflow-hidden">
+                                                                {card.content}
+                                                            </div>
+                                                        )}
+                                                        
+                                                        <div className="absolute right-2 top-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <Button
+                                                                variant="ghost"
+                                                                className="h-auto p-1 text-gray-400 hover:text-purple-400"
+                                                                onClick={() => handleCardEdit(card.id, card.content)}
+                                                            >
+                                                                <Pen size={16} />
+                                                            </Button>
+                                                            <Button 
+                                                                variant="ghost" 
+                                                                className="h-auto p-1 text-gray-400 hover:text-red-400"
+                                                                onClick={() => deleteCard(card.id)}
+                                                                disabled={deletingCardId === card.id}
+                                                            >
+                                                                {deletingCardId === card.id ? (
+                                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                                ) : (
+                                                                    <Trash2 size={16} />
+                                                                )}
+                                                            </Button>
+                                                        </div>
+                                                    </motion.div>
+                                                    {dropTargetId === card.id && dropPosition === 'bottom' && (
+                                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-500 translate-y-[2px]" />
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </AnimatePresence>
+                                    </div>
 
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="shrink-0"
-                        >
-                            <Button 
-                                className="h-[500px] w-[350px] min-w-[350px] cursor-pointer rounded-md bg-[#161C22] hover:bg-[#1F2937] hover:ring-1 hover:ring-inset hover:ring-purple-500 flex items-center justify-center gap-2 text-gray-400 hover:text-white"
-                                onClick={createNewColumn}
+                                    <div className="p-2 border-t border-gray-800">
+                                        <Button 
+                                            className="w-full flex items-center gap-2 text-gray-400 hover:text-black justify-start px-2"
+                                            variant="ghost"
+                                            onClick={() => createNewCard(column.id)}
+                                        >
+                                            <Plus size={16} />
+                                            Add task
+                                        </Button>
+                                    </div>
+                                </motion.div>
+                            ))}
+
+                            <motion.div
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="shrink-0"
                             >
-                                <Plus size={24} />
-                                Add Column
-                            </Button>
-                        </motion.div>
-                        </AnimatePresence>
+                                <Button 
+                                    className="h-[500px] w-[350px] min-w-[350px] cursor-pointer rounded-md bg-[#161C22] hover:bg-[#1F2937] hover:ring-1 hover:ring-inset hover:ring-purple-500 flex items-center justify-center gap-2 text-gray-400 hover:text-white"
+                                    onClick={createNewColumn}
+                                >
+                                    <Plus size={24} />
+                                    Add Column
+                                </Button>
+                            </motion.div>
+                            </AnimatePresence>
+                    </div>
                 </div>
+
+                {showScrollButtons && (
+                    <div className="flex justify-center gap-4 py-4">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="bg-black/20 hover:bg-black/40 rounded-full h-12 w-12"
+                            onClick={() => handleScroll('left')}
+                        >
+                            <ChevronLeft className="h-6 w-6 text-white" />
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="bg-black/20 hover:bg-black/40 rounded-full h-12 w-12"
+                            onClick={() => handleScroll('right')}
+                        >
+                            <ChevronRight className="h-6 w-6 text-white" />
+                        </Button>
+                    </div>
+                )}
             </div>
             <div className="flex items-center text-sm opacity-50 font-semibold text-muted-foreground justify-center pb-2">
-                <p>Contact us at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=lyraafy@gmail.com" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
+                <p>Contact us at <a href="mailto:lyraafy@gmail.com" className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
             </div>
         </div>
     );
