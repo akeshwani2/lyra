@@ -682,7 +682,7 @@ function KanbanBoard() {
                                             onClick={() => handleAddCard(column.id)}
                                             variant="ghost"
                                             size="icon"
-                                            className="h-8 w-8 hover:bg-white/10"
+                                            className="h-8 w-8 hover:text-green-400"
                                         >
                                             <Plus className="h-4 w-4" />
                                         </Button>
@@ -690,7 +690,7 @@ function KanbanBoard() {
                                             onClick={() => handleStartEditing(column.id, column.title)}
                                             variant="ghost"
                                             size="icon"
-                                            className="h-8 w-8 hover:bg-white/10"
+                                            className="h-8 w-8 hover:text-purple-400"
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </Button>
@@ -698,7 +698,7 @@ function KanbanBoard() {
                                             onClick={() => handleDeleteColumn(column.id)}
                                             variant="ghost"
                                             size="icon"
-                                            className="h-8 w-8 hover:bg-white/10 text-red-400 hover:text-red-300"
+                                            className="h-8 w-8 text-red-400 hover:text-red-300"
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>

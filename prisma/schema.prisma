@@ -10,10 +10,10 @@ datasource db {
 model Board {
   id        String   @id @default(cuid())
   title     String
-  userId    String   
-  columns   Column[] @relation("BoardToColumns")  // Remove onDelete here
+  userId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  columns   Column[] @relation("BoardToColumns")
 }
 
 model Column {
@@ -21,22 +21,22 @@ model Column {
   title     String
   order     Int
   boardId   String
-  board     Board    @relation("BoardToColumns", fields: [boardId], references: [id], onDelete: Cascade)  // Keep onDelete here
-  cards     Card[]   @relation("ColumnToCards")  // Remove onDelete here
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  cards     Card[]   @relation("ColumnToCards")
+  board     Board    @relation("BoardToColumns", fields: [boardId], references: [id], onDelete: Cascade)
 
   @@index([boardId])
 }
 
 model Card {
   id        String   @id @default(cuid())
-  content   String   @db.Text
+  content   String
   order     Int
   columnId  String
-  column    Column   @relation("ColumnToCards", fields: [columnId], references: [id], onDelete: Cascade)  // Keep onDelete here
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  column    Column   @relation("ColumnToCards", fields: [columnId], references: [id], onDelete: Cascade)
 
   @@index([columnId])
 }
