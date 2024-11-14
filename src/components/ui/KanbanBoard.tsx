@@ -274,27 +274,27 @@ function KanbanBoard() {
         }
     }
 
-    async function deleteColumn(columnId: string) {
-        try {
-            setDeletingColumnId(columnId);
-            const response = await fetch(`/api/columns/${columnId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
+    // async function deleteColumn(columnId: string) {
+    //     try {
+    //         setDeletingColumnId(columnId);
+    //         const response = await fetch(`/api/columns/${columnId}`, {
+    //             method: 'DELETE',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         });
             
-            if (!response.ok) {
-                throw new Error('Failed to delete column');
-            }
+    //         if (!response.ok) {
+    //             throw new Error('Failed to delete column');
+    //         }
         
-            await loadBoard();
-        } catch (error) {
-            console.error("Error deleting column:", error);
-        } finally {
-            setDeletingColumnId(null);
-        }
-    }
+    //         await loadBoard();
+    //     } catch (error) {
+    //         console.error("Error deleting column:", error);
+    //     } finally {
+    //         setDeletingColumnId(null);
+    //     }
+    // }
 
     async function deleteCard(cardId: string) {
         try {
@@ -351,27 +351,27 @@ function KanbanBoard() {
             setEditingColumnId(null);
         }
     }
-    async function updateCardContent(cardId: string, newContent: string) {
-        try {
-            const response = await fetch(`/api/cards/${cardId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content: newContent })
-            });
+    // async function updateCardContent(cardId: string, newContent: string) {
+    //     try {
+    //         const response = await fetch(`/api/cards/${cardId}`, {
+    //             method: 'PATCH',
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             },
+    //             body: JSON.stringify({ content: newContent })
+    //         });
             
-            if (!response.ok) {
-                throw new Error('Failed to update card');
-            }
+    //         if (!response.ok) {
+    //             throw new Error('Failed to update card');
+    //         }
     
-            await loadBoard();
-        } catch (error) {
-            console.error("Error updating card:", error);
-        } finally {
-            setEditingCardId(null);
-        }
-    }
+    //         await loadBoard();
+    //     } catch (error) {
+    //         console.error("Error updating card:", error);
+    //     } finally {
+    //         setEditingCardId(null);
+    //     }
+    // }
 
     const handleDragEnd = () => {
         setDropTargetId(null);
@@ -385,11 +385,11 @@ function KanbanBoard() {
     }, []);
 
     // Add this helper function to show drop indicators
-    function getDropIndicatorPosition(e: React.DragEvent, element: HTMLElement) {
-        const rect = element.getBoundingClientRect();
-        const midpoint = rect.top + rect.height / 2;
-        return e.clientY < midpoint ? 'top' : 'bottom';
-    }
+    // function getDropIndicatorPosition(e: React.DragEvent, element: HTMLElement) {
+    //     const rect = element.getBoundingClientRect();
+    //     const midpoint = rect.top + rect.height / 2;
+    //     return e.clientY < midpoint ? 'top' : 'bottom';
+    // }
 
     const handleColumnDragStart = (columnId: string) => {
         setDraggingColumnId(columnId);
