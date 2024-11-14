@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 
 export async function PATCH(
     request: NextRequest,
-    context: { params: { columnId: string } }
+    { params }: { params: { columnId: string } }
 ) {
     try {
         const { userId } = await auth();
@@ -15,7 +15,7 @@ export async function PATCH(
         const { sourceIndex, targetIndex } = await request.json();
 
         const sourceColumn = await prisma.column.findUnique({
-            where: { id: context.params.columnId },
+            where: { id: params.columnId },
             select: { boardId: true }
         });
 
@@ -56,7 +56,7 @@ export async function PATCH(
 
         updates.push(
             prisma.column.update({
-                where: { id: context.params.columnId },
+                where: { id: params.columnId },
                 data: { order: targetIndex }
             })
         );
