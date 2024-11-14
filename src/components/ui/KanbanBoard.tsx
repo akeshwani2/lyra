@@ -843,8 +843,8 @@ function KanbanBoard() {
                         </AnimatePresence>
                 </div>
             </div>
-            <div className="flex items-center text-sm opacity-50 text-muted-foreground justify-center pb-1">
-                <p>© 2024 Lyra. All rights reserved.</p>
+            <div className="flex items-center text-sm opacity-50 font-semibold text-muted-foreground justify-center pb-2">
+                <p>Contact us at <a href="https://mail.google.com/mail/?view=cm&fs=1&to=lyraafy@gmail.com" target="_blank" rel="noopener noreferrer" className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
             </div>
         </div>
     );
