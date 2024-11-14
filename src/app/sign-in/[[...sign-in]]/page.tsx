@@ -87,7 +87,7 @@ export default function Page() {
       <footer className="fixed bottom-0 left-0 right-0 text-center text-muted-foreground space-y-1 pb-4">
         <div className="absolute left-4 flex gap-4">
         <a 
-            href="https://github.com/akeshwani2/muse" 
+            href="https://github.com/akeshwani2/lyra" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-purple-400 p-2 rounded-lg hover:text-white hover:bg-gradient-to-r hover:from-purple-500 hover:to-blue-500 
