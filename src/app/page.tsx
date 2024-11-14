@@ -43,13 +43,13 @@ const DashboardPage = () => {
         <div className="flex items-center gap-2">
           <Image 
             src="/logo.svg" // Add your logo file to the public folder
-            alt="Muse Logo"
+            alt="Lyra Logo"
             width={65}
             height={65}
             className="rounded-lg"
           />
           <span className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-            Muse
+            Lyra
           </span>
         </div>
 
@@ -64,7 +64,7 @@ const DashboardPage = () => {
             <span className="relative z-10">
               {isSignedIn 
                 ? `Welcome ${user?.username || user?.firstName ? (user?.username || user?.firstName) : 'back'}!`
-                : <>Explore Muse <ArrowRight className="inline ml-1" /></>
+                : <>Explore Lyra <ArrowRight className="inline ml-1" /></>
               }
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 opacity-0 group-hover:opacity-100 
@@ -278,7 +278,7 @@ const DashboardPage = () => {
           </a>
         </div>
         <div className="flex items-center justify-center pb-1 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-        <p>© 2024 Muse. All rights reserved.</p>
+        <p>© 2024 Lyra. All rights reserved.</p>
         </div>
       </footer>
     </div>

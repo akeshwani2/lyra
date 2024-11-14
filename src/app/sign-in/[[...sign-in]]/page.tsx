@@ -16,9 +16,9 @@ export default function Page() {
       <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4  z-50">
           {/* Logo */}
           <Link href="/" className="flex items-center">
-            <Image src="/logo.svg" alt="Muse Logo" width={65} height={65} />
+            <Image src="/logo.svg" alt="Lyra Logo" width={65} height={65} />
             <span className="text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 text-transparent bg-clip-text pl-4">
-              Muse
+              Lyra
             </span>
           </Link>
         </div>
@@ -38,7 +38,7 @@ export default function Page() {
         {/* Left side welcome section */}
         <div className='flex flex-col gap-5 w-[500px]'>
           <h1 className="text-6xl text-center font-bold bg-gradient-to-r from-cyan-500 to-blue-500 text-transparent bg-clip-text pb-2">
-            Sign in to Muse!
+            Sign in to Lyra!
           </h1>
           <div className="h-24">
           <p className="text-muted-foreground text-lg text-center [text-shadow:0_0_15px_rgba(255,255,255,0.3)]">              
@@ -121,7 +121,7 @@ export default function Page() {
           </a>
         </div>
         <div className="flex items-center justify-center pb-1">
-        <p>© 2024 Muse. All rights reserved.</p>
+        <p>© 2024 Lyra. All rights reserved.</p>
         </div>
       </footer>
     </div>

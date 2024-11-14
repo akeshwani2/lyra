@@ -844,7 +844,7 @@ function KanbanBoard() {
                 </div>
             </div>
             <div className="flex items-center text-sm opacity-50 text-muted-foreground justify-center pb-1">
-                <p>© 2024 Muse. All rights reserved.</p>
+                <p>© 2024 Lyra. All rights reserved.</p>
             </div>
         </div>
     );
