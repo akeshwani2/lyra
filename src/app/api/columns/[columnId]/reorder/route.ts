@@ -4,7 +4,7 @@ import { auth } from '@clerk/nextjs/server';
 
 export async function PATCH(
     request: NextRequest,
-    { params }: { params: { columnId: string } }
+    context: { params: { columnId: string } }
 ) {
     try {
         const { userId } = await auth();
@@ -14,9 +14,8 @@ export async function PATCH(
 
         const { sourceIndex, targetIndex } = await request.json();
 
-        // Get all columns for the board
         const sourceColumn = await prisma.column.findUnique({
-            where: { id: params.columnId },
+            where: { id: context.params.columnId },
             select: { boardId: true }
         });
 
@@ -24,18 +23,14 @@ export async function PATCH(
             return NextResponse.json({ error: 'Source column not found' }, { status: 404 });
         }
 
-        // Get all columns for the board
         const columns = await prisma.column.findMany({
             where: { boardId: sourceColumn.boardId },
             orderBy: { order: 'asc' }
         });
 
-        // Create updates array
         const updates = [];
 
-        // First, move all affected columns out of the way
         if (sourceIndex < targetIndex) {
-            // Moving right
             updates.push(
                 ...columns
                     .filter(col => col.order > sourceIndex && col.order <= targetIndex)
@@ -47,7 +42,6 @@ export async function PATCH(
                     )
             );
         } else {
-            // Moving left
             updates.push(
                 ...columns
                     .filter(col => col.order >= targetIndex && col.order < sourceIndex)
@@ -60,18 +54,15 @@ export async function PATCH(
             );
         }
 
-        // Then move the source column to its new position
         updates.push(
             prisma.column.update({
-                where: { id: params.columnId },
+                where: { id: context.params.columnId },
                 data: { order: targetIndex }
             })
         );
 
-        // Execute all updates in a transaction
         await prisma.$transaction(updates);
 
-        // Return the updated columns
         const updatedColumns = await prisma.column.findMany({
             where: { boardId: sourceColumn.boardId },
             orderBy: { order: 'asc' },
