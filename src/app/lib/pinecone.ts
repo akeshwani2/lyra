@@ -9,7 +9,7 @@ import { convertToAscii } from './utils'
 type Vector = {
     id: string;
     values: number[];
-    metadata: Record<string, any>;
+    metadata: Record<string, string | number>;
 }
 
 let pinecone: Pinecone | null = null
@@ -91,14 +91,17 @@ export const truncateStringByBytes = (str: string, bytes: number) => {
 
 // This function prepares the document for indexing
 async function prepareDocument(page: PDFPage) {
-    let {pageContent, metadata} = page
-    pageContent = pageContent.replace(/\n/g, ' ')
+    const { pageContent, metadata } = page
+    const cleanedContent = pageContent.replace(/\n/g, ' ')
     // split the docs
     const splitter = new RecursiveCharacterTextSplitter();
     const docs = await splitter.splitDocuments([
         new Document({
-            pageContent,
-            metadata: {pageNumber: metadata.loc.pageNumber, text: truncateStringByBytes(pageContent, 36000)}
+            pageContent: cleanedContent,
+            metadata: {
+                pageNumber: metadata.loc.pageNumber, 
+                text: truncateStringByBytes(cleanedContent, 36000)
+            }
         })
     ])
     return docs

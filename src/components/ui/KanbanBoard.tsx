@@ -242,13 +242,24 @@ function KanbanBoard() {
         setIsLoading(true);  // Start loading
         try {
             const response = await fetch('/api/boards');
+            if (!response.ok) {
+                throw new Error(`Failed to load board: ${response.status} ${response.statusText}`);
+            }
+            
             const data = await response.json();
+            if (!data) {
+                throw new Error('No data received from server');
+            }
+            
             setBoard({ id: data.id, title: data.title });
             if (data.columns) {
                 setColumns(data.columns);
             }
         } catch (error) {
-            console.error("Error loading board:", error);
+            console.error("Error loading board:", error instanceof Error ? error.message : 'Unknown error');
+            // Optionally set an error state here to show to the user
+            setColumns([]); // Reset to empty state on error
+            setBoard(null);
         } finally {
             setIsLoading(false);  // End loading
         }
