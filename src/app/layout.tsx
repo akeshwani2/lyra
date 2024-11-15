@@ -45,6 +45,7 @@ export default function RootLayout({
           formFieldInput: "bg-gray-800/60 border-gray-700",
         }
       }}
+      dynamic={true}
     >
       <html lang="en" className="h-full overflow-hidden">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>

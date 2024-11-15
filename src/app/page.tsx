@@ -39,7 +39,7 @@ const DashboardPage = () => {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-gray-900 to-gray-950">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-6 py-4  z-50">
+      <div className="fixed top-0 left-0 right-0 flex items-center justify-between px-4 sm:px-6 py-4 z-50">
         <div className="flex items-center gap-2">
           <Image 
             src="/logo.svg" // Add your logo file to the public folder
@@ -86,11 +86,11 @@ const DashboardPage = () => {
       </div>
 
       {/* Main Content - add mt-16 to account for header height */}
-      <div className="w-full max-w-5xl mx-auto text-center space-y-12 z-10 px-4 overflow-y-auto mt-16">
+      <div className="w-full max-w-5xl mx-auto text-center space-y-8 sm:space-y-12 z-10 px-4 overflow-y-auto mt-16">
         {/* Hero Title */}
         <div className="space-y-4">
-          <h1 className="text-7xl font-bold">
-            <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+        <h1 className="text-4xl sm:text-7xl font-bold">
+        <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
               Revolutionize Your Workflow
             </span>
           </h1>
@@ -112,7 +112,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-8 px-2 sm:px-4">
         <div 
             onClick={() => handleNavigation("/ai-resume")} 
             className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:4.5s]"
@@ -241,7 +241,7 @@ const DashboardPage = () => {
         <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-purple-500/5 blur-[100px]"></div>
         <div className="absolute bottom-1/3 right-1/3 w-[500px] h-[500px] bg-blue-500/5 blur-[100px]"></div>
       </div>
-      <footer className="fixed bottom-0 left-0 pb-4 right-0 text-center text-muted-foreground space-y-1">
+      <footer className="fixed bottom-0 left-0 pb-2 sm:pb-4 right-0 text-center text-muted-foreground space-y-1">
         <div className="absolute left-4 flex gap-4">
           <a 
             href="https://github.com/akeshwani2/lyra" 

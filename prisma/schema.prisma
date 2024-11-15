@@ -34,6 +34,7 @@ model Card {
   content   String
   order     Int
   columnId  String
+  completed Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   column    Column   @relation("ColumnToCards", fields: [columnId], references: [id], onDelete: Cascade)

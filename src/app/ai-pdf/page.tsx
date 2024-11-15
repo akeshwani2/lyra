@@ -1,184 +1,96 @@
-// "use client";
+'use client'
+import { Button } from '@/components/ui/button';
+import UserSection from '@/components/ui/UserSection';
+import { ArrowUpRight, Upload } from 'lucide-react';
+import { TypeAnimation } from 'react-type-animation';
+import FileUpload from '@/components/ui/FileUpload';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 
-// import { useState } from 'react';
-// import { Upload, MessageSquare, Loader2 } from 'lucide-react';
-// import { useUser } from '@clerk/nextjs';
-// import { motion, AnimatePresence } from 'framer-motion';
+export default function AiPdf() {
+    const router = useRouter();
+    const [hasChats, setHasChats] = useState<boolean>(false);
+    const [firstChatId, setFirstChatId] = useState<number | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
-// const PDFPage = () => {
-//   const [isDragging, setIsDragging] = useState(false);
-//   const [uploading, setUploading] = useState(false);
-//   const [currentPDF, setCurrentPDF] = useState<File | null>(null);
-//   const { user } = useUser();
+    useEffect(() => {
+        const checkChats = async () => {
+            try {
+                const response = await fetch('/api/check-chats');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch chats');
+                }
+                const data = await response.json();
+                setHasChats(data.hasChats);
+                setFirstChatId(data.firstChatId);
+            } catch (error) {
+                console.error('Error checking chats:', error);
+                setHasChats(false);
+                setFirstChatId(null);
+            } finally {
+                setIsLoading(false);
+            }
+        };
 
-//   const handleDragOver = (e: React.DragEvent) => {
-//     e.preventDefault();
-//     setIsDragging(true);
-//   };
+        checkChats();
+    }, []);
 
-//   const handleDragLeave = () => {
-//     setIsDragging(false);
-//   };
+    const handleChatNavigation = () => {
+        if (!hasChats || !firstChatId) {
+            toast.error('Please upload a PDF below!', {
+                duration: 3000,
+                style: {
+                    background: '#4B0082',
+                    color: '#fff',
+                }
+            });
+            return;
+        }
+        router.push(`/chat/${firstChatId}`);
+    };
 
-//   const handleDrop = async (e: React.DragEvent) => {
-//     e.preventDefault();
-//     setIsDragging(false);
-
-//     const files = e.dataTransfer.files;
-//     if (files.length > 0 && files[0].type === 'application/pdf') {
-//       setCurrentPDF(files[0]);
-//       await handleFileUpload(files[0]);
-//     }
-//   };
-
-//   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const files = e.target.files;
-//     if (files && files.length > 0 && files[0].type === 'application/pdf') {
-//       setCurrentPDF(files[0]);
-//       await handleFileUpload(files[0]);
-//     }
-//   };
-
-//   const handleFileUpload = async (file: File) => {
-//     setUploading(true);
-//     try {
-//       const formData = new FormData();
-//       formData.append('pdf', file);
-      
-//       // We'll implement this API endpoint next
-//       const response = await fetch('/api/pdf/upload', {
-//         method: 'POST',
-//         body: formData,
-//       });
-
-//       if (!response.ok) {
-//         throw new Error('Upload failed');
-//       }
-
-//       // Handle successful upload
-//       const data = await response.json();
-//       // Navigate to chat interface or show chat UI
-      
-//     } catch (error) {
-//       console.error('Upload error:', error);
-//       // Show error message to user
-//     } finally {
-//       setUploading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-//       <div className="w-full max-w-4xl">
-//         <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-//           Chat with Your PDF
-//         </h1>
-
-//         {/* Upload Area */}
-//         <div
-//           onDragOver={handleDragOver}
-//           onDragLeave={handleDragLeave}
-//           onDrop={handleDrop}
-//           className={`
-//             border-2 border-dashed rounded-lg p-12 text-center
-//             transition-all duration-200 ease-in-out
-//             ${isDragging 
-//               ? 'border-purple-500 bg-purple-500/10' 
-//               : 'border-gray-600 hover:border-purple-500/50'}
-//           `}
-//         >
-//           {uploading ? (
-//             <div className="flex flex-col items-center gap-2">
-//               <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-//               <p className="text-gray-400">Uploading your PDF...</p>
-//             </div>
-//           ) : (
-//             <>
-//               <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-//               <p className="text-gray-400 mb-2">
-//                 Drag and drop your PDF here, or{' '}
-//                 <label className="text-purple-500 hover:text-purple-400 cursor-pointer">
-//                   browse
-//                   <input
-//                     type="file"
-//                     className="hidden"
-//                     accept=".pdf"
-//                     onChange={handleFileSelect}
-//                   />
-//                 </label>
-//               </p>
-//               <p className="text-sm text-gray-500">PDF files only, up to 10MB</p>
-//             </>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PDFPage;
-
-"use client";
-
-import { useState } from 'react';
-import { Upload, MessageSquare, Loader2 } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const PDFPage = () => {
-  // ... keep all your existing state and handlers ...
-
-  return (
-    <div className="relative min-h-screen w-full">
-      {/* Original content (blurred) */}
-      <div className='blur-sm pointer-events-none'>
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-          <div className="w-full max-w-4xl">
-            <h1 className="text-4xl font-bold text-center mb-8 bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-              Chat with Your PDF
-            </h1>
-
-            <div className="border-2 border-dashed rounded-lg p-12 text-center border-gray-600">
-              <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              <p className="text-gray-400 mb-2">
-                Drag and drop your PDF here, or browse
-              </p>
-              <p className="text-sm text-gray-500">PDF files only, up to 10MB</p>
+    return (
+        <>
+            <UserSection />
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <h1 className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text text-5xl font-bold">Chat with any PDF</h1>
+                <div className="flex mt-2">
+                    <Button 
+                        className='bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 cursor-default hover:to-cyan-500 transition-[background,transform,shadow] duration-300 ease-in-out hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]' 
+                        onClick={handleChatNavigation}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? (
+                            'Loading...'
+                        ) : hasChats ? (
+                            <>
+                                Go to Chats
+                                <ArrowUpRight className="w-4 h-4 ml-1" />
+                            </>
+                        ) : (
+                            <>
+                                Upload Your First PDF
+                                <Upload className="w-4 h-4 ml-1 cursor-default" />
+                            </>
+                        )}
+                    </Button>
+                </div>
+                <p className="text-xl text-gray-400 mt-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
+                    <TypeAnimation 
+                        sequence={[
+                            'Effortlessly Chat with Your PDFs Using Advanced AI Technology',
+                            2000,
+                        ]}
+                        wrapper="span"
+                        speed={75}
+                        repeat={Infinity}
+                    />         
+                </p>
+                <div className='w-full mt-4'>
+                    <FileUpload />
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Striped background overlay with gradient fade */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          background: `
-            linear-gradient(
-              to top,
-              rgba(28, 28, 28, 1) 0%,
-              rgba(28, 28, 28, 0) 100%
-            ),
-            repeating-linear-gradient(
-              -45deg,
-              transparent,
-              transparent 10px,
-              rgba(255, 107, 0, 0.05) 10px,
-              rgba(255, 107, 0, 0.05) 20px
-            )
-          `
-        }}
-      />
-      
-      {/* Centered text */}
-      <div className='absolute inset-0 flex items-center'>
-        <div className='px-8 py-4 rounded-lg'>
-          <p className='text-2xl font-bold text-orange-400'>You will be able to chat with your PDFs soon!</p>
-          <p className='text-sm text-gray-500'>This feature is currently under development.</p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default PDFPage;
+        </>
+    );
+}
