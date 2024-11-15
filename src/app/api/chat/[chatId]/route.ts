@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(
     request: NextRequest,
-    context: { params: { chatId: string } }
+    { params }: { params: { chatId: string } }
 ) {
     try {
         const { userId } = await auth();
@@ -14,7 +14,7 @@ export async function DELETE(
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const chatId = parseInt(context.params.chatId);
+        const chatId = parseInt(params.chatId);
         
         // First delete all messages associated with this chat
         await db.delete(messages).where(eq(messages.chatId, chatId));
