@@ -8,7 +8,7 @@ import { UserButton, useUser } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
-
+import Image from 'next/image'
 type Props = {
     chats: DrizzleChat[],
     chatId: number,
@@ -65,7 +65,7 @@ const ChatSideBar = ({chats, chatId}: Props) => {
             {/* Header section */}
             <div className='flex flex-row items-center mb-6'>
                 <Link href='/' className='flex flex-row items-center'>
-                    <img src='/logo.svg' alt='logo' className='w-12 h-12 items-left' />
+                    <Image src='/logo.svg' alt='logo' width={48} height={48} className='items-left' />
                     <div className='text-4xl ml-2 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text'>
                         Lyra
                     </div>

@@ -54,7 +54,7 @@ export default function AiPdf() {
         <>
             <UserSection />
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text text-5xl font-bold">Chat with any PDF</h1>
+                <h1 className="bg-gradient-to-r from-purple-500 pb-2 to-blue-500 text-transparent bg-clip-text text-5xl font-bold">Chat with any PDF</h1>
                 <div className="flex mt-2">
                     <Button 
                         className='bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 cursor-default hover:to-cyan-500 transition-[background,transform,shadow] duration-300 ease-in-out hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]' 

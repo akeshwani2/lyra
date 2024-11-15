@@ -2,10 +2,10 @@ import { db } from '@/app/lib/db'
 import { chats, messages } from '@/app/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function DELETE(
-    req: Request,
+    request: NextRequest,
     { params }: { params: { chatId: string } }
 ) {
     try {
