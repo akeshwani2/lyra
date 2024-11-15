@@ -4,18 +4,17 @@ import { eq } from 'drizzle-orm'
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function DELETE(
-    request: NextRequest,
-    { params }: { params: { chatId: string } }
-) {
+export async function DELETE(request: NextRequest) {
     try {
         const { userId } = await auth();
         if (!userId) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const chatId = parseInt(params.chatId);
-        
+        // Extract chatId from the request URL
+        const url = new URL(request.url);
+        const chatId = parseInt(url.pathname.split('/').pop() || '');
+
         // First delete all messages associated with this chat
         await db.delete(messages).where(eq(messages.chatId, chatId));
         
