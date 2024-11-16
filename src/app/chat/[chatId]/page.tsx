@@ -10,26 +10,27 @@ import ChatComponent from '@/components/ui/ChatComponent'
 import QueryClientProviderWrapper from '@/components/ui/QueryClientProviderWrapper'
 
 type Props = {
-    params: {
+    params: Promise<{
         chatId: string
-    }
+    }>
 }
 
-const ChatPage = async ({params: {chatId}}: Props) => {
-    const {userId} = await auth()
+const ChatPage = async ({params}: Props) => {
+    const { chatId } = await params;
+    const { userId } = await auth();
     if (!userId) {
-        return redirect('/sign-in')
+        return redirect('/sign-in');
     }
     
-    const _chats = await db.select().from(chats).where(eq(chats.userId, userId))
+    const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
     if (!_chats) {
-        return redirect('/ai-pdf')
+        return redirect('/ai-pdf');
     }
     if (!_chats.find(chat => chat.id === parseInt(chatId))) {
-        return redirect('/ai-pdf')
+        return redirect('/ai-pdf');
     }
 
-    const currentChat = _chats.find(chat => chat.id === parseInt(chatId))
+    const currentChat = _chats.find(chat => chat.id === parseInt(chatId));
 
     return (
         <div className="min-h-screen bg-gradient-to-t from-gray-700 via-gray-900 to-black overflow-hidden flex">
@@ -53,8 +54,9 @@ const ChatPage = async ({params: {chatId}}: Props) => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
-export default ChatPage
+export default ChatPage;
+
 
