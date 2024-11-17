@@ -4,36 +4,72 @@ import UserSection from '@/components/ui/UserSection';
 import { ArrowUpRight, Upload } from 'lucide-react';
 import { TypeAnimation } from 'react-type-animation';
 import FileUpload from '@/components/ui/FileUpload';
+import ChatPreview from '@/components/ui/ChatPreview';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Message } from 'ai';
 import toast from 'react-hot-toast';
+import PreviousSessionPreview from '@/components/ui/PreviousSessionPreview';
 
 export default function AiPdf() {
     const router = useRouter();
     const [hasChats, setHasChats] = useState<boolean>(false);
     const [firstChatId, setFirstChatId] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [previewMessages, setPreviewMessages] = useState<Message[]>([]);
+    const [pdfName, setPdfName] = useState<string>('');
+    const [pdfUrl, setPdfUrl] = useState<string>('');
+    const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
-        const checkChats = async () => {
+        const fetchPreview = async () => {
             try {
                 const response = await fetch('/api/check-chats');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch chats');
-                }
                 const data = await response.json();
+                console.log('API Response from /api/check-chats:', data);
+
+                if (data.hasChats) {
+                    const messagesResponse = await fetch('/api/get-messages', {
+                        method: 'POST',
+                        body: JSON.stringify({ chatId: data.firstChatId }),
+                    });
+                    const messages = await messagesResponse.json();
+                    console.log('Messages from /api/get-messages:', messages);
+
+                    setPreviewMessages(messages);
+                    setPdfName(data.pdfName || '');
+                    setPdfUrl(data.pdfUrl || '');
+                } else {
+                    setPreviewMessages([]);
+                    setPdfName('');
+                    setPdfUrl('');
+                }
+
                 setHasChats(data.hasChats);
                 setFirstChatId(data.firstChatId);
             } catch (error) {
-                console.error('Error checking chats:', error);
-                setHasChats(false);
-                setFirstChatId(null);
+                console.error('Error fetching preview:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        checkChats();
+        fetchPreview();
+    }, [refreshKey]);
+
+    useEffect(() => {
+        console.log('State after fetching:', { hasChats, previewMessages, pdfName, pdfUrl });
+    }, [hasChats, previewMessages, pdfName, pdfUrl]);
+
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'chat-deleted') {
+                setRefreshKey(prev => prev + 1);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
 
     const handleChatNavigation = () => {
@@ -54,10 +90,36 @@ export default function AiPdf() {
         <>
             <UserSection />
             <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="bg-gradient-to-r from-purple-500 pb-2 to-blue-500 text-transparent bg-clip-text text-5xl font-bold">Chat with any PDF</h1>
-                <div className="flex mt-2">
+                <h1 className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text text-5xl font-bold" style={{ lineHeight: '1.2' }}>
+                    Chat with any PDF
+                </h1>
+                <p className="text-xl text-gray-400 mt-4 mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
+                    <TypeAnimation 
+                        sequence={[
+                            'Effortlessly Chat with Your PDFs Using Advanced AI Technology',
+                            2000,
+                            'Ask Questions, Get Answers, and Explore Your PDFs with Ease',
+                            2000,
+                        ]}
+                        wrapper="span"
+                        speed={75}
+                        repeat={Infinity}
+                    />         
+                </p>
+                
+                {hasChats && previewMessages.length > 0 ? (
+                    <PreviousSessionPreview 
+                        messages={previewMessages}
+                        pdfName={pdfName}
+                        pdfUrl={pdfUrl}
+                    />
+                ) : (
+                    <></>
+                )}
+
+                <div className="flex mt-10 mb-6">
                     <Button 
-                        className='bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 cursor-default hover:to-cyan-500 transition-[background,transform,shadow] duration-300 ease-in-out hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]' 
+                        className='bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500 transition-[background,transform,shadow] duration-300 ease-in-out hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]' 
                         onClick={handleChatNavigation}
                         disabled={isLoading}
                     >
@@ -76,17 +138,7 @@ export default function AiPdf() {
                         )}
                     </Button>
                 </div>
-                <p className="text-xl text-gray-400 mt-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                    <TypeAnimation 
-                        sequence={[
-                            'Effortlessly Chat with Your PDFs Using Advanced AI Technology',
-                            2000,
-                        ]}
-                        wrapper="span"
-                        speed={75}
-                        repeat={Infinity}
-                    />         
-                </p>
+
                 <div className='w-full mt-4'>
                     <FileUpload />
                 </div>

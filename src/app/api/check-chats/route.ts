@@ -1,7 +1,7 @@
 import { db } from '@/app/lib/db';
 import { chats } from '@/app/lib/db/schema';
-import { eq } from 'drizzle-orm';
 import { auth } from '@clerk/nextjs/server';
+import { desc, eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -11,20 +11,37 @@ export async function GET() {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
-        const userChats = await db.select().from(chats).where(eq(chats.userId, userId));
-        
-        return NextResponse.json({ 
-            hasChats: userChats.length > 0,
-            firstChatId: userChats.length > 0 ? userChats[0].id : null
+        const userChats = await db
+            .select()
+            .from(chats)
+            .where(eq(chats.userId, userId))
+            .orderBy(desc(chats.createdAt));
+
+        if (!userChats.length) {
+            return NextResponse.json({
+                hasChats: false,
+                firstChatId: null,
+                mostRecentChatId: null,
+                pdfName: null,
+                pdfUrl: null,
+            });
+        }
+
+        const mostRecentChat = userChats[0];
+        const firstChat = userChats[userChats.length - 1];
+
+        return NextResponse.json({
+            hasChats: true,
+            firstChatId: firstChat.id,
+            mostRecentChatId: mostRecentChat.id,
+            pdfName: mostRecentChat.pdfName,
+            pdfUrl: mostRecentChat.pdfUrl,
         });
     } catch (error) {
-        console.error('Error checking chats:', error);
-        return NextResponse.json({ 
-            hasChats: false,
-            firstChatId: null,
-            error: "Failed to fetch chats"
-        }, { 
-            status: 500 
-        });
+        console.error('Error in check-chats:', error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
     }
 }

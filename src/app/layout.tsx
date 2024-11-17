@@ -17,8 +17,19 @@ const geistMono = localFont({
   weight: "100 900",
 })
 
-export const metadata: Metadata = {
-  title: "Lyra",
+export const metadata = {
+  title: 'Lyra',
+  description: 'AI-powered productivity tools',
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/logo.svg', type: 'image/svg+xml' },
+    ],
+    apple: [
+      { url: '/apple-icon.png' },
+      { url: '/apple-icon-180x180.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 }
 
 export default function RootLayout({

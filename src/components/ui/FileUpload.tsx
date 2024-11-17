@@ -8,7 +8,7 @@ import { toast } from 'react-hot-toast'
 import React, { useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useRouter } from 'next/navigation'
-
+import { FileIcon } from 'lucide-react';
 const FileUpload = () => {
     const router = useRouter()
     const [uploading, setUploading] = React.useState(false)
@@ -66,36 +66,43 @@ const FileUpload = () => {
                     onError: (error) => {
                         toast.error('Error creating chat')
                         console.log('Error creating chat', error)
+                        setUploading(false)  // Reset uploading state on error
                     }
                     
                 })
             } catch (error) {
                 toast.error('Error uploading file to S3')
                 console.error('Error uploading file to S3:', error)
-            } finally {
-                setUploading(false)
+                setUploading(false)  // Reset uploading state on error
             }
         }
     })
 
   return (
-    <div className='p-2 rounded-xl'>
-        <div {...getRootProps({
-            className: "border-dashed border-2 border-muted-foreground hover:border-purple-400 rounded-xl cursor-pointer bg-transparent p-8 flex flex-col items-center justify-center"
-        })}>
-            <input {...getInputProps()} />
-            {(uploading || isPending) ? (
-                <>
-                <Loader2 className='w-10 h-10 text-purple-400 animate-spin' />
-                <p className='mt-2 text-sm text-muted-foreground'>Spilling Tea to AI...</p>
-                </>
-            ) : (
-                <>
-                    <Inbox className='w-10 h-10 text-purple-400' />
-                    <p className='mt-2 text-sm text-muted-foreground'>Drop PDF Here</p>
-                </>
-            )}
-        </div>
+    <div 
+        {...getRootProps({
+            className: 'h-full w-full flex items-center justify-center cursor-pointer'
+        })}
+    >
+        <input {...getInputProps()} />
+        {(uploading || isPending) ? (
+            <div className="flex flex-col items-center gap-4">
+                <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
+                <div className="flex flex-col items-center gap-1">
+                    <p className="text-lg font-medium bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+                        Spilling tea to AI...
+                    </p>
+                    <p className="text-sm text-gray-500">
+                        Analyzing your PDF with our advanced AI
+                    </p>
+                </div>
+            </div>
+        ) : (
+            <div className="flex flex-col items-center gap-2 text-gray-500">
+                <FileIcon className="w-12 h-12 text-gray-300" />
+                <p>Drop PDF Here</p>
+            </div>
+        )}
     </div>
   )
 }

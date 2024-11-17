@@ -40,6 +40,13 @@ const ChatSideBar = ({chats, chatId}: Props) => {
 
             toast.success('Chat deleted successfully');
 
+            // Trigger refresh in other components
+            localStorage.setItem('chat-deleted', Date.now().toString());
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'chat-deleted',
+                newValue: Date.now().toString()
+            }));
+
             if (chatIdToDelete === chatId) {
                 const currentIndex = chats.findIndex(chat => chat.id === chatIdToDelete);
                 const nextChat = chats[currentIndex + 1] || chats[currentIndex - 1];
