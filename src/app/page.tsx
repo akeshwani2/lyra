@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User, ArrowRight } from "lucide-react";
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const DashboardPage = () => {
   const { isSignedIn } = useAuth();
   const router = useRouter();
   const { user } = useUser();
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleNavigation = (path: string) => {
     if (!isSignedIn) {
@@ -30,6 +31,16 @@ const DashboardPage = () => {
       }
     }
   }, [isSignedIn, router]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640); // 640px is the 'sm' breakpoint in Tailwind
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-gray-900 to-gray-950">
@@ -86,7 +97,14 @@ const DashboardPage = () => {
           </h1>
           <p className="text-sm sm:text-xl text-gray-400 px-2 sm:pb-0 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
             <TypeAnimation 
-              sequence={[
+              sequence={isMobile ? [
+                'AI-Powered Productivity',
+                2000,
+                'Smart Workflow Solutions',
+                2000,
+                'Innovative AI Tools',
+                2000,
+              ] : [
                 'AI Solutions to Boost Your Productivity and Creativity',
                 2000,
                 'Seamlessly Integrate AI Technology into Your Daily Workflow',
