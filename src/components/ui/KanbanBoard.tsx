@@ -561,7 +561,7 @@ function KanbanBoard() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen w-full">
+        <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
                         {isLoading ? (
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="flex flex-col items-center gap-4">
@@ -571,10 +571,10 @@ function KanbanBoard() {
                     </div>
                 </div>
             ) : null}
-            <div className="px-[40px] py-12">
-                <div className="absolute top-4 right-8 flex items-center gap-3">
+            <div className="px-4 md:px-[40px] pt-24 md:pt-12">
+                <div className="fixed top-4 right-4 md:right-8 flex items-center gap-3 z-10">
                     {isLoaded && isSignedIn && (
-                        <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-xl font-bold">
+                        <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-lg md:text-xl font-bold">
                             {user?.username || user?.firstName || ''}
                         </span>
                     )}
@@ -584,8 +584,8 @@ function KanbanBoard() {
                             appearance={{
                                 baseTheme: dark,
                                 elements: {
-                                    avatarBox: "w-10 h-10",
-                                    userButtonTrigger: "p-2",
+                                    avatarBox: "w-8 h-8 md:w-10 md:h-10",
+                                    userButtonTrigger: "p-1 md:p-2",
                                     userButtonPopoverCard: "min-w-[240px]"
                                 }
                             }}
@@ -616,13 +616,13 @@ function KanbanBoard() {
                                         setEditingBoardTitle(null);
                                     }
                                 }}
-                                className="text-4xl font-bold bg-transparent text-white border-b-2 border-purple-500 outline-none px-2 py-1 min-w-[300px]"
+                                className="text-3xl md:text-4xl font-bold bg-transparent text-white border-b-2 border-purple-500 outline-none px-2 py-1 min-w-[200px] md:min-w-[300px]"
                                 autoFocus
                             />
                         ) : (
                             <div className="flex items-center gap-3">
                                 
-                                <h1 className="text-7xl font-bold text-white">
+                                <h1 className="text-4xl md:text-7xl font-bold text-white">
                                     {board?.title || 'My Board'}
                                 </h1>
                                 <Button
@@ -652,12 +652,12 @@ function KanbanBoard() {
                     </div>
                 </div>
             </div>
-            <div className="flex-1 relative flex flex-col">
+            <div className="flex-1 relative flex flex-col mt-8">
                 <div 
                     ref={containerRef}
                     className="flex-1 overflow-x-auto custom-scrollbar"
                 >
-                    <div className="inline-flex gap-4 p-[40px]">
+                    <div className="inline-flex gap-4 p-4 md:p-[40px]">
                         <AnimatePresence mode="popLayout">
                             {columns.map((column: Column) => (
                                 <motion.div
@@ -891,27 +891,27 @@ function KanbanBoard() {
                 </div>
 
                 {showScrollButtons && (
-                    <div className="flex justify-center gap-4 py-4">
+                    <div className="flex justify-center gap-4 py-4 sticky bottom-4">
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="bg-black/20 hover:bg-black/40 rounded-full h-12 w-12"
+                            className="bg-black/50 hover:bg-black/70 rounded-full h-10 w-10 md:h-12 md:w-12"
                             onClick={() => handleScroll('left')}
                         >
-                            <ChevronLeft className="h-6 w-6 text-white" />
+                            <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-white" />
                         </Button>
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="bg-black/20 hover:bg-black/40 rounded-full h-12 w-12"
+                            className="bg-black/50 hover:bg-black/70 rounded-full h-10 w-10 md:h-12 md:w-12"
                             onClick={() => handleScroll('right')}
                         >
-                            <ChevronRight className="h-6 w-6 text-white" />
+                            <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-white" />
                         </Button>
                     </div>
                 )}
             </div>
-            <div className="flex items-center text-sm opacity-50 font-semibold text-muted-foreground justify-center pb-2">
+            <div className="flex items-center text-xs md:text-sm opacity-50 font-semibold text-muted-foreground justify-center py-4">
                 <p>Contact us at <a href="mailto:lyraafy@gmail.com" className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
             </div>
         </div>

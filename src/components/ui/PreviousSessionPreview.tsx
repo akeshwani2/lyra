@@ -13,7 +13,7 @@ interface PreviousSessionPreviewProps {
 const PreviousSessionPreview = ({ messages, pdfName, pdfUrl }: PreviousSessionPreviewProps) => {
   console.log('PreviousSessionPreview Props:', { messages, pdfName, pdfUrl });
 
-  const previewMessages = messages.slice(-3);
+  const previewMessages = messages.slice(-4);
   
   return (
     <motion.div
@@ -36,7 +36,7 @@ const PreviousSessionPreview = ({ messages, pdfName, pdfUrl }: PreviousSessionPr
           </div>
 
           {/* Chat Preview */}
-          <div className="flex-1 rounded-xl p-4 border border-gray-800 bg-gray-900/20">
+          <div className="flex-1 rounded-xl p-4 border border-gray-800 bg-gray-900/20 max-h-[300px] overflow-y-auto">
             <div className="space-y-4">
               {previewMessages.map((message) => (
                 <div
