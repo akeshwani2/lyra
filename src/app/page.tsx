@@ -74,7 +74,8 @@ const DashboardPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full max-w-5xl mx-auto text-center space-y-4 sm:space-y-12 z-10 px-2 sm:px-4 overflow-y-auto -mt-8 sm:mt-20">
+      <div className="w-full max-w-5xl mx-auto text-center space-y-4 sm:space-y-12 z-10 px-2 sm:px-4 overflow-y-auto 
+                      -mt-8 sm:mt-20 pt-32 sm:pt-0">
         {/* Hero Title */}
         <div className="space-y-2 sm:space-y-4 pb-6 sm:pb-0 pt-4 sm:pt-0">
           
@@ -101,7 +102,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Feature Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-6 px-4 mt-4 sm:px-4 sm:mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-6 px-4 mt-4 sm:px-4 sm:mt-8 pb-20 sm:pb-0">
           {/* AI Resume Card */}
           <div 
             onClick={() => handleNavigation("/ai-resume")} 
