@@ -30,9 +30,9 @@ const FileUpload = () => {
         accept: {
             'application/pdf': ['.pdf']
         },
-        // We can also add a maxFiles parameter to tell it how many files we want to upload
+        // We can add a maxFiles parameter to tell it how many files we want to upload
         maxFiles: 1,
-        // We can also add a onDrop function to handle the files that are dropped
+        // We can also add an onDrop function to handle the files that are dropped
         onDrop: async (acceptedFiles) => {
             console.log(acceptedFiles)
             const file = acceptedFiles[0]

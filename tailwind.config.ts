@@ -67,8 +67,68 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+  		typography: {
+  			DEFAULT: {
+  				css: {
+  					maxWidth: '100%',
+  					color: 'rgb(255 255 255 / 0.8)',
+  					'[class~="lead"]': {
+  						color: 'rgb(255 255 255 / 0.7)',
+  					},
+  					a: {
+  						color: 'rgb(96 165 250)',
+  						'&:hover': {
+  							color: 'rgb(147 197 253)',
+  						},
+  					},
+  					strong: {
+  						color: 'rgb(255 255 255 / 0.9)',
+  					},
+  					'ol > li::marker': {
+  						color: 'rgb(255 255 255 / 0.6)',
+  					},
+  					'ul > li::marker': {
+  						color: 'rgb(255 255 255 / 0.6)',
+  					},
+  					hr: {
+  						borderColor: 'rgb(255 255 255 / 0.2)',
+  					},
+  					blockquote: {
+  						borderLeftColor: 'rgb(255 255 255 / 0.2)',
+  						color: 'rgb(255 255 255 / 0.7)',
+  					},
+  					h1: {
+  						color: 'rgb(255 255 255 / 0.9)',
+  					},
+  					h2: {
+  						color: 'rgb(255 255 255 / 0.9)',
+  					},
+  					h3: {
+  						color: 'rgb(255 255 255 / 0.9)',
+  					},
+  					h4: {
+  						color: 'rgb(255 255 255 / 0.9)',
+  					},
+  					code: {
+  						color: 'rgb(255 255 255 / 0.8)',
+  						backgroundColor: 'rgb(0 0 0 / 0.3)',
+  					},
+  					'pre code': {
+  						backgroundColor: 'transparent',
+  						color: 'inherit',
+  					},
+  					pre: {
+  						backgroundColor: 'rgb(0 0 0 / 0.3)',
+  						color: 'rgb(255 255 255 / 0.8)',
+  					},
+  				},
+  			},
+  		},
   	}
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require('@tailwindcss/typography'),
+  ],
 } satisfies Config;

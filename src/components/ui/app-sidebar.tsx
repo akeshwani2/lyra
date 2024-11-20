@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut } from "lucide-react"
+import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut, FileAudio, Feather } from "lucide-react"
 import { useClerk } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
@@ -36,25 +36,27 @@ const items = [
     hoverColor: "hover:bg-green-500/5 hover:text-green-400 !text-green-400",
   },
   {
-    title: "Calendar",
-    url: "/calendar",
-    icon: Calendar,
+    title: "Scribe",
+    url: "/scribe",
+    icon: Feather,
+    activeColor: "bg-amber-500/10 text-amber-400",
+    hoverColor: "hover:bg-amber-500/5 hover:text-amber-400 !text-amber-400",
+  },
+  {
+    title: "AI Resume",
+    url: "/ai-resume",
+    icon: Brain,
     activeColor: "bg-purple-500/10 text-purple-400",
     hoverColor: "hover:bg-purple-500/5 hover:text-purple-400 !text-purple-400",
+
   },
+
   {
     title: "Scheduler",
     url: "/scheduler",
     icon: CalendarClock,
     activeColor: "bg-pink-500/10 text-pink-400",
     hoverColor: "hover:bg-pink-500/5 hover:text-pink-400 !text-pink-400",
-  },
-  {
-    title: "AI Resume",
-    url: "/ai-resume",
-    icon: Brain,
-    activeColor: "bg-amber-500/10 text-amber-400",
-    hoverColor: "hover:bg-amber-500/5 hover:text-amber-400 !text-amber-400",
   },
 ]
 

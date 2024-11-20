@@ -11,6 +11,7 @@ const DashboardPage = () => {
   const { isSignedIn } = useAuth();
   const router = useRouter();
   const { user } = useUser();
+  const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   const handleNavigation = (path: string) => {
@@ -23,6 +24,17 @@ const DashboardPage = () => {
   };
 
   useEffect(() => {
+    setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
     if (isSignedIn) {
       const redirectPath = sessionStorage.getItem('redirectPath');
       if (redirectPath) {
@@ -31,16 +43,6 @@ const DashboardPage = () => {
       }
     }
   }, [isSignedIn, router]);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 640); // 640px is the 'sm' breakpoint in Tailwind
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-gray-900 to-gray-950">
@@ -54,7 +56,7 @@ const DashboardPage = () => {
             height={40}
             className="rounded-lg sm:w-[65px] sm:h-[65px]"
           />
-          <span className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+          <span className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
             Lyra
           </span>
         </div>
@@ -96,26 +98,30 @@ const DashboardPage = () => {
             </span>
           </h1>
           <p className="text-sm sm:text-xl text-gray-400 px-2 sm:pb-0 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-            <TypeAnimation 
-              sequence={isMobile ? [
-                'AI-Powered Productivity',
-                2000,
-                'Smart Workflow Solutions',
-                2000,
-                'Innovative AI Tools',
-                2000,
-              ] : [
-                'AI Solutions to Boost Your Productivity and Creativity',
-                2000,
-                'Seamlessly Integrate AI Technology into Your Daily Workflow',
-                2000,
-                'Elevate Your Work with Intelligent Automation and Innovation',
-                2000,
-              ]}
-              wrapper="span"
-              speed={75}
-              repeat={Infinity}
-            />         
+            {mounted ? (
+              <TypeAnimation 
+                sequence={isMobile ? [
+                  'AI-Powered Productivity',
+                  2000,
+                  'Smart Workflow Solutions',
+                  2000,
+                  'Innovative AI Tools',
+                  2000,
+                ] : [
+                  'AI Solutions to Boost Your Productivity and Creativity',
+                  2000,
+                  'Seamlessly Integrate AI Technology into Your Daily Workflow',
+                  2000,
+                  'Elevate Your Work with Intelligent Automation and Innovation',
+                  2000,
+                ]}
+                wrapper="span"
+                speed={75}
+                repeat={Infinity}
+              />
+            ) : (
+              'AI Solutions to Boost Your Productivity and Creativity'
+            )}         
           </p>
         </div>
 
@@ -154,7 +160,7 @@ const DashboardPage = () => {
             onClick={() => handleNavigation("/tasks")} 
             className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:1.5s]"
           >
-            <div className="p-3 sm:p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm relative overflow-hidden group">
+            <div className="p-4 sm:p-8 rounded-2xl bg-gray-900/50 border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(139,92,246,0.3)] backdrop-blur-sm relative overflow-hidden group">
               <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-purple-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-purple-500/40 transition-colors duration-300"></div>
               <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
                 <div className="p-3 rounded-xl bg-purple-500/10 text-purple-400">
@@ -173,22 +179,22 @@ const DashboardPage = () => {
 
           {/* Scheduler Card */}
           <div 
-            onClick={() => handleNavigation("/scheduler")} 
+            onClick={() => handleNavigation("/scribe")} 
             className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:3s]"
           >
-            <div className="p-3 sm:p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.3)] backdrop-blur-sm relative overflow-hidden group">
+            <div className="p-4 sm:p-8 rounded-2xl bg-gray-900/50 border border-cyan-500/20 hover:border-cyan-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.3)] backdrop-blur-sm relative overflow-hidden group">
               <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-cyan-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-cyan-500/40 transition-colors duration-300"></div>
               <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
                 <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
                   <Calendar size={24} />
                 </div>
-                <h2 className="sm:text-2xl text-xl font-bold text-white">Scheduler</h2>
+                <h2 className="sm:text-2xl text-xl font-bold text-white">Scribe</h2>
               </div>
               <p className="text-gray-400 text-left sm:text-base  text-sm mb-2 sm:mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                Plan your day with our intelligent scheduling assistant.
+                Transcribe your lectures now!
               </p>
               <div className="flex items-center text-cyan-400 group-hover:text-cyan-300 transition-colors [text-shadow:0_0_15px_rgba(34,211,238,0.7)]">
-                Schedule Now <ArrowUpRight className="ml-2" />
+                Transcribe Now <ArrowUpRight className="ml-2" />
               </div>
             </div>
           </div>
@@ -198,7 +204,7 @@ const DashboardPage = () => {
             onClick={() => handleNavigation("/ai-pdf")} 
             className="group cursor-pointer animate-[float_6s_ease-in-out_infinite]"
           >
-            <div className="p-3 sm:p-8 rounded-2xl bg-gray-900/50 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(129,140,248,0.3)] backdrop-blur-sm relative overflow-hidden group">
+            <div className="p-4 sm:p-8 rounded-2xl bg-gray-900/50 border border-indigo-500/20 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(129,140,248,0.3)] backdrop-blur-sm relative overflow-hidden group">
               <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-indigo-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-indigo-500/40 transition-colors duration-300"></div>
               <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
                 <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">

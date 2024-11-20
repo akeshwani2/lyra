@@ -17,7 +17,7 @@ export default function Page() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image src="/logo.svg" alt="Lyra Logo" width={65} height={65} />
-            <span className="text-4xl font-bold bg-gradient-to-r from-cyan-500 to-blue-500 text-transparent bg-clip-text pl-4">
+            <span className="text-4xl font-bold pb-1 pl-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-transparent bg-clip-text">
               Lyra
             </span>
           </Link>
