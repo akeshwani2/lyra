@@ -2,19 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/app/lib/prisma';
 
+type Params = {
+  params: {
+    noteId: string
+  }
+}
+
 export async function GET(
   request: NextRequest,
-  context: { params: { noteId: string } }
+  { params }: Params
 ): Promise<NextResponse> {
   try {
-    // Await the result of auth()
     const { userId } = await auth();
-
+    
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const { params } = context; // Extract params from the context object
 
     const note = await prisma.genNotes.findUnique({
       where: {
