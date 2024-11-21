@@ -4,14 +4,17 @@ import { prisma } from '@/app/lib/prisma';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { noteId: string } }
+  context: { params: { noteId: string } }
 ): Promise<NextResponse> {
   try {
+    // Await the result of auth()
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const { params } = context; // Extract params from the context object
 
     const note = await prisma.genNotes.findUnique({
       where: {
