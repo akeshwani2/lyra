@@ -2,10 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { prisma } from '@/app/lib/prisma';
 
-export async function GET(
-  request: Request,
-  context: { params: { noteId: string } }
-): Promise<Response> {
+export async function GET(request: Request) {
+  const noteId = request.url.split('/').pop();
   try {
     const { userId } = await auth();
     
@@ -15,7 +13,7 @@ export async function GET(
 
     const note = await prisma.genNotes.findUnique({
       where: {
-        id: context.params.noteId,
+        id: noteId,
         userId,
       },
     });
