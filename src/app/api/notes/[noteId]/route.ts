@@ -5,7 +5,7 @@ import { prisma } from '@/app/lib/prisma';
 export async function GET(
   request: Request,
   { params }: { params: { noteId: string } }
-) {
+): Promise<NextResponse> {
   try {
     const { userId } = await auth();
     
@@ -16,7 +16,7 @@ export async function GET(
     const note = await prisma.genNotes.findUnique({
       where: {
         id: params.noteId,
-        userId, // Ensure the note belongs to the user
+        userId,
       },
     });
 
