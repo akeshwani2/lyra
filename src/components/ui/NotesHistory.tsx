@@ -89,15 +89,15 @@ const NotesHistory = forwardRef(({
     <>
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/5 backdrop-blur-sm z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed right-0 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 
-                   backdrop-blur-lg p-2 rounded-l-lg z-50"
+        className="fixed right-0 top-1/2 -translate-y-1/2 bg-white/5 hover:bg-white/10 
+                   backdrop-blur-md p-2 rounded-l-lg z-50"
       >
         <div className="rotate-180 bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text hover:text-amber-500 transition-all duration-300 ease-in-out" style={{ writingMode: 'vertical-rl' }}>
           Notes
@@ -108,7 +108,7 @@ const NotesHistory = forwardRef(({
         initial={{ width: 0 }}
         animate={{ width: isOpen ? 300 : 0 }}
         transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-        className="fixed right-0 top-0 h-full bg-gray-900/95 backdrop-blur-lg 
+        className="fixed right-0 top-0 h-full bg-white/5 backdrop-blur-2xl 
                    border-l border-white/10 overflow-hidden z-50"
       >
         <div className="p-4 h-full overflow-y-auto">

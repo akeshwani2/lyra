@@ -8,7 +8,7 @@ import { UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'react-hot-toast';
-import { Save, Plus, Pause, Play, Square, X } from 'lucide-react';
+import { Save, Plus, Pause, Play, Square, X, CircleDashed, FeatherIcon } from 'lucide-react';
 import NotesHistory from '@/components/ui/NotesHistory';
 import { Note } from '@/types';
 
@@ -518,7 +518,7 @@ const ScribePage = () => {
       <div className='absolute inset-0 flex flex-col h-screen'>
         {/* Header bar - add shrink-0 to prevent shrinking */}
         <div className="flex justify-between items-center w-full px-8 pr-16 py-8 shrink-0">
-          <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
+            <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
             Scribe
           </h1>
           
@@ -548,7 +548,23 @@ const ScribePage = () => {
                     Start Recording
                   </span>
                 </Button>
-              ) : null}
+              ) : isPaused ? (
+                <Button
+                  onClick={resumeRecording}
+                  className="bg-green-500/20 hover:bg-green-500/30 text-green-500 transition-all duration-300 px-6 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Play className="w-4 h-4" />
+                  Resume Recording
+                </Button>
+              ) : (
+                <Button
+                  className="bg-red-500/20 hover:bg-red-500/30 text-red-500 transition-all duration-300 px-6 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <CircleDashed className="w-4 h-4 animate-spin" />
+                  Stop Recording
+                </Button>
+              )}
+
             </div>
 
             <div className="flex items-center gap-3">
@@ -669,56 +685,46 @@ const ScribePage = () => {
               
               
               <div className="prose prose-invert max-w-none">
-                {notes}
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {notes}
+                </ReactMarkdown>
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl w-full mx-auto mt-12 flex flex-col items-center gap-8">
+            <div className="max-w-3xl w-full mx-auto mt-48 flex flex-col items-center gap-8">
               <div className="relative w-32 h-32">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full hover:opacity-50 animate-pulse"></div>
                 <Image
-                  src="/microphone.svg" // You'll need to add this icon
-                  alt="Microphone"
-                  width={128}
-                  height={128}
-                  className="relative z-10 p-6"
+                  onClick={() => {
+                    if (isRecording) {
+                      stopRecording();
+                    } else {
+                      startRecording();
+                      resetNote();
+                    }
+                  }}
+                  src={isRecording ? "/circle-dashed.svg" : "/microphone.svg"}
+                  alt={isRecording ? "Recording" : "Microphone"}
+                  width={256}
+                  height={256}
+                  className="relative z-10 p-6 cursor-pointer transition-all duration-300 hover:scale-110"
                 />
               </div>
               
+              
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-white mb-3">
-                  Welcome to Scribe
-                </h2>
-                <p className="text-lg text-white/70 max-w-md">
+                <div className="text-md font-bold text-gray-400 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
+                  Welcome to 
+                </div>
+                <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-6xl mb-4 font-bold text-transparent bg-clip-text">
+                  Scribe
+                </span>
+                <p className="text-sm sm:text-xl text-gray-400 sm:pb-0 pt-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
                   Transform your voice into organized notes instantly
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 mt-4">
-                <Button
-                  onClick={() => {startRecording(); resetNote()}}
-                  className="group relative bg-gradient-to-r from-purple-500 to-blue-500 
-                            hover:from-violet-600 hover:to-cyan-500 
-                            transition-all duration-300 rounded-xl px-8 py-3 
-                            text-lg font-medium shadow-lg
-                            hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full" />
-                    Start Recording
-                  </span>
-                </Button>
-              </div>
-
-              <div className="mt-8 flex items-center gap-4 text-white/50">
-                <div className="w-12 h-px bg-white/20"></div>
-                <span>or</span>
-                <div className="w-12 h-px bg-white/20"></div>
-              </div>
-
-              <p className="text-white/50">
-                Access your previous notes from the sidebar →
-              </p>
+              
             </div>
           )}
         </div>

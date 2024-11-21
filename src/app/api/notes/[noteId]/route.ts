@@ -4,7 +4,7 @@ import { prisma } from '@/app/lib/prisma';
 
 export async function GET(
   request: Request,
-  { params }: { params: { noteId: string } } & { searchParams: { [key: string]: string | string[] | undefined } }
+  { params }: { params: { noteId: string } }
 ) {
   try {
     const { userId } = await auth();
