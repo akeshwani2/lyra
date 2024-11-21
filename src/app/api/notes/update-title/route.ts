@@ -10,25 +10,18 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { title } = await request.json();
+    const { noteId, title } = await request.json();
 
-    if (!title) {
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
+    if (!title || !noteId) {
+      return NextResponse.json({ error: 'Title and noteId are required' }, { status: 400 });
     }
 
-    // Get the most recent note for this user
-    const note = await prisma.genNotes.findFirst({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (!note) {
-      return NextResponse.json({ error: 'No note found' }, { status: 404 });
-    }
-
-    // Update the title
+    // Update the specific note
     const updatedNote = await prisma.genNotes.update({
-      where: { id: note.id },
+      where: { 
+        id: noteId,
+        userId, // Ensure the note belongs to the user
+      },
       data: { title },
     });
 

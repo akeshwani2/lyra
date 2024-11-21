@@ -339,19 +339,25 @@ const ScribePage = () => {
     if (title.trim() && title !== savedTitle) {
       try {
         // Only make API call if note has been saved (has an ID)
-        if (isNoteSaved) {
+        if (currentNoteId) {
           const response = await fetch('/api/notes/update-title', {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+              noteId: currentNoteId,
               title: title.trim(),
             }),
           });
 
           if (!response.ok) {
             throw new Error('Failed to update title');
+          }
+
+          // After successful update, refresh the notes list
+          if (notesHistoryRef.current) {
+            await notesHistoryRef.current.loadNotes();
           }
         }
 
