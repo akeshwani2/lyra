@@ -2,7 +2,7 @@
 
 import { useAuth, useUser} from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User, ArrowRight } from "lucide-react";
+import { ArrowUpRight, ListTodo, FileText, Calendar, Brain, Github, Linkedin, User, ArrowRight, Feather, Omega } from "lucide-react";
 import Image from 'next/image'
 import { TypeAnimation } from 'react-type-animation'
 import { useEffect, useState } from 'react';
@@ -110,6 +110,8 @@ const DashboardPage = () => {
                 ] : [
                   'AI Solutions to Boost Your Productivity and Creativity',
                   2000,
+                  'A one stop solution for all your AI needs',
+                  2000,
                   'Seamlessly Integrate AI Technology into Your Daily Workflow',
                   2000,
                   'Elevate Your Work with Intelligent Automation and Innovation',
@@ -129,7 +131,7 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-6 px-4 mt-4 sm:px-4 sm:mt-8 pb-20 sm:pb-0">
           {/* AI Resume Card */}
           <div 
-            onClick={() => handleNavigation("/ai-resume")} 
+            onClick={() => handleNavigation("/nyx")} 
             className="group cursor-pointer animate-[float_6s_ease-in-out_infinite] [animation-delay:4.5s]"
           >
             <div className="p-4 sm:p-8 rounded-2xl bg-gray-900/50 border border-blue-500/20 hover:border-blue-500/40 transition-all duration-300 hover:shadow-[0_0_30px_-5px_rgba(96,165,250,0.3)] backdrop-blur-sm relative overflow-hidden group">
@@ -142,15 +144,15 @@ const DashboardPage = () => {
               </div>
               <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
                 <div className="p-2 sm:p-3 rounded-xl bg-blue-500/10 text-blue-400">
-                  <FileText size={24} className="sm:w-6 sm:h-6"/>
+                  <Omega size={24} className="sm:w-6 sm:h-6"/>
                 </div>
-                <h2 className="sm:text-2xl text-xl font-bold text-white">AI Resume Builder</h2>
+                <h2 className="sm:text-2xl text-xl font-bold text-white">Nyx</h2>
               </div>
               <p className="text-gray-400 text-left sm:text-base text-sm mb-2 sm:mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                Create professional resumes with <span className="text-blue-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span> powered suggestions.
+                An intelligent Github repository assistant powered by <span className="text-blue-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span>
               </p>
               <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors [text-shadow:0_0_15px_rgba(96,165,250,0.7)]">
-                Build Resume <ArrowUpRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                Talk to Nyx <ArrowUpRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </div>
           </div>
@@ -186,15 +188,15 @@ const DashboardPage = () => {
               <div className="absolute -top-1 -right-1 w-16 h-16 bg-gradient-to-br from-transparent to-cyan-500/20 rotate-45 transform translate-x-1/2 -translate-y-1/2 group-hover:to-cyan-500/40 transition-colors duration-300"></div>
               <div className="flex items-center gap-2 sm:gap-4 mb-2 sm:mb-4">
                 <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400">
-                  <Calendar size={24} />
+                  <Feather size={24} />
                 </div>
                 <h2 className="sm:text-2xl text-xl font-bold text-white">Scribe</h2>
               </div>
               <p className="text-gray-400 text-left sm:text-base  text-sm mb-2 sm:mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                Transcribe your lectures now!
+              Effortlessly convert your lectures into text!
               </p>
               <div className="flex items-center text-cyan-400 group-hover:text-cyan-300 transition-colors [text-shadow:0_0_15px_rgba(34,211,238,0.7)]">
-                Transcribe Now <ArrowUpRight className="ml-2" />
+              Start Transcribing <ArrowUpRight className="ml-2" />
               </div>
             </div>
           </div>
@@ -210,7 +212,7 @@ const DashboardPage = () => {
                 <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400">
                   <Brain size={24} />
                 </div>
-                <h2 className="sm:text-2xl text-xl font-bold text-white">AI PDF Chat</h2>
+                <h2 className="sm:text-2xl text-xl font-bold text-white">DocBot</h2>
               </div>
               <p className="text-gray-400 text-left sm:text-base text-sm mb-2 sm:mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
               Engage with Any PDF Seamlessly Using  <span className="text-indigo-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span>

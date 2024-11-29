@@ -41,6 +41,7 @@ export async function POST(req: Request) {
 
                         If the user greets you (e.g., "Hi" or "Hello"), reply warmly and naturally, as if you are a friendly and approachable human.
                         If information is missing or unclear in the ${context}, ask clarifying questions or respond with: "I don't have enough information to answer that question. Could you please provide more details?"
+                        And any other question the user asks, even if it's not related to the ${context}, respond with a friendly and helpful tone.
                         Your rules:
 
                         Do not rely on information outside the ${context} unless explicitly permitted or necessary to clarify general concepts.

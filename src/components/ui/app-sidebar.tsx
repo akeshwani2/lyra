@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut, FileAudio, Feather } from "lucide-react"
+import { Calendar, CalendarClock, FileText, ListTodo, Omega, LogOut, FileAudio, Feather } from "lucide-react"
 import { useClerk } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
@@ -44,8 +44,8 @@ const items = [
   },
   {
     title: "AI Resume",
-    url: "/ai-resume",
-    icon: Brain,
+    url: "/nyx",
+    icon: Omega,
     activeColor: "bg-purple-500/10 text-purple-400",
     hoverColor: "hover:bg-purple-500/5 hover:text-purple-400 !text-purple-400",
 
