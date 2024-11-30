@@ -144,13 +144,13 @@ const DashboardPage = () => {
                 <div className="p-2 sm:p-3 rounded-xl bg-blue-500/10 text-blue-400">
                   <FileText size={24} className="sm:w-6 sm:h-6"/>
                 </div>
-                <h2 className="sm:text-2xl text-xl font-bold text-white">Note Mate</h2>
+                <h2 className="sm:text-2xl text-xl font-bold text-white">AI Resume Builder</h2>
               </div>
               <p className="text-gray-400 text-left sm:text-base text-sm mb-2 sm:mb-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                Create professional notes with <span className="text-blue-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span> powered suggestions.
+                Create professional resumes with <span className="text-blue-400 px-1 shadow-[0_0_15px_rgba(129,140,248,0.7)] rounded">AI</span> powered suggestions.
               </p>
               <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors [text-shadow:0_0_15px_rgba(96,165,250,0.7)]">
-                Take Notes <ArrowUpRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
+                Create Resume <ArrowUpRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
               </div>
             </div>
           </div>
