@@ -322,3 +322,17 @@
 .prose h2:first-child, .ProseMirror h2:first-child {
   margin-top: 1em !important;
 }
+
+/* Add after your existing styles */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: white;
+  z-index: 1;
+}
+
+.chat-header {
+  position: relative;
+  z-index: 10;
+  background-color: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(8px);
+}

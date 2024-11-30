@@ -34,7 +34,7 @@ const ChatComponent = ({chatId}: Props) => {
     }, [messages])
   return (
     <div className='relative max-h-screen overflow-scroll flex flex-col h-screen bg-gray-900' id='message-container'>
-        <div className='sticky top-0 inset-x-0 p-2 bg-gray-900 h-fit border-b border-gray-800'>
+        <div className='sticky top-0 inset-x-0 p-2 bg-gray-900/95 h-fit border-b border-gray-800 z-50 backdrop-blur-md'>
             <h3 className='text-xl text-center font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text'>
                 Chat
             </h3>
