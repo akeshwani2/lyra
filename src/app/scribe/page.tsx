@@ -42,7 +42,8 @@ const ScribePage = () => {
   const [isCancelled, setIsCancelled] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'error' | ''>('');
 
-  // Create a debounced save function
+  // Disable the exhaustive-deps warning for this specific hook
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSave = useCallback(
     debounce(async (content: string, noteId?: string, noteTitle?: string) => {
       if (!content) return;
