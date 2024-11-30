@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button';
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import Image from 'next/image'
@@ -8,9 +8,12 @@ import { UserButton } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { useUser } from '@clerk/nextjs';
 import { toast } from 'react-hot-toast';
-import { Save, Plus, Pause, Play, Square, X, CircleDashed, FeatherIcon } from 'lucide-react';
+import { Save, Plus, Pause, Play, Square, X, CircleDashed, FeatherIcon, Wand2, Pencil } from 'lucide-react';
 import NotesHistory from '@/components/ui/NotesHistory';
 import { Note } from '@/types';
+import RichTextEditor from '@/components/ui/RichTextEditor';
+import debounce from 'lodash/debounce';
+import { TypeAnimation } from 'react-type-animation';
 
 const ScribePage = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -37,32 +40,70 @@ const ScribePage = () => {
   const [currentNoteId, setCurrentNoteId] = useState<string>();
   const notesHistoryRef = useRef<{ loadNotes: () => Promise<void> } | null>(null);
   const [isCancelled, setIsCancelled] = useState(false);
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'error' | ''>('');
 
-  useEffect(() => {
-    const loadLastOpenedNote = async () => {
-      const lastNoteId = localStorage.getItem('lastOpenedNoteId');
-      if (lastNoteId) {
-        try {
-          const response = await fetch(`/api/notes/${lastNoteId}`);
-          if (!response.ok) throw new Error('Failed to load note');
-          const note = await response.json();
-          
-          setNotes(note.content);
-          setTitle(note.title);
-          setSavedTitle(note.title);
-          setCurrentNoteId(note.id);
-          setIsNoteSaved(true);
-          setIsTitleSaved(true);
-          setIsNewNote(false);
-        } catch (error) {
-          console.error('Error loading last note:', error);
-          localStorage.removeItem('lastOpenedNoteId');
+  // Create a debounced save function
+  const debouncedSave = useCallback(
+    debounce(async (content: string, noteId?: string, noteTitle?: string) => {
+      if (!content) return;
+
+      try {
+        setAutoSaveStatus('saving');
+        
+        // Determine if this is a new note from AI transcription
+        const isNewAINote = !noteId && !noteTitle;
+        const title = noteTitle || (isNewAINote ? `Notes ${new Date().toLocaleString()}` : 'Untitled Note');
+        
+        const response = await fetch('/api/notes/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: noteId,
+            title: title,
+            content: content,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to save notes');
         }
-      }
-    };
 
-    loadLastOpenedNote();
-  }, []);
+        const data = await response.json();
+
+        // Update note ID if it's a new note
+        if (!noteId) {
+          setCurrentNoteId(data.id);
+          setTitle(title);
+        }
+
+        setSavedTitle(title);
+        setIsNoteSaved(true);
+        setIsTitleSaved(true);
+        setAutoSaveStatus('saved');
+        setIsNewNote(false);
+        
+        // Refresh notes list
+        if (notesHistoryRef.current) {
+          await notesHistoryRef.current.loadNotes();
+        }
+      } catch (error) {
+        console.error('Auto-save error:', error);
+        setAutoSaveStatus('error');
+        toast.error('Failed to save note. Please try again.');
+      }
+    }, 1000),
+    []
+  );
+
+  // Add useEffect to cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSave.cancel();
+    };
+  }, [debouncedSave]);
 
   const startRecording = async () => {
     try {
@@ -210,7 +251,59 @@ const ScribePage = () => {
         throw new Error(notesData.error || 'Notes processing failed');
       }
 
-      setNotes(notesData.notes);
+      // Format the notes with proper spacing, structure, and indentation
+      const formattedNotes = notesData.notes
+        // Format section headers
+        .replace(/^(Topic|Key Points|Important Takeaways|Examples|Definitions):/gm, '\n$1:')
+        // Add proper spacing after section headers
+        .replace(/^(.+:)$/gm, '$1\n')
+        // Format bullet points with proper indentation
+        .replace(/^[•-]\s*/gm, '• ')
+        // Indent sub-points
+        .replace(/^(• .+)$/gm, (match: string) => {
+          const leadingSpaces = match.match(/^\s*/)?.[0].length ?? 0;
+          const indentationLevel = Math.floor(leadingSpaces / 2);
+          return '    '.repeat(indentationLevel) + match.trim();
+        })
+        // Ensure proper spacing between sections
+        .replace(/\n{3,}/g, '\n\n')
+        // Remove any trailing/leading whitespace
+        .trim();
+
+      // Immediately save the transcribed note
+      const newTitle = `Notes ${new Date().toLocaleString()}`;
+      const saveResponse = await fetch('/api/notes/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          content: formattedNotes,
+        }),
+      });
+
+      if (!saveResponse.ok) {
+        throw new Error('Failed to save transcribed note');
+      }
+
+      const savedNote = await saveResponse.json();
+      
+      // Update all relevant state
+      setNotes(formattedNotes);
+      setTitle(newTitle);
+      setSavedTitle(newTitle);
+      setCurrentNoteId(savedNote.id);
+      setIsNoteSaved(true);
+      setIsTitleSaved(true);
+      setIsNewNote(false);
+      setAutoSaveStatus('saved');
+
+      // Refresh notes list
+      if (notesHistoryRef.current) {
+        await notesHistoryRef.current.loadNotes();
+      }
+
       toast.success('Recording processed and saved successfully!');
     } catch (err) {
       // Only show error if not cancelled
@@ -247,7 +340,7 @@ const ScribePage = () => {
   };
 
   const AudioVisualizer = ({ data }: { data: number[] }) => (
-    <div className="flex items-center justify-center h-16 gap-[2px] px-4">
+    <div className="flex items-center justify-center h-12 gap-[2px] px-4">
       {data.map((value, index) => (
         <div
           key={index}
@@ -331,12 +424,30 @@ const ScribePage = () => {
   };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    setIsTitleSaved(false); // Reset saved state when title changes
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    setIsTitleSaved(false);
+    // Only trigger debounced save if the title is not empty
+    if (newTitle.trim()) {
+      debouncedSave(notes, currentNoteId, newTitle);
+    }
   };
 
   const handleTitleBlur = async () => {
-    if (title.trim() && title !== savedTitle) {
+    // Cancel any pending debounced saves
+    debouncedSave.cancel();
+
+    // If title is empty, revert to previous title or "Untitled Note"
+    if (!title.trim()) {
+      const previousTitle = savedTitle || "Untitled Note";
+      setTitle(previousTitle);
+      setSavedTitle(previousTitle);
+      setIsEditingTitle(false);
+      return;
+    }
+
+    // Only proceed with update if title changed
+    if (title.trim() !== savedTitle) {
       try {
         // Only make API call if note has been saved (has an ID)
         if (currentNoteId) {
@@ -376,6 +487,9 @@ const ScribePage = () => {
       } catch (error) {
         toast.error('Failed to update title');
       }
+    } else {
+      // If title hasn't changed, just exit edit mode
+      setIsEditingTitle(false);
     }
   };
 
@@ -388,12 +502,11 @@ const ScribePage = () => {
   const resetNote = () => {
     setNotes('');
     setTitle('');
-    setSavedTitle('');
+    setCurrentNoteId(undefined);
     setIsNoteSaved(false);
     setIsTitleSaved(false);
     setIsNewNote(true);
-    setCurrentNoteId(undefined);
-    localStorage.removeItem('lastOpenedNoteId');
+    setSavedTitle('');
   };
 
   const handleSelectNote = (note: Note) => {
@@ -413,34 +526,24 @@ const ScribePage = () => {
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this note?')) {
-      return;
-    }
+    // Prevent multiple deletion attempts
+    if (isSaving) return;
 
     try {
+      setIsSaving(true); // Prevent multiple clicks
+
       // First, get the notes list
-      let nextNoteToShow: Note | null = null;
-      
-      try {
-        const notesResponse = await fetch('/api/notes');
-        if (notesResponse.ok) {
-          const data = await notesResponse.json();
-          // Make sure we have notes array and it's not empty
-          if (data && Array.isArray(data.notes) && data.notes.length > 0) {
-            const allNotes = data.notes;
-            const currentIndex = allNotes.findIndex((note: Note) => note.id === currentNoteId);
-            
-            // Find the next note to show (if any)
-            if (allNotes.length > 1 && currentIndex !== -1) {
-              nextNoteToShow = allNotes[currentIndex + 1] || allNotes[currentIndex - 1];
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching notes:', error);
+      const notesResponse = await fetch('/api/notes');
+      const data = await notesResponse.json();
+      const allNotes = data.notes || [];
+
+      // Only proceed with confirmation if we haven't already started deleting
+      if (!confirm('Are you sure you want to delete this note?')) {
+        setIsSaving(false);
+        return;
       }
 
-      // Then delete the current note
+      // Delete the current note
       const deleteResponse = await fetch('/api/notes/delete', {
         method: 'DELETE',
         headers: {
@@ -453,29 +556,46 @@ const ScribePage = () => {
         throw new Error('Failed to delete note');
       }
 
+      // If this was the last note, reset everything
+      if (allNotes.length <= 1) {
+        resetNote();
+        localStorage.removeItem('lastOpenedNoteId');
+        if (notesHistoryRef.current) {
+          await notesHistoryRef.current.loadNotes();
+        }
+        toast.success('Note deleted successfully');
+        return;
+      }
+
+      // Find the next note to show
+      const currentIndex = allNotes.findIndex((note: Note) => note.id === currentNoteId);
+      const nextNote = allNotes[currentIndex + 1] || allNotes[currentIndex - 1];
+
+      if (nextNote) {
+        setNotes(nextNote.content);
+        setTitle(nextNote.title);
+        setSavedTitle(nextNote.title);
+        setCurrentNoteId(nextNote.id);
+        setIsNoteSaved(true);
+        setIsTitleSaved(true);
+        setIsNewNote(false);
+        localStorage.setItem('lastOpenedNoteId', nextNote.id);
+      } else {
+        resetNote();
+        localStorage.removeItem('lastOpenedNoteId');
+      }
+
       // Update the sidebar
       if (notesHistoryRef.current) {
         await notesHistoryRef.current.loadNotes();
       }
 
-      // Navigate to next note or reset
-      if (nextNoteToShow) {
-        setNotes(nextNoteToShow.content);
-        setTitle(nextNoteToShow.title);
-        setSavedTitle(nextNoteToShow.title);
-        setCurrentNoteId(nextNoteToShow.id);
-        setIsNoteSaved(true);
-        setIsTitleSaved(true);
-        setIsNewNote(false);
-        localStorage.setItem('lastOpenedNoteId', nextNoteToShow.id);
-      } else {
-        resetNote();
-      }
-      
       toast.success('Note deleted successfully');
     } catch (error) {
       console.error('Error deleting note:', error);
       toast.error('Failed to delete note');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -513,6 +633,119 @@ const ScribePage = () => {
     resetNote();
   };
 
+  const startNewNote = async () => {
+    try {
+      // First reset all states
+      resetNote();
+      
+      // Generate new title with timestamp
+      const newTitle = `Notes ${new Date().toLocaleString()}`;
+      
+      // Create a new note in the database
+      const response = await fetch('/api/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: newTitle,
+          content: ''
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create new note');
+      }
+
+      const newNote = await response.json();
+
+      // Update local state with the new note
+      setNotes('');
+      setTitle(newTitle);
+      setSavedTitle(newTitle);
+      setCurrentNoteId(newNote.id);
+      setIsNoteSaved(true);
+      setIsTitleSaved(true);
+      setIsNewNote(false);
+      
+      // Refresh notes list
+      if (notesHistoryRef.current) {
+        await notesHistoryRef.current.loadNotes();
+      }
+
+      toast.success('New note created');
+    } catch (error) {
+      console.error('Error creating new note:', error);
+      toast.error('Failed to create new note');
+    }
+  };
+
+  const handleNotesChange = (newContent: string) => {
+    if (!currentNoteId) return; // Don't update if no note is selected
+    
+    setNotes(newContent);
+    setIsNoteSaved(false);
+    debouncedSave(newContent, currentNoteId, title);
+  };
+
+  const enhanceNotes = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Get any selected text
+    const selection = window.getSelection();
+    const selectedText = selection?.toString();
+
+    // If no text is selected, check if there's any note content
+    if (!selectedText && !notes.trim()) {
+      toast.error('Please add some notes first');
+      return;
+    }
+
+    try {
+      setIsProcessing(true);
+      setProcessingStatus('Enhancing notes with AI...');
+
+      const response = await fetch('/api/enhance-notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          content: selectedText || notes,
+          isPartialContent: !!selectedText 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to enhance notes');
+      }
+
+      const { enhancedNotes } = await response.json();
+      
+      // If we enhanced selected text, replace just that portion
+      if (selectedText && selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(document.createTextNode(enhancedNotes));
+        
+        // Trigger save with the updated content
+        const updatedContent = notes.replace(selectedText, enhancedNotes);
+        setNotes(updatedContent);
+        debouncedSave(updatedContent, currentNoteId, title);
+      } else {
+        // Replace entire note content
+        setNotes(enhancedNotes);
+        debouncedSave(enhancedNotes, currentNoteId, title);
+      }
+      
+      toast.success('Notes enhanced successfully!');
+    } catch (error) {
+      console.error('Error enhancing notes:', error);
+      toast.error('Failed to enhance notes');
+    } finally {
+      setIsProcessing(false);
+      setProcessingStatus('');
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
       {/* Animated background pattern */}
@@ -520,62 +753,64 @@ const ScribePage = () => {
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
       </div>
       
-      {/* Main content - change to flex-col and h-screen */}
-      <div className='absolute inset-0 flex flex-col h-screen'>
+      {/* Main content - add flex-col and min-h-screen */}
+      <div className='absolute inset-0 flex flex-col min-h-screen'>
         {/* Header bar - add shrink-0 to prevent shrinking */}
         <div className="flex justify-between items-center w-full px-8 pr-16 py-8 shrink-0">
-            <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text">
-            Scribe
+          <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text pl-4">
+            {savedTitle || "Scribe"}
           </h1>
           
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-4">
-              {/* <Button
-                onClick={resetNote}
-                className="group relative bg-gradient-to-r from-emerald-500 to-teal-500 
-                          hover:from-emerald-600 hover:to-teal-600 
-                          transition-all duration-300 rounded-xl px-6 py-2 
-                          text-base font-medium shadow-lg"
-                disabled={isRecording || (!notes && !title)} // Disable if recording or no content
-              >
-                <span className="relative z-10 flex items-center gap-2">
-                  <Plus className="w-4 h-4" />
-                  New Note
-                </span>
-              </Button> */}
-              
-              {!isRecording ? (
-                <Button
-                  onClick={() => {startRecording(); resetNote()}}
-                  className="group relative bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500 transition-all duration-300 ease-in-out rounded-xl px-6 py-2 text-base font-medium shadow-lg hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full" />
-                    Start Recording
-                  </span>
-                </Button>
-              ) : isPaused ? (
-                <Button
-                  onClick={resumeRecording}
-                  className="bg-green-500/20 hover:bg-green-500/30 text-green-500 transition-all duration-300 px-6 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <Play className="w-4 h-4" />
-                  Resume Recording
-                </Button>
-              ) : (
-                <Button
-                  className="bg-red-500/20 hover:bg-red-500/30 text-red-500 transition-all duration-300 px-6 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <CircleDashed className="w-4 h-4 animate-spin" />
-                  Stop Recording
-                </Button>
-              )}
-
-            </div>
+            {notes && (
+              <div className="relative flex gap-2">
+                {!isRecording ? (
+                  <>
+                    <Button
+                      onClick={() => {startRecording(); resetNote()}}
+                      className="group relative bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500 transition-all duration-300 ease-in-out rounded-xl px-6 py-2 text-base font-medium shadow-lg hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-white rounded-full" />
+                        New Recording
+                      </span>
+                    </Button>
+                    <Button
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        await startNewNote();
+                      }}
+                      className="group relative bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 ease-in-out rounded-xl px-6 py-2 text-base font-medium shadow-lg hover:shadow-[0_0_2rem_-0.5rem_rgba(16,185,129,0.8)]"
+                    >
+                      <span className="relative z-10 flex items-center gap-2">
+                        <FeatherIcon className="w-4 h-4" />
+                        New Note
+                      </span>
+                    </Button>
+                  </>
+                ) : isPaused ? (
+                  <Button
+                    onClick={resumeRecording}
+                    className="bg-green-500/20 hover:bg-green-500/30 text-green-500 transition-all duration-300 px-6 py-2 rounded-lg flex items-center gap-2"
+                  >
+                    <Play className="w-4 h-4" />
+                    Resume
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={stopRecording}
+                    className="bg-red-500/20 hover:bg-red-500/30 text-red-500 transition-all duration-300 px-6 py-2 rounded-lg flex items-center gap-2"
+                  >
+                    <CircleDashed className="w-4 h-4 animate-spin" />
+                    Stop
+                  </Button>
+                )}
+              </div>
+            )}
 
             <div className="flex items-center gap-3">
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text md:text-xl font-bold">
-            {user?.username || user?.firstName || ''}
+              <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text md:text-xl font-bold">
+                {user?.username || user?.firstName || ''}
               </span>
               <UserButton 
                 afterSignOutUrl="/"
@@ -600,123 +835,130 @@ const ScribePage = () => {
                 {processingStatus}
               </div>
             </div>
-          ) : notes ? (
-            <div className='max-w-3xl w-full mx-auto bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-white/10'>
-              {/* AI Focused Highlights header */}
-              <div className="flex items-center gap-2 mb-6">
-                <Image
-                  src="/star.svg"
-                  alt="Star icon"
-                  width={24}
-                  height={24}
-                  className="opacity-80"
-                />
-                <h2 className="text-xl font-semibold text-white/90">
-                  AI Focused Highlights
-                </h2>
-              </div>
-
-              <div className="flex flex-col gap-4 mt-6">
-                <div className="relative flex items-center gap-2 mb-4">
-                  {isEditingTitle ? (
-                    <input
-                      type="text"
-                      value={title}
-                      onChange={handleTitleChange}
-                      onBlur={handleTitleBlur}
-                      onKeyDown={handleTitleKeyDown}
-                      placeholder="Enter title..."
-                      className="bg-transparent border-b border-purple-500/30 focus:border-purple-500 outline-none px-2 py-1 text-white placeholder:text-gray-400 transition-all duration-300 w-full max-w-[300px]"
-                      autoFocus
-                    />
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-white text-lg font-medium">
-                        {savedTitle || "Untitled Note"}
-                      </h3>
-                      <button
-                        onClick={() => {
-                          setIsEditingTitle(true);
-                          setIsTitleSaved(false);
-                        }}
-                        className="text-purple-400 hover:text-purple-300 transition-colors"
-                      >
-                        ✎
-                      </button>
-                    </div>
-                  )}
-                  {isTitleSaved && (
-                    <span className="ml-2 text-green-400 text-sm animate-fade-in">
-                      ✓
-                    </span>
-                  )}
-                </div>
-                
-                <div className="flex items-center gap-2 self-end">
-                  <Button
-                    onClick={handleSaveNotes}
-                    disabled={isSaving || !notes || isNoteSaved}
-                    className={`bg-gradient-to-r from-purple-500 to-blue-500 
-                                hover:from-purple-600 hover:to-blue-600 
-                                transition-all duration-300 px-6 py-2 rounded-lg 
-                                flex items-center gap-2
-                                ${(isNoteSaved || !notes) ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    {isSaving ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        Saving...
-                      </>
+          ) : (currentNoteId || notes) ? (
+            <div className='max-w-[109rem] w-full mx-auto h-full bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-white/10 flex flex-col'>
+              <div className="flex flex-col gap-4 mb-6 flex-shrink-0">
+                {/* Title section - with actions aligned */}
+                <div className="flex items-center justify-between">
+                  {/* Title and edit button */}
+                  <div className="flex items-center justify-center gap-2">
+                    {isEditingTitle ? (
+                      <input
+                        type="text"
+                        value={title}
+                        onChange={handleTitleChange}
+                        onBlur={handleTitleBlur}
+                        onKeyDown={handleTitleKeyDown}
+                        placeholder="Enter title..."
+                        className="bg-transparent border-b border-purple-500/30 focus:border-purple-500 outline-none px-2 py-1 text-white placeholder:text-gray-400 transition-all duration-300 w-full max-w-[400px] text-2xl text-center items-center"
+                        autoFocus
+                      />
                     ) : (
-                      <>
-                        <Save className="w-4 h-4" />
-                        {isNoteSaved ? 'Saved' : 'Save Notes'}
-                      </>
+                      <div className="flex items-center justify-center gap-2">
+                        <h3 className="text-white text-2xl font-medium text-center items-center cursor-pointer "
+                          onClick={() => {
+                            setIsEditingTitle(true);
+                            setIsTitleSaved(false);
+                          }}
+                        >
+                          {savedTitle || "Untitled Note"}
+                        </h3>
+                        <button
+                          onClick={() => {
+                            setIsEditingTitle(true);
+                            setIsTitleSaved(false);
+                          }}
+                          className="text-purple-400 hover:text-purple-300 transition-colors"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
-                  </Button>
+                  </div>
 
-                  {isNoteSaved && currentNoteId && (
-                    <Button
-                      onClick={handleDeleteNote}
-                      className="bg-red-500/20 hover:bg-red-500/30 text-red-500 
-                                transition-all duration-300 px-6 py-2 rounded-lg 
-                                flex items-center gap-2"
-                    >
-                      <X className="w-4 h-4" />
-                      Delete
-                    </Button>
-                  )}
+                  {/* Right side actions */}
+                  <div className="flex items-center gap-4">
+                    {/* Auto-save status indicator */}
+                    <div className="text-sm">
+                      {autoSaveStatus === 'saving' && (
+                        <div className="flex items-center gap-1 text-yellow-500">
+                          <CircleDashed className="w-3 h-3 animate-spin" />
+                          Saving...
+                        </div>
+                      )}
+                      {autoSaveStatus === 'saved' && (
+                        <div className="flex items-center gap-1 text-green-500">
+                          <div className="w-2 h-2 rounded-full bg-green-500" />
+                          Saved
+                        </div>
+                      )}
+                      {autoSaveStatus === 'error' && (
+                        <div className="flex items-center gap-1 text-red-500">
+                          <X className="w-3 h-3" />
+                          Error saving
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Enhance button */}
+                    {notes && !isProcessing && (
+                      <Button
+                        onClick={enhanceNotes}
+                        className="group relative bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600 transition-all duration-300 ease-in-out rounded-xl px-4 py-2 text-sm font-medium shadow-lg hover:shadow-[0_0_2rem_-0.5rem_rgba(167,139,250,0.8)]"
+                      >
+                        <span className="relative z-10 flex items-center gap-2">
+                          <Wand2 className="w-4 h-4" />
+                          Enhance with AI
+                        </span>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
-              
-              
-              <div className="prose prose-invert max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {notes}
-                </ReactMarkdown>
+
+              <div className="prose prose-invert max-w-none flex-1 overflow-hidden">
+                <RichTextEditor
+                  content={notes}
+                  onChange={handleNotesChange}
+                  noteId={currentNoteId}
+                />
               </div>
             </div>
           ) : (
+            // Welcome screen
             <div className="max-w-3xl w-full mx-auto mt-48 flex flex-col items-center gap-8">
-              <div className="relative w-32 h-32">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full hover:opacity-50 animate-pulse"></div>
-                <Image
-                  onClick={() => {
-                    if (isRecording) {
-                      stopRecording();
-                    } else {
-                      startRecording();
-                      resetNote();
-                    }
-                  }}
-                  src={isRecording ? "/circle-dashed.svg" : "/microphone.svg"}
-                  alt={isRecording ? "Recording" : "Microphone"}
-                  width={256}
-                  height={256}
-                  className="relative z-10 p-6 cursor-pointer transition-all duration-300 hover:scale-110"
-                />
+              <div className="flex gap-8">
+                {/* Voice Recording Button */}
+                <div className="relative w-32 h-32">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full hover:opacity-50 animate-pulse"></div>
+                  <Image
+                    onClick={() => {
+                      if (isRecording) {
+                        stopRecording();
+                      } else {
+                        startRecording();
+                        resetNote();
+                      }
+                    }}
+                    src={isRecording ? "/circle-dashed.svg" : "/microphone.svg"}
+                    alt={isRecording ? "Recording" : "Microphone"}
+                    width={256}
+                    height={256}
+                    className="relative z-10 p-6 cursor-pointer transition-all duration-300 hover:scale-110"
+                  />
+                </div>
+
+                {/* Manual Notes Button */}
+                <div className="relative w-32 h-32">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full hover:opacity-50"></div>
+                  <div
+                    onClick={startNewNote}
+                    className="relative z-10 w-full h-full p-6 cursor-pointer transition-all duration-300 hover:scale-110 flex items-center justify-center"
+                  >
+                    <FeatherIcon className="w-16 h-16 text-white" />
+                  </div>
+                </div>
               </div>
-              
               
               <div className="text-center">
                 <div className="text-md font-bold text-gray-400 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
@@ -726,11 +968,21 @@ const ScribePage = () => {
                   Scribe
                 </span>
                 <p className="text-sm sm:text-xl text-gray-400 sm:pb-0 pt-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                  Transform your voice into organized notes instantly
+                  <TypeAnimation 
+                    sequence={[
+                          'Record Lectures and Transform Them into Notes with AI Assistance',
+                          2000,
+                          'Enhance Your Notes with AI for Better Understanding and Clarity',
+                          2000,
+                          'Efficiently Organize Your Notes with AI-Powered Enhancements',
+                          2000,
+                        ]}
+                        wrapper="span"
+                        speed={75}
+                        repeat={Infinity}
+                    />
                 </p>
               </div>
-
-              
             </div>
           )}
         </div>
@@ -782,7 +1034,14 @@ const ScribePage = () => {
         currentNoteId={currentNoteId}
         onDeleteNote={handleDeleteNote}
       />
+      {/* Move footer outside the main content area but inside the container */}
+      <footer className="fixed bottom-0 left-0 right-0">
+        <div className="flex items-center text-xs md:text-sm opacity-50 font-semibold text-muted-foreground justify-center py-2">
+          <p>Contact us at <a className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
+        </div>
+      </footer>
     </div>
+    
   )
 }
 export default ScribePage

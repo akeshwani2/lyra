@@ -1,6 +1,6 @@
 import React from 'react'
 
-const AIResumePage = () => {
+const AiResumeBuilderPage = () => {
   return (
     <div className="relative min-h-screen w-full">
       {/* Original content (blurred) */}
@@ -30,9 +30,9 @@ const AIResumePage = () => {
       />
       
       {/* Centered text */}
-      <div className='absolute inset-0 flex items-center '>
+      <div className='absolute inset-0 flex items-center'>
         <div className='px-8 py-4 rounded-lg'>
-          <p className='text-2xl font-bold text-orange-400'>AI Resume will be coming soon!</p>
+          <p className='text-2xl font-bold text-orange-400'>AI Resume Builder will be coming soon!</p>
           <p className='text-sm text-gray-500'>This feature is currently under development.</p>
 
         </div>
@@ -41,4 +41,4 @@ const AIResumePage = () => {
   )
 }
 
-export default AIResumePage
+export default AiResumeBuilderPage

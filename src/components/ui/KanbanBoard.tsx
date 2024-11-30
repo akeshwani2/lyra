@@ -912,7 +912,7 @@ function KanbanBoard() {
                 )}
             </div>
             <div className="flex items-center text-xs md:text-sm opacity-50 font-semibold text-muted-foreground justify-center py-4">
-                <p>Contact us at <a href="mailto:lyraafy@gmail.com" className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
+                <p>Contact us at <a className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
             </div>
         </div>
     );

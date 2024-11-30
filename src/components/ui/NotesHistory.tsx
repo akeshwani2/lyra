@@ -99,8 +99,8 @@ const NotesHistory = forwardRef(({
         className="fixed right-0 top-1/2 -translate-y-1/2 bg-white/5 hover:bg-white/10 
                    backdrop-blur-md p-2 rounded-l-lg z-50"
       >
-        <div className="rotate-180 bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text hover:text-amber-500 transition-all duration-300 ease-in-out" style={{ writingMode: 'vertical-rl' }}>
-          Notes
+        <div className="rotate-180 text-white bg-clip-text hover:text-gray-500 transition-all duration-300 ease-in-out" style={{ writingMode: 'vertical-rl' }}>
+          History
         </div>
       </button>
 

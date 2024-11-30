@@ -157,3 +157,168 @@
 .custom-scrollbar.overflow-right::after {
   opacity: 1;
 }
+
+/* Add these styles to your CSS */
+.prose {
+  @apply text-white;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply text-white font-bold mb-4;
+}
+
+.prose ul {
+  @apply list-disc pl-6 mb-4;
+}
+
+.prose li {
+  @apply mb-2;
+}
+
+.prose p {
+  @apply mb-1;
+  line-height: 1.4;
+}
+
+.prose strong {
+  @apply text-purple-300;
+}
+
+.ProseMirror {
+  min-height: 100px;
+  padding: 1rem;
+}
+
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Maintain formatting for user-typed content */
+.ProseMirror p {
+  margin-bottom: 0.25em;
+  line-height: 1.4;
+}
+
+.ProseMirror p + p {
+  margin-top: 0.25em;
+}
+
+.ProseMirror ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.ProseMirror li {
+  margin-left: 1em;
+}
+
+/* Preserve spacing between sections */
+.ProseMirror h2 + * {
+  margin-top: 0.25em;
+}
+
+/* Add these styles */
+.prose h2 {
+  margin-top: 3em !important;
+  margin-bottom: 0.75em !important;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #a855f7;
+}
+
+.prose ul {
+  list-style-type: none;
+  padding-left: 1.5em;
+}
+
+.prose li {
+  position: relative;
+  padding-left: 1em;
+}
+
+.prose li::before {
+  content: "•";
+  position: absolute;
+  left: -0.5em;
+  color: #a855f7;
+}
+
+.prose li li {
+  margin-left: 1.5em;
+}
+
+@layer utilities {
+  .scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 100vh;
+    background: transparent;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 100vh;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 92, 246, 0.4);
+  }
+
+  /* Hide scrollbar by default */
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  /* Show scrollbar on hover */
+  .scrollbar:hover {
+    scrollbar-color: rgba(139, 92, 246, 0.4) transparent;
+  }
+}
+
+/* Adjust header spacing */
+.prose h2 {
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #a855f7;
+}
+
+/* Also update ProseMirror header spacing */
+.ProseMirror h2 {
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+/* Keep our nice paragraph spacing */
+.ProseMirror p {
+  margin-bottom: 0.25em;
+  line-height: 1.4;
+}
+
+/* Force larger spacing above headers */
+.prose h2, .ProseMirror h2 {
+  margin-top: 3em !important;    /* Much larger top margin */
+  margin-bottom: 0.75em !important;
+  font-size: 1.5em;
+  font-weight: 600;
+  color: #a855f7;
+}
+
+/* Ensure first header doesn't have huge top margin */
+.prose h2:first-child, .ProseMirror h2:first-child {
+  margin-top: 1em !important;
+}

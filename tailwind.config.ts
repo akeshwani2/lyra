@@ -73,6 +73,26 @@ export default {
   				css: {
   					maxWidth: '100%',
   					color: 'rgb(255 255 255 / 0.8)',
+  					lineHeight: '1.3',
+  					p: {
+  						marginBottom: '0.3em',
+  						lineHeight: '1',
+  					},
+  					h1: {
+  						color: 'transparent',
+  						backgroundImage: 'linear-gradient(to right, rgb(168 85 247), rgb(236 72 153))',
+  						backgroundClip: 'text',
+  					},
+  					h2: {
+  						color: 'transparent',
+  						backgroundImage: 'linear-gradient(to right, rgb(96 165 250), rgb(79 70 229))',
+  						backgroundClip: 'text',
+  					},
+  					h3: {
+  						color: 'transparent',
+  						backgroundImage: 'linear-gradient(to right, rgb(45 212 191), rgb(34 211 238))',
+  						backgroundClip: 'text',
+  					},
   					'[class~="lead"]': {
   						color: 'rgb(255 255 255 / 0.7)',
   					},
@@ -97,18 +117,6 @@ export default {
   					blockquote: {
   						borderLeftColor: 'rgb(255 255 255 / 0.2)',
   						color: 'rgb(255 255 255 / 0.7)',
-  					},
-  					h1: {
-  						color: 'rgb(255 255 255 / 0.9)',
-  					},
-  					h2: {
-  						color: 'rgb(255 255 255 / 0.9)',
-  					},
-  					h3: {
-  						color: 'rgb(255 255 255 / 0.9)',
-  					},
-  					h4: {
-  						color: 'rgb(255 255 255 / 0.9)',
   					},
   					code: {
   						color: 'rgb(255 255 255 / 0.8)',
