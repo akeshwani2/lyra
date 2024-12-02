@@ -35,14 +35,16 @@ const Header = () => {
           <div>
             <div className="border h-10 w-10 rounded-lg inline-flex items-center justify-center border-white/15">
               <LogoIcon className="w-8 h-8" />
+              
             </div>
+            
           </div>
           <div className="hidden md:block">
             <nav className="flex text-white/70 gap-8 text-sm">
               <a href="/" className="hover:text-white transition">
                 Features
               </a>
-              <a href="/" className="hover:text-white transition">
+              <a href="https://ak-port.vercel.app" target="_blank" className="hover:text-white transition">
                 Developer
               </a>
               <a href="/" className="hover:text-white transition">

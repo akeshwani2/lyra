@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import starsBg from "@/assets/stars.png";
 import { motion, useScroll, useMotionValueEvent, useTransform } from "framer-motion";
+import { Dot } from "lucide-react";
 
 const Hero = () => {
   const sectionRef = useRef(null);
@@ -120,7 +121,7 @@ const Hero = () => {
           Streamline your workflow effortlessly with AI-powered tools that
           enhance productivity, optimize learning, and simplify your tasks
         </p>
-        <div className="flex justify-center mt-5">
+        <div className="flex flex-col items-center justify-center mt-6">
           <button
             className="relative py-2 px-3 rounded-lg font-medium text-sm bg-gradient-to-b from-[#190d2e] to-[#4a208a] shadow-[0px_0px_12px_#8c45ff] transition-all duration-300 hover:scale-105 hover:shadow-[0px_0px_16px_#8c45ff]"
             onClick={() =>
@@ -145,7 +146,15 @@ const Hero = () => {
                 <>Explore Lyra</>
               )}
             </span>
+
           </button>
+          <div className="text-white/70 flex mt-6 px-4 py-2 border border-white/15 rounded-full justify-center items-center gap-1 text-sm font-medium">
+            <div className="relative w-6 flex items-center justify-center">
+              <Dot className="absolute w-8 h-8 font-bold text-green-500 scale-125" />
+            </div>
+            Secured $5K in seed funding
+          </div>
+
         </div>
       </div>
     </motion.section>

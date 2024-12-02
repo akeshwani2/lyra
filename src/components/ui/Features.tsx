@@ -14,8 +14,8 @@ const tabs = [
     backgroundSizeX: 150,
   },
   {
-    icon: "assets/lottie/click.lottie",
-    title: "One-click optimization",
+    icon: "/assets/lottie/click.lottie",
+    title: "Instant AI-powered explanations",
     isNew: false,
     backgroundPositionX: 98,
     backgroundPositionY: 100,
@@ -23,7 +23,7 @@ const tabs = [
   },
   {
     icon: "/assets/lottie/stars.lottie",
-    title: "Smart keyword generator",
+    title: "Audio note-taking assistant",
     isNew: true,
     backgroundPositionX: 100,
     backgroundPositionY: 27,
@@ -67,10 +67,10 @@ export const Features = () => {
     <section className="py-20 md:py-24">
       <div className="container">
         <h2 className="text-5xl md:text-6xl font-medium text-center tracking-tighter">
-          Transform the Way You Learn and Organize
+          Transform the Way You Learn and Organize.
         </h2>
         <p className="text-white/70 text-lg md:text-xl max-w-2xl mx-auto tracking-tight text-center mt-5">
-        From students to professionals, our AI-powered platform is redefining how people organize, learn, and achieve their goals.
+        From students to professionals, our AI-powered platform is redefining how people organize, learn, and achieve their goals
         </p>
         <div className="mt-10 lg:flex-row flex flex-col gap-3">
           {tabs.map((tab) => (
