@@ -90,7 +90,7 @@ export function AppSidebar() {
                   alt=""
                   width={65}
                   height={60}
-                  className="w-full h-full bg-gray-900 text-center rounded-lg hover:bg-gray-950 transition-colors duration-200"
+                  className="w-full h-full bg-gray-900  text-center text-white rounded-lg hover:bg-gray-950 transition-colors duration-200"
                   priority
                 />
               </div>

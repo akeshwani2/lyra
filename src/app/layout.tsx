@@ -3,6 +3,8 @@ import localFont from "next/font/local"
 import { ClerkProvider } from '@clerk/nextjs'
 import { dark } from '@clerk/themes'
 import "./globals.css"
+import { Inter } from 'next/font/google'
+import logo from "@/assets/logo.svg"
 // import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 // import { AppSidebar } from "@/components/ui/app-sidebar"
 
@@ -17,13 +19,17 @@ const geistMono = localFont({
   weight: "100 900",
 })
 
+const inter = Inter({
+  subsets: ['latin'],
+})
+
 export const metadata = {
   title: 'Lyra',
   description: 'AI-powered productivity tools',
   icons: {
     icon: [
       { url: '/favicon.ico' },
-      { url: '/logo.svg', type: 'image/svg+xml' },
+      { url: '/logo-copy.svg', type: 'image/svg+xml' },
     ],
     apple: [
       { url: '/apple-icon.png' },
@@ -58,7 +64,7 @@ export default function RootLayout({
       }}
       dynamic={true}
     >
-      <html lang="en" className="h-full overflow-hidden">
+      <html lang="en" className="h-full">
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
           {children}
         </body>

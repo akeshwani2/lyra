@@ -1036,11 +1036,6 @@ const ScribePage = () => {
         onDeleteNote={handleDeleteNote}
       />
       {/* Move footer outside the main content area but inside the container */}
-      <footer className="fixed bottom-0 left-0 right-0">
-        <div className="flex items-center text-xs md:text-sm opacity-50 font-semibold text-muted-foreground justify-center py-2">
-          <p>Contact us at <a className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
-        </div>
-      </footer>
     </div>
     
   )
