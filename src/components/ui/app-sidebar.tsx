@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut, FileAudio, Feather, Notebook, NotebookText, NotebookPen, FilePen } from "lucide-react"
+import { Calendar, CalendarClock, FileText, ListTodo, Brain, LogOut, FileAudio, Feather, FilePen } from "lucide-react"
 import { useClerk } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
