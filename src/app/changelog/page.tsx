@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,10 @@ import noteImage from "@/assets/notemate.png";
 import Footer from "@/components/ui/Footer";
 import Logo from "@/assets/logo.svg";
 import userImage from "@/assets/users.png";
+import dashImage from "@/assets/ui.png"
+import productImage from "../../../public/assets/product-image.png";
+
+
 export default function ChangelogPage() {
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
@@ -23,6 +27,25 @@ export default function ChangelogPage() {
     [0, 1],
     [-300, 300]
   );
+
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const ImageModal = () => {
+    if (!selectedImage) return null;
+    
+    return (
+      <div 
+        className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 cursor-pointer"
+        onClick={() => setSelectedImage(null)}
+      >
+        <img 
+          src={selectedImage} 
+          alt="Enlarged view" 
+          className="max-w-[90vw] max-h-[90vh] object-contain"
+        />
+      </div>
+    );
+  };
 
   return (
     <motion.div
@@ -47,6 +70,8 @@ export default function ChangelogPage() {
     >
       <Header />
 
+      <ImageModal />
+
       {/* Main Content */}
       <main className="container mx-auto px-8 py-24">
         <div className="mx-auto space-y-40">
@@ -60,10 +85,42 @@ export default function ChangelogPage() {
 
           {/* Changelog Entries */}
           <div className="space-y-40">
-            <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+          <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
               <div className="space-y-6">
                 <time className="block text-base text-white/50">
                   December 3, 2024
+                </time>
+                <h2 className="text-3xl font-medium">
+                   Updated UI for the tasks page
+                </h2>
+                <p className="text-white/70 leading-relaxed">
+                  I updated the UI for the tasks page to make it more modern and user-friendly.
+                  The old UI was starting to look a bit outdated and I wanted to give it a fresh look.
+                </p>
+              </div>
+              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0 cursor-pointer hover:border-white/40 transition-colors"
+                   onClick={() => setSelectedImage(dashImage.src)}>
+                <img src={dashImage.src} alt="dashImage" />
+              </div>
+              <div className="space-y-6">
+                <h2 className="text-3xl font-medium">
+                   New UI for Scribe
+                </h2>
+                <p className="text-white/70 leading-relaxed">
+                  I changed the UI for Scribe to make it more minimalistic and user-friendly. I realized that the old UI was a bit too bright/distracting and made it harder to read.
+                </p>
+              </div>
+              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0 cursor-pointer hover:border-white/40 transition-colors"
+                   onClick={() => setSelectedImage(productImage.src)}>
+                <img src={productImage.src} alt="productImage" />
+              </div>
+            </article>
+            <hr className="border-t border-white/20 my-12" />
+
+            <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+              <div className="space-y-6">
+                <time className="block text-base text-white/50">
+                  December 2, 2024
                 </time>
                 <h2 className="text-3xl font-medium">
                   Redesigned landing page
@@ -76,7 +133,8 @@ export default function ChangelogPage() {
                   to make it more modern and user-friendly.
                 </p>
               </div>
-              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0">
+              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0 cursor-pointer hover:border-white/40 transition-colors"
+                   onClick={() => setSelectedImage(bgImage.src)}>
                 <img src={bgImage.src} alt="bgImage" />
               </div>
             </article>
@@ -85,7 +143,7 @@ export default function ChangelogPage() {
             <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
               <div className="space-y-6">
                 <time className="block text-base text-white/50">
-                  December 2, 2024
+                  December 1, 2024
                 </time>
                 <h2 className="text-3xl font-medium">
                   A Heartfelt Thank You to the Users
@@ -99,7 +157,8 @@ export default function ChangelogPage() {
                   and create a better platform for everyone.
                 </p>
               </div>
-              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0">
+              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0 cursor-pointer hover:border-white/40 transition-colors"
+                   onClick={() => setSelectedImage(userImage.src)}>
                 <img src={userImage.src} alt="userImage" />
               </div>
             </article>
@@ -121,7 +180,8 @@ export default function ChangelogPage() {
                   clicking a button.
                 </p>
               </div>
-              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0">
+              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0 cursor-pointer hover:border-white/40 transition-colors"
+                   onClick={() => setSelectedImage(noteImage.src)}>
                 <img src={noteImage.src} alt="noteImage" />
               </div>
             </article>
@@ -144,7 +204,8 @@ export default function ChangelogPage() {
                   and when they don't have time to take notes during class.
                 </p>
               </div>
-              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0">
+              <div className="border border-white/20 p-4 rounded-xl mt-3 lg:mt-0 cursor-pointer hover:border-white/40 transition-colors"
+                   onClick={() => setSelectedImage(scribeImage.src)}>
                 <img src={scribeImage.src} alt="scribeImage" />
               </div>
             </article>

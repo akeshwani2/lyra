@@ -1,46 +1,61 @@
-'use client'
-import { Button } from '@/components/ui/button';
-import React, { useState, useRef, useEffect, useCallback } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import Image from 'next/image'
-import { UserButton } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
-import { useUser } from '@clerk/nextjs';
-import { toast } from 'react-hot-toast';
-import { Save, Plus, Pause, Play, Square, X, CircleDashed, FeatherIcon, Wand2, Pencil } from 'lucide-react';
-import NotesHistory from '@/components/ui/NotesHistory';
-import { Note } from '@/types';
-import RichTextEditor from '@/components/ui/RichTextEditor';
-import debounce from 'lodash/debounce';
-import { TypeAnimation } from 'react-type-animation';
+"use client";
+import { Button } from "@/components/ui/button";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import Image from "next/image";
+import { UserButton } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "react-hot-toast";
+import {
+  Save,
+  Plus,
+  Pause,
+  Play,
+  Square,
+  X,
+  CircleDashed,
+  FeatherIcon,
+  Wand2,
+  Pencil,
+} from "lucide-react";
+import NotesHistory from "@/components/ui/NotesHistory";
+import { Note } from "@/types";
+import RichTextEditor from "@/components/ui/RichTextEditor";
+import debounce from "lodash/debounce";
+import { TypeAnimation } from "react-type-animation";
 
 const ScribePage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const [notes, setNotes] = useState<string>('');
+  const [notes, setNotes] = useState<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processingStatus, setProcessingStatus] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
+  const [processingStatus, setProcessingStatus] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
   const { user } = useUser();
   const [audioData, setAudioData] = useState<number[]>(new Array(50).fill(0));
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animationFrameRef = useRef<number>();
   const [isSaving, setIsSaving] = useState(false);
-  const [title, setTitle] = useState('');
+  const [title, setTitle] = useState("");
   const [isTitleSaved, setIsTitleSaved] = useState(false);
-  const [savedTitle, setSavedTitle] = useState('');
+  const [savedTitle, setSavedTitle] = useState("");
   const [isNoteSaved, setIsNoteSaved] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [isNewNote, setIsNewNote] = useState(true);
   const [currentNoteId, setCurrentNoteId] = useState<string>();
-  const notesHistoryRef = useRef<{ loadNotes: () => Promise<void> } | null>(null);
+  const notesHistoryRef = useRef<{ loadNotes: () => Promise<void> } | null>(
+    null
+  );
   const [isCancelled, setIsCancelled] = useState(false);
-  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'error' | ''>('');
+  const [autoSaveStatus, setAutoSaveStatus] = useState<
+    "saved" | "saving" | "error" | ""
+  >("");
 
   // Disable the exhaustive-deps warning for this specific hook
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -49,16 +64,20 @@ const ScribePage = () => {
       if (!content) return;
 
       try {
-        setAutoSaveStatus('saving');
-        
+        setAutoSaveStatus("saving");
+
         // Determine if this is a new note from AI transcription
         const isNewAINote = !noteId && !noteTitle;
-        const title = noteTitle || (isNewAINote ? `Notes ${new Date().toLocaleString()}` : 'Untitled Note');
-        
-        const response = await fetch('/api/notes/update', {
-          method: 'POST',
+        const title =
+          noteTitle ||
+          (isNewAINote
+            ? `Notes ${new Date().toLocaleString()}`
+            : "Untitled Note");
+
+        const response = await fetch("/api/notes/update", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
             id: noteId,
@@ -69,7 +88,7 @@ const ScribePage = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to save notes');
+          throw new Error(errorData.error || "Failed to save notes");
         }
 
         const data = await response.json();
@@ -83,17 +102,17 @@ const ScribePage = () => {
         setSavedTitle(title);
         setIsNoteSaved(true);
         setIsTitleSaved(true);
-        setAutoSaveStatus('saved');
+        setAutoSaveStatus("saved");
         setIsNewNote(false);
-        
+
         // Refresh notes list
         if (notesHistoryRef.current) {
           await notesHistoryRef.current.loadNotes();
         }
       } catch (error) {
-        console.error('Auto-save error:', error);
-        setAutoSaveStatus('error');
-        toast.error('Failed to save note. Please try again.');
+        console.error("Auto-save error:", error);
+        setAutoSaveStatus("error");
+        toast.error("Failed to save note. Please try again.");
       }
     }, 1000),
     []
@@ -110,7 +129,7 @@ const ScribePage = () => {
     try {
       setIsCancelled(false);
       chunksRef.current = [];
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       const mediaRecorder = new MediaRecorder(stream);
@@ -125,7 +144,7 @@ const ScribePage = () => {
       analyser.smoothingTimeConstant = 0.5; // Lower value = more reactive (0-1)
       analyser.minDecibels = -90; // Lower value = more sensitive to quiet sounds
       analyser.maxDecibels = -10; // Upper limit of sensitivity
-      
+
       source.connect(analyser);
       analyserRef.current = analyser;
 
@@ -140,18 +159,18 @@ const ScribePage = () => {
       mediaRecorder.onstop = async () => {
         if (isCancelled) {
           if (streamRef.current) {
-            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current.getTracks().forEach((track) => track.stop());
           }
           return;
         }
 
         if (chunksRef.current.length > 0) {
-          const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+          const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
           await processAudio(audioBlob);
         }
-        
+
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current.getTracks().forEach((track) => track.stop());
         }
       };
 
@@ -160,7 +179,7 @@ const ScribePage = () => {
       setIsPaused(false);
       setIsCancelled(false);
     } catch (err) {
-      console.error('Error accessing microphone:', err);
+      console.error("Error accessing microphone:", err);
     }
   };
 
@@ -183,7 +202,7 @@ const ScribePage = () => {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setIsPaused(false);
-      
+
       // Clean up audio visualization
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -203,17 +222,17 @@ const ScribePage = () => {
 
     try {
       setIsProcessing(true);
-      setProcessingStatus('Feeding audio to AI...');
+      setProcessingStatus("Feeding audio to AI...");
 
       const formData = new FormData();
-      formData.append('file', audioBlob, 'recording.webm');
-      formData.append('model', 'whisper-1');
+      formData.append("file", audioBlob, "recording.webm");
+      formData.append("model", "whisper-1");
 
-      const transcriptionResponse = await fetch('/api/transcribe', {
-        method: 'POST',
+      const transcriptionResponse = await fetch("/api/transcribe", {
+        method: "POST",
         body: formData,
       });
-      
+
       // Add check for cancelled state before continuing
       if (isCancelled) {
         return;
@@ -221,27 +240,27 @@ const ScribePage = () => {
 
       if (!transcriptionResponse.ok) {
         const errorText = await transcriptionResponse.text();
-        throw new Error(errorText || 'Transcription failed');
+        throw new Error(errorText || "Transcription failed");
       }
 
       const transcriptionData = await transcriptionResponse.json();
-      
+
       // Another cancelled check
       if (isCancelled) {
         return;
       }
 
       const { text: rawTranscript } = transcriptionData;
-      setProcessingStatus('Generating notes...');
-      
-      const notesResponse = await fetch('/api/process-notes', {
-        method: 'POST',
+      setProcessingStatus("Generating notes...");
+
+      const notesResponse = await fetch("/api/process-notes", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ text: rawTranscript }),
       });
-      
+
       // Final cancelled check
       if (isCancelled) {
         return;
@@ -249,34 +268,37 @@ const ScribePage = () => {
 
       const notesData = await notesResponse.json();
       if (!notesResponse.ok) {
-        throw new Error(notesData.error || 'Notes processing failed');
+        throw new Error(notesData.error || "Notes processing failed");
       }
 
       // Format the notes with proper spacing, structure, and indentation
       const formattedNotes = notesData.notes
         // Format section headers
-        .replace(/^(Topic|Key Points|Important Takeaways|Examples|Definitions):/gm, '\n$1:')
+        .replace(
+          /^(Topic|Key Points|Important Takeaways|Examples|Definitions):/gm,
+          "\n$1:"
+        )
         // Add proper spacing after section headers
-        .replace(/^(.+:)$/gm, '$1\n')
+        .replace(/^(.+:)$/gm, "$1\n")
         // Format bullet points with proper indentation
-        .replace(/^[•-]\s*/gm, '• ')
+        .replace(/^[•-]\s*/gm, "• ")
         // Indent sub-points
         .replace(/^(• .+)$/gm, (match: string) => {
           const leadingSpaces = match.match(/^\s*/)?.[0].length ?? 0;
           const indentationLevel = Math.floor(leadingSpaces / 2);
-          return '    '.repeat(indentationLevel) + match.trim();
+          return "    ".repeat(indentationLevel) + match.trim();
         })
         // Ensure proper spacing between sections
-        .replace(/\n{3,}/g, '\n\n')
+        .replace(/\n{3,}/g, "\n\n")
         // Remove any trailing/leading whitespace
         .trim();
 
       // Immediately save the transcribed note
       const newTitle = `Notes ${new Date().toLocaleString()}`;
-      const saveResponse = await fetch('/api/notes/update', {
-        method: 'POST',
+      const saveResponse = await fetch("/api/notes/update", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: newTitle,
@@ -285,11 +307,11 @@ const ScribePage = () => {
       });
 
       if (!saveResponse.ok) {
-        throw new Error('Failed to save transcribed note');
+        throw new Error("Failed to save transcribed note");
       }
 
       const savedNote = await saveResponse.json();
-      
+
       // Update all relevant state
       setNotes(formattedNotes);
       setTitle(newTitle);
@@ -298,26 +320,28 @@ const ScribePage = () => {
       setIsNoteSaved(true);
       setIsTitleSaved(true);
       setIsNewNote(false);
-      setAutoSaveStatus('saved');
+      setAutoSaveStatus("saved");
 
       // Refresh notes list
       if (notesHistoryRef.current) {
         await notesHistoryRef.current.loadNotes();
       }
 
-      toast.success('Recording processed and saved successfully!');
+      toast.success("Recording processed and saved successfully!");
     } catch (err) {
       // Only show error if not cancelled
       if (!isCancelled) {
-        console.error('Error processing audio:', err);
-        setProcessingStatus('Error: Failed to process recording');
-        toast.error(err instanceof Error ? err.message : 'Failed to process recording');
+        console.error("Error processing audio:", err);
+        setProcessingStatus("Error: Failed to process recording");
+        toast.error(
+          err instanceof Error ? err.message : "Failed to process recording"
+        );
       }
     } finally {
       // Reset processing states if not cancelled
       if (!isCancelled) {
         setIsProcessing(false);
-        setProcessingStatus('');
+        setProcessingStatus("");
       }
     }
   };
@@ -326,15 +350,15 @@ const ScribePage = () => {
     if (analyserRef.current) {
       const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
       analyserRef.current.getByteFrequencyData(dataArray); // Changed to frequency data for more movement
-      
+
       // Enhanced normalization with more dramatic scaling
       const normalizedData = Array.from(dataArray)
         .slice(0, 50)
-        .map(value => {
+        .map((value) => {
           const normalized = value / 255.0; // Normalize to 0-1
           return normalized * normalized * 1.5; // Square for more dramatic effect
         });
-      
+
       setAudioData(normalizedData);
       animationFrameRef.current = requestAnimationFrame(visualizeAudio);
     }
@@ -358,16 +382,16 @@ const ScribePage = () => {
 
   const handleSaveNotes = async () => {
     if (!notes) {
-      toast.error('No notes to save');
+      toast.error("No notes to save");
       return;
     }
 
     try {
       setIsSaving(true);
-      const response = await fetch('/api/notes/save', {
-        method: 'POST',
+      const response = await fetch("/api/notes/save", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: title || `Notes ${new Date().toLocaleString()}`,
@@ -378,22 +402,24 @@ const ScribePage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.details || data.error || 'Failed to save notes');
+        throw new Error(data.details || data.error || "Failed to save notes");
       }
 
       setSavedTitle(title || `Notes ${new Date().toLocaleString()}`);
       setIsNoteSaved(true);
       setIsTitleSaved(true);
       setCurrentNoteId(data.id);
-      
+
       if (notesHistoryRef.current) {
         await notesHistoryRef.current.loadNotes();
       }
 
-      toast.success('Notes saved successfully!');
+      toast.success("Notes saved successfully!");
     } catch (error) {
-      console.error('Error saving notes:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to save notes');
+      console.error("Error saving notes:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to save notes"
+      );
     } finally {
       setIsSaving(false);
     }
@@ -402,25 +428,27 @@ const ScribePage = () => {
   // Add this temporary test function
   const testSave = async () => {
     try {
-      const response = await fetch('/api/notes/save', {
-        method: 'POST',
+      const response = await fetch("/api/notes/save", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: 'Test Note',
-          content: 'Test content',
+          title: "Test Note",
+          content: "Test content",
         }),
       });
-      
+
       const data = await response.json();
-      console.log('Test save response:', data);
-      
+      console.log("Test save response:", data);
+
       if (!response.ok) {
-        throw new Error(data.details || data.error || 'Failed to save test note');
+        throw new Error(
+          data.details || data.error || "Failed to save test note"
+        );
       }
     } catch (error) {
-      console.error('Test save error:', error);
+      console.error("Test save error:", error);
     }
   };
 
@@ -452,10 +480,10 @@ const ScribePage = () => {
       try {
         // Only make API call if note has been saved (has an ID)
         if (currentNoteId) {
-          const response = await fetch('/api/notes/update-title', {
-            method: 'PATCH',
+          const response = await fetch("/api/notes/update-title", {
+            method: "PATCH",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               noteId: currentNoteId,
@@ -464,7 +492,7 @@ const ScribePage = () => {
           });
 
           if (!response.ok) {
-            throw new Error('Failed to update title');
+            throw new Error("Failed to update title");
           }
 
           // After successful update, refresh the notes list
@@ -476,17 +504,17 @@ const ScribePage = () => {
         setSavedTitle(title.trim());
         setIsTitleSaved(true);
         setIsEditingTitle(false);
-        
-        toast.success('Title updated', {
+
+        toast.success("Title updated", {
           duration: 2000,
           style: {
-            background: 'rgba(147, 51, 234, 0.1)',
-            border: '1px solid rgba(147, 51, 234, 0.2)',
-            color: '#fff',
+            background: "rgba(147, 51, 234, 0.1)",
+            border: "1px solid rgba(147, 51, 234, 0.2)",
+            color: "#fff",
           },
         });
       } catch (error) {
-        toast.error('Failed to update title');
+        toast.error("Failed to update title");
       }
     } else {
       // If title hasn't changed, just exit edit mode
@@ -495,19 +523,19 @@ const ScribePage = () => {
   };
 
   const handleTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.currentTarget.blur(); // This will trigger the blur event
     }
   };
 
   const resetNote = () => {
-    setNotes('');
-    setTitle('');
+    setNotes("");
+    setTitle("");
     setCurrentNoteId(undefined);
     setIsNoteSaved(false);
     setIsTitleSaved(false);
     setIsNewNote(true);
-    setSavedTitle('');
+    setSavedTitle("");
   };
 
   const handleSelectNote = (note: Note) => {
@@ -518,12 +546,12 @@ const ScribePage = () => {
     setIsNoteSaved(true);
     setIsTitleSaved(true);
     setIsNewNote(false);
-    localStorage.setItem('lastOpenedNoteId', note.id);
+    localStorage.setItem("lastOpenedNoteId", note.id);
   };
 
   const handleDeleteNote = async () => {
     if (!currentNoteId) {
-      toast.error('No note to delete');
+      toast.error("No note to delete");
       return;
     }
 
@@ -534,42 +562,44 @@ const ScribePage = () => {
       setIsSaving(true); // Prevent multiple clicks
 
       // First, get the notes list
-      const notesResponse = await fetch('/api/notes');
+      const notesResponse = await fetch("/api/notes");
       const data = await notesResponse.json();
       const allNotes = data.notes || [];
 
       // Only proceed with confirmation if we haven't already started deleting
-      if (!confirm('Are you sure you want to delete this note?')) {
+      if (!confirm("Are you sure you want to delete this note?")) {
         setIsSaving(false);
         return;
       }
 
       // Delete the current note
-      const deleteResponse = await fetch('/api/notes/delete', {
-        method: 'DELETE',
+      const deleteResponse = await fetch("/api/notes/delete", {
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ noteId: currentNoteId }),
       });
 
       if (!deleteResponse.ok) {
-        throw new Error('Failed to delete note');
+        throw new Error("Failed to delete note");
       }
 
       // If this was the last note, reset everything
       if (allNotes.length <= 1) {
         resetNote();
-        localStorage.removeItem('lastOpenedNoteId');
+        localStorage.removeItem("lastOpenedNoteId");
         if (notesHistoryRef.current) {
           await notesHistoryRef.current.loadNotes();
         }
-        toast.success('Note deleted successfully');
+        toast.success("Note deleted successfully");
         return;
       }
 
       // Find the next note to show
-      const currentIndex = allNotes.findIndex((note: Note) => note.id === currentNoteId);
+      const currentIndex = allNotes.findIndex(
+        (note: Note) => note.id === currentNoteId
+      );
       const nextNote = allNotes[currentIndex + 1] || allNotes[currentIndex - 1];
 
       if (nextNote) {
@@ -580,10 +610,10 @@ const ScribePage = () => {
         setIsNoteSaved(true);
         setIsTitleSaved(true);
         setIsNewNote(false);
-        localStorage.setItem('lastOpenedNoteId', nextNote.id);
+        localStorage.setItem("lastOpenedNoteId", nextNote.id);
       } else {
         resetNote();
-        localStorage.removeItem('lastOpenedNoteId');
+        localStorage.removeItem("lastOpenedNoteId");
       }
 
       // Update the sidebar
@@ -591,10 +621,10 @@ const ScribePage = () => {
         await notesHistoryRef.current.loadNotes();
       }
 
-      toast.success('Note deleted successfully');
+      toast.success("Note deleted successfully");
     } catch (error) {
-      console.error('Error deleting note:', error);
-      toast.error('Failed to delete note');
+      console.error("Error deleting note:", error);
+      toast.error("Failed to delete note");
     } finally {
       setIsSaving(false);
     }
@@ -604,18 +634,18 @@ const ScribePage = () => {
     // Set cancelled state first
     setIsCancelled(true);
     setIsProcessing(false); // Immediately clear processing state
-    setProcessingStatus(''); // Clear any status message
-    
+    setProcessingStatus(""); // Clear any status message
+
     // Clear the chunks array
     chunksRef.current = [];
-    
+
     // Stop the media recorder
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
       setIsPaused(false);
     }
-    
+
     // Clean up audio visualization
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
@@ -624,12 +654,12 @@ const ScribePage = () => {
       audioContextRef.current.close();
     }
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
-    
+
     // Reset audio data
     setAudioData(new Array(50).fill(0));
-    
+
     // Reset notes
     resetNote();
   };
@@ -638,52 +668,52 @@ const ScribePage = () => {
     try {
       // First reset all states
       resetNote();
-      
+
       // Generate new title with timestamp
       const newTitle = `Notes ${new Date().toLocaleString()}`;
-      
+
       // Create a new note in the database
-      const response = await fetch('/api/notes', {
-        method: 'POST',
+      const response = await fetch("/api/notes", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: newTitle,
-          content: ''
+          content: "",
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create new note');
+        throw new Error("Failed to create new note");
       }
 
       const newNote = await response.json();
 
       // Update local state with the new note
-      setNotes('');
+      setNotes("");
       setTitle(newTitle);
       setSavedTitle(newTitle);
       setCurrentNoteId(newNote.id);
       setIsNoteSaved(true);
       setIsTitleSaved(true);
       setIsNewNote(false);
-      
+
       // Refresh notes list
       if (notesHistoryRef.current) {
         await notesHistoryRef.current.loadNotes();
       }
 
-      toast.success('New note created');
+      toast.success("New note created");
     } catch (error) {
-      console.error('Error creating new note:', error);
-      toast.error('Failed to create new note');
+      console.error("Error creating new note:", error);
+      toast.error("Failed to create new note");
     }
   };
 
   const handleNotesChange = (newContent: string) => {
     if (!currentNoteId) return; // Don't update if no note is selected
-    
+
     setNotes(newContent);
     setIsNoteSaved(false);
     debouncedSave(newContent, currentNoteId, title);
@@ -696,37 +726,37 @@ const ScribePage = () => {
 
     // If no text is selected, check if there's any note content
     if (!selectedText && !notes.trim()) {
-      toast.error('Please add some notes first');
+      toast.error("Please add some notes first");
       return;
     }
 
     try {
       setIsProcessing(true);
-      setProcessingStatus('Enhancing notes with AI...');
+      setProcessingStatus("Enhancing notes with AI...");
 
-      const response = await fetch('/api/enhance-notes', {
-        method: 'POST',
+      const response = await fetch("/api/enhance-notes", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           content: selectedText || notes,
-          isPartialContent: !!selectedText 
+          isPartialContent: !!selectedText,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to enhance notes');
+        throw new Error("Failed to enhance notes");
       }
 
       const { enhancedNotes } = await response.json();
-      
+
       // If we enhanced selected text, replace just that portion
       if (selectedText && selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         range.deleteContents();
         range.insertNode(document.createTextNode(enhancedNotes));
-        
+
         // Trigger save with the updated content
         const updatedContent = notes.replace(selectedText, enhancedNotes);
         setNotes(updatedContent);
@@ -736,14 +766,14 @@ const ScribePage = () => {
         setNotes(enhancedNotes);
         debouncedSave(enhancedNotes, currentNoteId, title);
       }
-      
-      toast.success('Notes enhanced successfully!');
+
+      toast.success("Notes enhanced successfully!");
     } catch (error) {
-      console.error('Error enhancing notes:', error);
-      toast.error('Failed to enhance notes');
+      console.error("Error enhancing notes:", error);
+      toast.error("Failed to enhance notes");
     } finally {
       setIsProcessing(false);
-      setProcessingStatus('');
+      setProcessingStatus("");
     }
   };
 
@@ -753,22 +783,25 @@ const ScribePage = () => {
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
       </div>
-      
+
       {/* Main content - add flex-col and min-h-screen */}
-      <div className='absolute inset-0 flex flex-col min-h-screen'>
-        {/* Header bar - add shrink-0 to prevent shrinking */}
-        <div className="flex justify-between items-center w-full px-8 pr-16 py-8 shrink-0">
+      <div className="absolute inset-0 flex flex-col min-h-screen">
+        {/* Header bar - adjust the right padding and user button container */}
+        <div className="flex justify-between items-center w-full px-8 py-8">
           <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text pl-2">
             {savedTitle || "Scribe"}
           </h1>
-          
+
           <div className="flex items-center gap-8">
             {notes && (
               <div className="relative flex gap-2">
                 {!isRecording ? (
                   <>
                     <Button
-                      onClick={() => {startRecording(); resetNote()}}
+                      onClick={() => {
+                        startRecording();
+                        resetNote();
+                      }}
                       className="group relative bg-gradient-to-r from-purple-500 to-blue-500 hover:from-violet-600 hover:to-cyan-500 transition-all duration-300 ease-in-out rounded-xl px-6 py-2 text-base font-medium shadow-lg hover:shadow-[0_0_2rem_-0.5rem_rgba(139,92,246,0.8)]"
                     >
                       <span className="relative z-10 flex items-center gap-2">
@@ -809,18 +842,20 @@ const ScribePage = () => {
               </div>
             )}
 
-            <div className="flex items-center gap-3">
-              <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text md:text-xl font-bold">
-                {user?.username || user?.firstName || ''}
+            {/* Update user button container positioning */}
+            <div className="flex items-center gap-2 border border-white/15 rounded-xl px-2 md:right-8 flex items-center gap-2 z-10 tracking-tight">
+              <span className="bg-gradient-to-t from-zinc-600 tracking-tight via-zinc-300 to-white text-transparent bg-clip-text text-lg md:text-xl font-bold">
+                {user?.username || user?.firstName || ""}
               </span>
-              <UserButton 
+              <UserButton
                 afterSignOutUrl="/"
                 appearance={{
                   baseTheme: dark,
                   elements: {
-                    avatarBox: "w-10 h-10",
-                    userButtonTrigger: "rounded-full"
-                  }
+                    avatarBox: "w-8 h-8 md:w-10 md:h-10",
+                    userButtonTrigger: "p-1 md:p-2",
+                    userButtonPopoverCard: "min-w-[240px]",
+                  },
                 }}
               />
             </div>
@@ -830,14 +865,14 @@ const ScribePage = () => {
         {/* Notes display - add loader */}
         <div className="flex-1 overflow-y-auto px-4 pb-8">
           {isProcessing ? (
-            <div className='max-w-3xl w-full mx-auto mt-12 flex flex-col items-center gap-4'>
+            <div className="max-w-3xl w-full mx-auto mt-12 flex flex-col items-center gap-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
               <div className="text-white/80 text-lg font-medium animate-pulse">
                 {processingStatus}
               </div>
             </div>
-          ) : (currentNoteId || notes) ? (
-            <div className='max-w-[109rem] w-full mx-auto h-full bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-white/10 flex flex-col'>
+          ) : currentNoteId || notes ? (
+            <div className="max-w-[109rem] w-full mx-auto h-full bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-2xl border border-white/10 flex flex-col">
               <div className="flex flex-col gap-4 mb-6 flex-shrink-0">
                 {/* Title section - with actions aligned */}
                 <div className="flex items-center justify-between">
@@ -856,7 +891,8 @@ const ScribePage = () => {
                       />
                     ) : (
                       <div className="flex items-center justify-center gap-2">
-                        <h3 className="text-white text-2xl font-medium text-center items-center cursor-pointer "
+                        <h3
+                          className="text-white text-2xl font-medium text-center items-center cursor-pointer "
                           onClick={() => {
                             setIsEditingTitle(true);
                             setIsTitleSaved(false);
@@ -881,19 +917,19 @@ const ScribePage = () => {
                   <div className="flex items-center gap-4">
                     {/* Auto-save status indicator */}
                     <div className="text-sm">
-                      {autoSaveStatus === 'saving' && (
+                      {autoSaveStatus === "saving" && (
                         <div className="flex items-center gap-1 text-yellow-500">
                           <CircleDashed className="w-3 h-3 animate-spin" />
                           Saving...
                         </div>
                       )}
-                      {autoSaveStatus === 'saved' && (
+                      {autoSaveStatus === "saved" && (
                         <div className="flex items-center gap-1 text-green-500">
                           <div className="w-2 h-2 rounded-full bg-green-500" />
                           Saved
                         </div>
                       )}
-                      {autoSaveStatus === 'error' && (
+                      {autoSaveStatus === "error" && (
                         <div className="flex items-center gap-1 text-red-500">
                           <X className="w-3 h-3" />
                           Error saving
@@ -960,41 +996,40 @@ const ScribePage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="text-center">
                 <div className="text-md font-bold text-gray-400 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                  Welcome to 
+                  Welcome to
                 </div>
                 <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-6xl mb-4 font-bold text-transparent bg-clip-text">
                   Scribe
                 </span>
                 <p className="text-sm sm:text-xl text-gray-400 sm:pb-0 pt-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
-                  <TypeAnimation 
+                  <TypeAnimation
                     sequence={[
-                          'Record Lectures and Transform Them into Notes with AI Assistance',
-                          2000,
-                          'Enhance Your Notes with AI for Better Understanding and Clarity',
-                          2000,
-                          'Efficiently Organize Your Notes with AI-Powered Enhancements',
-                          2000,
-                        ]}
-                        wrapper="span"
-                        speed={75}
-                        repeat={Infinity}
-                    />
+                      "Record Lectures and Transform Them into Notes with AI Assistance",
+                      2000,
+                      "Enhance Your Notes with AI for Better Understanding and Clarity",
+                      2000,
+                      "Efficiently Organize Your Notes with AI-Powered Enhancements",
+                      2000,
+                    ]}
+                    wrapper="span"
+                    speed={75}
+                    repeat={Infinity}
+                  />
                 </p>
               </div>
             </div>
           )}
         </div>
       </div>
-      
-      
+
       {isRecording && (
         <div className="absolute left-1/2 transform -translate-x-1/2 bottom-8 w-96 bg-black/20 backdrop-blur-lg rounded-2xl p-4 border border-white/10">
           <div className="flex flex-col gap-4">
             <AudioVisualizer data={audioData} />
-            
+
             {/* Control buttons */}
             <div className="flex items-center justify-center gap-4">
               {!isPaused ? (
@@ -1016,7 +1051,7 @@ const ScribePage = () => {
                   <Play className="w-4 h-4 text-green-500" />
                 </button>
               )}
-              
+
               <button
                 onClick={stopRecording}
                 className="w-10 h-10 rounded-full bg-red-500/20 hover:bg-red-500/30 
@@ -1029,16 +1064,14 @@ const ScribePage = () => {
           </div>
         </div>
       )}
-      <NotesHistory 
+      <NotesHistory
         ref={notesHistoryRef}
-        onSelectNote={handleSelectNote} 
+        onSelectNote={handleSelectNote}
         currentNoteId={currentNoteId}
         onDeleteNote={handleDeleteNote}
       />
       {/* Move footer outside the main content area but inside the container */}
     </div>
-    
-  )
-}
-export default ScribePage
-
+  );
+};
+export default ScribePage;

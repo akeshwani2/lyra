@@ -101,7 +101,7 @@ const FileUpload = forwardRef<FileUploadRef>((_, ref) => {
                 </div>
             ) : (
                 <div className="flex flex-col items-center gap-2 text-gray-500">
-                    <FileIcon className="w-12 h-12 text-gray-300" />
+                    
                     <p></p>
                 </div>
             )}

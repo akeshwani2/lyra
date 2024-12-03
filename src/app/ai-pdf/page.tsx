@@ -168,6 +168,7 @@ export default function AiPdf() {
               <>
                 Upload Your First PDF
                 
+                
                 <Upload className="w-4 h-4 ml-1 cursor-default" />
               </>
             )}
@@ -175,7 +176,7 @@ export default function AiPdf() {
         </div>
 
         <div className="w-full mt-4">
-          
+          <FileUpload ref={fileInputRef} />
         </div>
       </div>
     </>
