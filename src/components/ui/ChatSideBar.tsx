@@ -68,7 +68,7 @@ const ChatSideBar = ({chats, chatId}: Props) => {
     };
 
     return (
-        <div className='w-full h-screen p-4 text-muted-foreground bg-gray-900 flex flex-col'>
+        <div className='w-full h-screen p-4 text-muted-foreground bg-zinc-950 flex flex-col'>
             {/* Header section */}
             <div className='flex flex-row items-center mb-6'>
                 <Link href='/' className='flex flex-row items-center'>
@@ -130,8 +130,8 @@ const ChatSideBar = ({chats, chatId}: Props) => {
             </div>
 
             {/* Footer with username on the right */}
-            <div className='mt-2 pt-2 border-t border-gray-800 bg-gray-900'>
-                <div className='flex items-center justify-start gap-3 p-1 rounded-lg bg-gray-800/50'>
+            <div className='mt-2 pt-2 border-t border-gray-800 bg-zinc-950'>
+                <div className='flex items-center justify-start gap-2 p-1 rounded-lg bg-zinc-800/50'>
                     {isLoaded && (
                         <UserButton 
                             afterSignOutUrl="/"
@@ -146,7 +146,7 @@ const ChatSideBar = ({chats, chatId}: Props) => {
                         />
                     )}
                     {isLoaded && isSignedIn && (
-                        <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-md font-bold">
+                        <span className="bg-gradient-to-t from-zinc-600 via-zinc-300 to-white text-transparent bg-clip-text text-lg font-bold">
                             {user?.username || user?.firstName || ''}
                         </span>
                     )}

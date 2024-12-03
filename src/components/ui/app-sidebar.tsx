@@ -7,6 +7,7 @@ import { useClerk } from "@clerk/nextjs"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import LogoIcon from "@/assets/logo.svg";
 
 import {
   Sidebar,
@@ -25,39 +26,37 @@ const items = [
     title: "Tasks",
     url: "/tasks",
     icon: ListTodo,
-    activeColor: "bg-blue-500/10 text-blue-400",
-    hoverColor: "hover:bg-blue-500/5 hover:text-blue-400 !text-blue-400",
+    activeColor: "bg-blue-500/10 text-white",
+    hoverColor: "hover:bg-blue-500/5 hover:text-white ",
   },
   {
     title: "PDF Reader",
     url: "/ai-pdf",
     icon: FileText,
-    activeColor: "bg-green-500/10 text-green-400",
-    hoverColor: "hover:bg-green-500/5 hover:text-green-400 !text-green-400",
+    activeColor: "bg-green-500/10 text-white",
+    hoverColor: "hover:bg-green-500/5 hover:text-white",
   },
   {
     title: "Scribe",
     url: "/scribe",
     icon: Feather,
-    activeColor: "bg-amber-500/10 text-amber-400",
-    hoverColor: "hover:bg-amber-500/5 hover:text-amber-400 !text-amber-400",
+    activeColor: "bg-amber-500/10 text-white",
+    hoverColor: "hover:bg-amber-500/5 hover:text-white",
   },
   {
     title: "Note Mate",
     url: "/ai-resume",
     icon: FilePen,
-    activeColor: "bg-purple-500/10 text-purple-400",
-    hoverColor: "hover:bg-purple-500/5 hover:text-purple-400 !text-purple-400",
-
+    activeColor: "bg-purple-500/10 text-white",
+    hoverColor: "hover:bg-purple-500/5 hover:text-white",
   },
-
-  {
-    title: "Scheduler",
-    url: "/scheduler",
-    icon: CalendarClock,
-    activeColor: "bg-pink-500/10 text-pink-400",
-    hoverColor: "hover:bg-pink-500/5 hover:text-pink-400 !text-pink-400",
-  },
+  // {
+  //   title: "Scheduler",
+  //   url: "/scheduler",
+  //   icon: CalendarClock,
+  //   activeColor: "bg-pink-500/10 text-white",
+  //   hoverColor: "hover:bg-pink-500/5 hover:text-white",
+  // },
 ]
 
 // Add this new type to handle the custom styling
@@ -79,20 +78,13 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon" className="border-none w-[100px]">
-      <SidebarContent className="bg-gray-900/95 backdrop-blur-sm h-full overflow-visible">
+      <SidebarContent className="bg-zinc-900 backdrop-blur-sm h-full overflow-visible">
         <SidebarGroup className="h-full flex flex-col">
           {/* Logo */}
           <div className="flex justify-center py-8">
             <Link href="/">
-              <div className="w-16 h-16">
-                <Image 
-                  src="/logo.svg"
-                  alt=""
-                  width={65}
-                  height={60}
-                  className="w-full h-full bg-gray-900  text-center text-white rounded-lg hover:bg-gray-950 transition-colors duration-200"
-                  priority
-                />
+            <div className="border h-14 w-14 rounded-lg inline-flex items-center justify-center border-white/15">
+              <LogoIcon className="w-12 h-12 text-white" />
               </div>
             </Link>
           </div>
@@ -135,7 +127,7 @@ export function AppSidebar() {
                               ? item.activeColor.split(' ')[1]
                               : "text-gray-400",
                             isActive 
-                              ? "hover:text-amber-400"
+                              ? "hover:text-white"
                               : item.hoverColor.split(' ')[1]
                           )}
                           strokeWidth={1.5} 

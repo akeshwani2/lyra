@@ -212,7 +212,10 @@ function KanbanBoard() {
     };
     
     const handleBoardTitleSave = async (boardId: string, newTitle: string) => {
-        if (newTitle.trim() === '') return;
+        if (!newTitle.trim()) {
+            setEditingBoardTitle(null);
+            return;
+        }
         try {
             const response = await fetch('/api/boards', {
                 method: 'PATCH',
@@ -461,8 +464,10 @@ function KanbanBoard() {
     };
 
     const handleColumnTitleChange = async (columnId: string, newTitle: string) => {
-        // Don't save empty titles
+        // If empty title, revert to previous title
         if (!newTitle.trim()) {
+            const currentColumn = columns.find(col => col.id === columnId);
+            setEditingTitle(currentColumn?.title || '');
             setIsEditingColumnId(null);
             return;
         }
@@ -561,20 +566,20 @@ function KanbanBoard() {
     };
 
     return (
-        <div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+        <div className="flex flex-col min-h-screen w-full overflow-x-hidden tracking-tight">
                         {isLoading ? (
                 <div className="absolute inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
                     <div className="flex flex-col items-center gap-4">
                         {/* <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-400 border-t-purple-500" /> */}
-                        <Loader className="h-8 w-8 animate-spin text-purple-500" />
+                        <Loader2 className="h-8 w-8 animate-spin text-white" />
                         <p className="text-gray-400 text-sm">Assembling your masterpiece...</p>
                     </div>
                 </div>
             ) : null}
             <div className="px-4 md:px-[40px] pt-24 md:pt-12">
-                <div className="fixed top-4 right-4 md:right-8 flex items-center gap-3 z-10">
+                <div className="fixed top-4 border border-white/15 rounded-xl px-2 md:right-8 flex items-center gap-2 z-10">
                     {isLoaded && isSignedIn && (
-                        <span className="bg-gradient-to-r from-indigo-500 to-purple-500 text-transparent bg-clip-text text-lg md:text-xl font-bold">
+                        <span className="bg-gradient-to-t from-zinc-600 via-zinc-300 to-white text-transparent bg-clip-text text-lg md:text-xl font-bold">
                             {user?.username || user?.firstName || ''}
                         </span>
                     )}
@@ -616,7 +621,7 @@ function KanbanBoard() {
                                         setEditingBoardTitle(null);
                                     }
                                 }}
-                                className="text-3xl md:text-4xl font-bold bg-transparent text-white border-b-2 border-purple-500 outline-none px-2 py-1 min-w-[200px] md:min-w-[300px]"
+                                className="text-3xl md:text-4xl text-center font-bold bg-transparent text-white border-b-2 border-white/15 outline-none px-2 py-1 min-w-[200px] md:min-w-[300px]"
                                 autoFocus
                             />
                         ) : (
@@ -666,9 +671,9 @@ function KanbanBoard() {
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.4 }}
                                     transition={{ duration: 0.3 }}
-                                    className={`w-[350px] h-[500px] shrink-0 bg-[#161C22] rounded-md flex flex-col
+                                    className={`w-[350px] h-[500px] shrink-0 bg-zinc-900/60 rounded-md flex flex-col border border-white/10
                                         ${draggingColumnId === column.id ? 'opacity-50' : ''}
-                                        ${dropTargetColumnId === column.id ? 'ring-2 ring-purple-500' : ''}`}
+                                        ${dropTargetColumnId === column.id ? 'ring-2 ring-white/50' : ''}`}
                                     draggable
                                     onDragStart={() => handleColumnDragStart(column.id)}
                                     onDragOver={(e) => handleColumnDragOver(e, column.id)}
@@ -678,7 +683,7 @@ function KanbanBoard() {
                                         setDropTargetColumnId(null);
                                     }}
                                 >
-                                    <div className="p-2 flex items-center justify-between gap-2 hover:bg-gray-950 transition-colors duration-200 border-b border-gray-800">
+                                    <div className="p-2 flex items-center justify-between gap-2 hover:bg-white/5 transition-colors duration-200 border-b border-white/10">
                                         <div 
                                             className="flex items-center gap-2 flex-1 cursor-grab min-w-0"
                                             onMouseDown={() => handleColumnDragStart(column.id)}
@@ -753,7 +758,7 @@ function KanbanBoard() {
                                     <div 
                                         className={`flex-grow p-2 flex flex-col gap-2 overflow-y-auto transition-colors duration-200 ${
                                             dropTargetId === column.id && !column.cards?.length 
-                                                ? 'bg-purple-500/10 ring-2 ring-purple-500/20 rounded-md' 
+                                                ? 'bg-white/5 ring-2 ring-white/20 rounded-md' 
                                                 : ''
                                         }`}
                                         onDragOver={(e) => {
@@ -793,8 +798,8 @@ function KanbanBoard() {
                                                     <motion.div
                                                         draggable
                                                         onDragStart={() => handleDragStart(card.id)}
-                                                        className={`group relative bg-[#1F2937] p-3 rounded-md shadow-sm hover:ring-1 
-                                                            hover:ring-inset hover:ring-gray-700 cursor-grab
+                                                        className={`group relative bg-white/10 p-3 rounded-md shadow-sm 
+                                                            hover:ring-1 hover:ring-inset hover:ring-white/20 cursor-grab
                                                             ${draggingCardId === card.id ? 'opacity-50' : ''}`}
                                                     >
                                                         {editingCardContent?.id === card.id ? (
@@ -859,9 +864,9 @@ function KanbanBoard() {
                                         </AnimatePresence>
                                     </div>
 
-                                    <div className="p-2 border-t border-gray-800">
+                                    <div className="p-2 border-t border-white/10">
                                         <Button 
-                                            className="w-full flex items-center gap-2 text-gray-400 hover:text-black justify-start px-2"
+                                            className="w-full flex items-center gap-2 text-gray-400 hover:text-white hover:bg-white/5 justify-start px-2"
                                             variant="ghost"
                                             onClick={() => createNewCard(column.id)}
                                         >
@@ -879,7 +884,10 @@ function KanbanBoard() {
                                 className="shrink-0"
                             >
                                 <Button 
-                                    className="h-[500px] w-[350px] min-w-[350px] cursor-pointer rounded-md bg-[#161C22] hover:bg-[#1F2937] hover:ring-1 hover:ring-inset hover:ring-purple-500 flex items-center justify-center gap-2 text-gray-400 hover:text-white"
+                                    className="h-[500px] w-[350px] min-w-[350px] cursor-pointer rounded-md 
+                                        bg-black/40 hover:bg-white/5 hover:ring-1 hover:ring-inset hover:ring-white/20 
+                                        flex items-center justify-center gap-2 text-gray-400 hover:text-white
+                                        border border-white/10"
                                     onClick={createNewColumn}
                                 >
                                     <Plus size={24} />
@@ -895,7 +903,7 @@ function KanbanBoard() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="bg-black/50 hover:bg-black/70 rounded-full h-10 w-10 md:h-12 md:w-12"
+                            className="bg-zinc-900 hover:bg-white/10 rounded-full h-10 w-10 md:h-12 md:w-12"
                             onClick={() => handleScroll('left')}
                         >
                             <ChevronLeft className="h-5 w-5 md:h-6 md:w-6 text-white" />
@@ -903,7 +911,7 @@ function KanbanBoard() {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="bg-black/50 hover:bg-black/70 rounded-full h-10 w-10 md:h-12 md:w-12"
+                            className="bg-zinc-900 hover:bg-white/10 rounded-full h-10 w-10 md:h-12 md:w-12"
                             onClick={() => handleScroll('right')}
                         >
                             <ChevronRight className="h-5 w-5 md:h-6 md:w-6 text-white" />
@@ -912,7 +920,7 @@ function KanbanBoard() {
                 )}
             </div>
             <div className="flex items-center text-xs md:text-sm opacity-50 font-semibold text-muted-foreground justify-center py-4">
-                <p>Contact us at <a className="text-purple-400 hover:text-purple-300 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
+                <p>Contact us at <a className="text-white hover:text-white/80 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
             </div>
         </div>
     );

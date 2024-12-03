@@ -33,7 +33,7 @@ const ChatPage = async ({params}: Props) => {
     const currentChat = _chats.find(chat => chat.id === parseInt(chatId));
 
     return (
-        <div className="min-h-screen bg-gradient-to-t from-gray-700 via-gray-900 to-black overflow-hidden flex">
+        <div className="min-h-screen bg-zinc-950 overflow-hidden flex">
             {/* Chat Sidebar */}
             <div className="w-64 border-r border-gray-800">
                 <ChatSideBar chats={_chats} chatId={parseInt(chatId)}/>

@@ -36,7 +36,7 @@ const TasksPage = () => {
   }
 
   return (
-    <div className='h-screen overflow-hidden text-white text-2xl font-bold'>
+    <div className='h-screen overflow-hidden text-white text-2xl font-bold bg-zinc-950'>
       <KanbanBoard />
     </div>
   )

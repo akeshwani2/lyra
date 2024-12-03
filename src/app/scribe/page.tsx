@@ -748,7 +748,7 @@ const ScribePage = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900">
+    <div className="relative min-h-screen w-full bg-zinc-950">
       {/* Animated background pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
@@ -758,7 +758,7 @@ const ScribePage = () => {
       <div className='absolute inset-0 flex flex-col min-h-screen'>
         {/* Header bar - add shrink-0 to prevent shrinking */}
         <div className="flex justify-between items-center w-full px-8 pr-16 py-8 shrink-0">
-          <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text pl-4">
+          <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text pl-2">
             {savedTitle || "Scribe"}
           </h1>
           
@@ -951,7 +951,7 @@ const ScribePage = () => {
 
                 {/* Manual Notes Button */}
                 <div className="relative w-32 h-32">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full hover:opacity-50"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full hover:opacity-50 animate-pulse"></div>
                   <div
                     onClick={startNewNote}
                     className="relative z-10 w-full h-full p-6 cursor-pointer transition-all duration-300 hover:scale-110 flex items-center justify-center"

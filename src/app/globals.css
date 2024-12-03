@@ -98,7 +98,7 @@
 /* Custom scrollbar styles */
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(139, 92, 246, 0.15) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   overflow-x: auto !important;
   -webkit-overflow-scrolling: touch;
   width: 100%;
@@ -227,13 +227,13 @@
 }
 
 /* Add these styles */
-.prose h2 {
-  margin-top: 3em !important;
+/* .prose h2, .ProseMirror h2 {
+  margin-top: 3em !important;    
   margin-bottom: 0.75em !important;
   font-size: 1.5em;
   font-weight: 600;
   color: #a855f7;
-}
+} */
 
 .prose ul {
   list-style-type: none;
@@ -288,39 +288,19 @@
   }
 }
 
-/* Adjust header spacing */
-.prose h2 {
-  margin-top: 2em;
-  margin-bottom: 0.5em;
+/* Single source of truth for h2 styling */
+.ProseMirror h2, .prose h2 {
+  margin: 0;
+  padding: 0;
   font-size: 1.5em;
   font-weight: 600;
   color: #a855f7;
-}
-
-/* Also update ProseMirror header spacing */
-.ProseMirror h2 {
-  margin-top: 2em;
-  margin-bottom: 0.5em;
 }
 
 /* Keep our nice paragraph spacing */
 .ProseMirror p {
   margin-bottom: 0.25em;
   line-height: 1.4;
-}
-
-/* Force larger spacing above headers */
-.prose h2, .ProseMirror h2 {
-  margin-top: 3em !important;    /* Much larger top margin */
-  margin-bottom: 0.75em !important;
-  font-size: 1.5em;
-  font-weight: 600;
-  color: #a855f7;
-}
-
-/* Ensure first header doesn't have huge top margin */
-.prose h2:first-child, .ProseMirror h2:first-child {
-  margin-top: 1em !important;
 }
 
 /* Add after your existing styles */

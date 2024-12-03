@@ -22,7 +22,7 @@ const tabs = [
     isNew: false,
     backgroundPositionX: 0,
     backgroundPositionY: 10,
-    backgroundSizeX: 145,
+    backgroundSizeX: 130,
   },
 
   {
@@ -31,15 +31,15 @@ const tabs = [
     isNew: true,
     backgroundPositionX: 100,
     backgroundPositionY: 75,
-    backgroundSizeX: 165,
+    backgroundSizeX: 140,
   },
   {
     icon: "/assets/lottie/stars.lottie",
     title: "Focus Areas",
     isNew: false,
-    backgroundPositionX: 15,
-    backgroundPositionY: 20,
-    backgroundSizeX: 140,
+    backgroundPositionX: 19,
+    backgroundPositionY: 60,
+    backgroundSizeX: 135,
   },
 ];
 
