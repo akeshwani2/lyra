@@ -55,7 +55,7 @@ export const Testimonials = () => {
             initial={{ translateX: "-50%" }}
             animate={{ translateX: "0%" }}
             transition={{
-              duration: 30,
+              duration: 45,
               ease: "linear",
               repeat: Infinity,
             }}

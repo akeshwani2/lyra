@@ -1,14 +1,18 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LogoIcon from "@/assets/logo.svg";
 import { useRouter } from "next/navigation";
 import { useAuth, useUser } from "@clerk/nextjs";
 import MenuIcon from "@/assets/icon-menu.svg";
+import Link from "next/link";
+
 
 const Header = () => {
   const router = useRouter();
   const { isSignedIn } = useAuth();
   const { user } = useUser();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const handleNavigation = (path: string) => {
     if (!isSignedIn) {
       sessionStorage.setItem("redirectPath", path);
@@ -28,13 +32,29 @@ const Header = () => {
     }
   }, [isSignedIn, router]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (isMenuOpen && !target.closest('.mobile-menu') && !target.closest('.menu-button')) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [isMenuOpen]);
+
   return (
     <header className="py-4 border-b border-white/15 md:border-none sticky top-0 z-10 backdrop-blur md:backdrop-blur-none">
       <div className="container">
         <div className="flex justify-between items-center md:border border-white/15 md:p-2.5 rounded-xl max-w-2xl mx-auto md:backdrop-blur">
           <div>
             <div className="border h-10 w-10 rounded-lg inline-flex items-center justify-center border-white/15">
+              <Link href="/">
               <LogoIcon className="w-8 h-8" />
+              </Link>
+              
+      
               
             </div>
             
@@ -50,9 +70,9 @@ const Header = () => {
               <a href="https://ak-port.vercel.app" target="_blank" className="hover:text-white transition">
                 Developer
               </a>
-              <a href="/" className="hover:text-white transition">
+              <Link href="/changelog" className="hover:text-white transition">
                 Changelog
-              </a>
+              </Link>
               <a href="/" className="hover:text-white transition">
                 Contact
               </a>
@@ -86,9 +106,40 @@ const Header = () => {
                 )}
               </span>
             </button>
-            <MenuIcon className="md:hidden" />
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden menu-button"
+            >
+              <MenuIcon />
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMenuOpen && (
+          <div className="md:hidden mobile-menu absolute left-0 right-0 top-[calc(100%+1px)] bg-black/95 backdrop-blur border-b border-white/15">
+            <nav className="container py-4 flex flex-col text-white/70 gap-4 text-sm">
+              <button 
+                onClick={() => {
+                  handleNavigation("/tasks");
+                  setIsMenuOpen(false);
+                }} 
+                className="hover:text-white transition text-left"
+              >
+                Features
+              </button>
+              <a href="https://ak-port.vercel.app" target="_blank" className="hover:text-white transition">
+                Developer
+              </a>
+              <Link href="/changelog" className="hover:text-white transition">
+                Changelog
+              </Link>
+              <a href="/" className="hover:text-white transition">
+                Contact
+              </a>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
