@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react';
 // import Header from '@/app/section/Header';
 import { SignIn } from '@clerk/nextjs'
 import { dark } from '@clerk/themes';
@@ -9,6 +10,38 @@ import { TypeAnimation } from 'react-type-animation';
 import { Github, Linkedin, User } from 'lucide-react';
 
 export default function Page() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <div className='min-h-screen w-full fixed inset-0 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-gray-900 to-black'>
+        <div className='space-y-6 max-w-md mx-auto'>
+          {/* Mobile Icon */}
+          <div className='text-6xl mb-8'>
+            📱
+          </div>
+          <h1 className='text-3xl font-bold text-white mb-4'>
+            Lyra is not optimized for mobile screens yet
+          </h1>
+          <p className='text-gray-400 text-lg'>
+            Please visit us on a desktop or laptop computer for the best experience.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='min-h-screen flex items-center justify-center p-5 bg-gradient-to-t from-gray-700 via-gray-900 to-black relative overflow-hidden'>
       {/* Header/Navigation */}
