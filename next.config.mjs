@@ -19,6 +19,14 @@ const nextConfig = {
         issuer: fileLoaderRule.issuer,
         resourceQuery: { not: [...fileLoaderRule.resourceQuery.not, /url/] }, // exclude if *.svg?url
         use: ["@svgr/webpack"],
+      },
+      // Add support for .lottie files
+      {
+        test: /\.lottie$/i,
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/media/[name][ext]'
+        }
       }
     );
 

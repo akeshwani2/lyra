@@ -26,7 +26,7 @@ const tabs = [
   },
 
   {
-    icon: "assets/lottie/click.lottie",
+    icon: "/assets/lottie/click.lottie",
     title: "AI-Enhanced Notes",
     isNew: true,
     backgroundPositionX: 100,

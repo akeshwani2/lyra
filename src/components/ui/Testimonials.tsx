@@ -1,8 +1,10 @@
 "use client";
 import avatar1 from "@/assets/avatar-1.png";
 import avatar2 from "@/assets/avatar-2.png";
+import avatar7 from "@/assets/avatar-7.png";
 import avatar3 from "@/assets/avatar-3.png";
 import avatar4 from "@/assets/avatar-4.png";
+import avatar5 from "@/assets/avatar-5.png";
 import Image from "next/image";
 import { motion } from "framer-motion";
 const testimonials = [
@@ -10,13 +12,13 @@ const testimonials = [
     text: "“Love what Arhaan has done here. The impact was immediate - it's transformed how I work!”",
     name: "Arya Toufanian",
     title: "Founder/CEO of Cita Marketplace",
-    avatarImg: avatar2,
+    avatarImg: avatar7,
   },
   {
     text: "“The user interface is so intuitive and easy to use, it helps me organize my notes and tasks efficiently.”",
     name: "Maria Victoria",
-    title: "Upcoming student @ FSU",
-    avatarImg: avatar3,
+    title: "Upcoming student @ Harvard University",
+    avatarImg: avatar5,
   },
   {
     text: "“This tool has greatly assisted me in organizing my tasks and staying on track.”",

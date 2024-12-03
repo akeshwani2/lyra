@@ -41,9 +41,12 @@ const Header = () => {
           </div>
           <div className="hidden md:block">
             <nav className="flex text-white/70 gap-8 text-sm">
-              <a href="/" className="hover:text-white transition">
+              <button 
+                onClick={() => handleNavigation("/tasks")} 
+                className="hover:text-white transition"
+              >
                 Features
-              </a>
+              </button>
               <a href="https://ak-port.vercel.app" target="_blank" className="hover:text-white transition">
                 Developer
               </a>

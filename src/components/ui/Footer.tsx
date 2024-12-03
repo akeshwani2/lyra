@@ -3,8 +3,22 @@ import React from "react";
 import Logo from "@/assets/logo.svg";
 import Image from "next/image";
 import { Github, Linkedin, User } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const Footer = () => {
+  const router = useRouter();
+  const { isSignedIn } = useAuth();
+
+  const handleNavigation = (path: string) => {
+    if (!isSignedIn) {
+      sessionStorage.setItem("redirectPath", path);
+      router.push("/sign-in");
+      return;
+    }
+    router.push(path);
+  };
+
   return (
     <footer className="py-5 border-t border-white/15">
       <div className="container">
@@ -15,9 +29,12 @@ const Footer = () => {
           </div>
 
             <nav className="flex flex-col lg:flex-row gap-5 lg:gap-7 lg:flex-1 lg:justify-center">
-              <a href="/" className="text-xs md:text-sm hover:text-white transition text-white/70">
+              <button 
+                onClick={() => handleNavigation("/tasks")} 
+                className="text-xs md:text-sm hover:text-white transition text-white/70 text-left"
+              >
                 Features
-              </a>
+              </button>
               <a href="https://ak-port.vercel.app" target="_blank" className="text-xs md:text-sm hover:text-white transition text-white/70">
                 Developer
               </a>
