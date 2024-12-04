@@ -13,6 +13,7 @@ import { Github, Linkedin, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import starsBg from '@/assets/stars.png';
 import gridLines from '@/assets/grid-lines.png';
+import emailjs from '@emailjs/browser';
 
 const useRelativeMousePosition = (to: RefObject<HTMLElement>) => {
   const mouseX = useMotionValue(0);
@@ -39,6 +40,48 @@ export default function Page() {
   const [mouseX, mouseY] = useRelativeMousePosition(containerRef);
 
   const maskImage = useMotionTemplate`radial-gradient(50% 50% at ${mouseX}px ${mouseY}px, black, transparent)`;
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await emailjs.send(
+        'service_8bsgl2c',
+        'template_rqjsxaa',
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+        },
+        'JPORaptdXlmY9VLhL'
+      );
+      
+      setSubmitStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const checkMobile = () => {
@@ -110,9 +153,9 @@ export default function Page() {
               Help me improve Lyra!
             </h1>
             <p className='text-white/70 text-center mb-8 text-lg'>
-              I would love to hear from you! If you have any questions, feedback, or suggestions, please let me know!
+              I would love to hear from you! If you have any questions, feedback, or suggestions, please reach out!
             </p>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
                   Name
@@ -120,8 +163,11 @@ export default function Page() {
                 <input
                   type="text"
                   id="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
                   placeholder="Your name"
+                  required
                 />
               </div>
               
@@ -132,8 +178,11 @@ export default function Page() {
                 <input
                   type="email"
                   id="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
                   placeholder="your@email.com"
+                  required
                 />
               </div>
               
@@ -143,15 +192,28 @@ export default function Page() {
                 </label>
                 <textarea
                   id="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
                   rows={4}
                   className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
                   placeholder="Your message..."
+                  required
                 />
               </div>
               
+              {submitStatus === 'success' && (
+                <div className="text-green-400 text-center">Message sent successfully!</div>
+              )}
+              
+              {submitStatus === 'error' && (
+                <div className="text-red-400 text-center">Failed to send message. Please try again.</div>
+              )}
+              
               <div className="flex justify-center">
                 <button
-                  className="w-full max-w-[600px] items-center relative py-2 px-3 rounded-lg font-medium text-sm bg-gradient-to-b from-[#190d2e] to-[#4a208a] shadow-[0px_0px_12px_#8c45ff] transition-all duration-300 hover:scale-105 hover:shadow-[0px_0px_16px_#8c45ff]"
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full max-w-[600px] items-center relative py-2 px-3 rounded-lg font-medium text-sm bg-gradient-to-b from-[#190d2e] to-[#4a208a] shadow-[0px_0px_12px_#8c45ff] transition-all duration-300 hover:scale-105 hover:shadow-[0px_0px_16px_#8c45ff] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div className="absolute inset-0">
                     <div className="rounded-lg border border-white/20 absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent)]"></div>
@@ -161,7 +223,7 @@ export default function Page() {
                     <div className="absolute inset-0 shadow-[0_0_10px_rgb(140,69,255.7)_inset] rounded-lg"></div>
                   </div>
                   <span className="relative z-10 text-white">
-                    Send Message
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </span>
                 </button>
               </div>

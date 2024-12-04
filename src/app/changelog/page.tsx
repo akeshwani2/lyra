@@ -13,6 +13,7 @@ import Logo from "@/assets/logo.svg";
 import userImage from "@/assets/users.png";
 import dashImage from "@/assets/ui.png";
 import productImage from "../../../public/assets/product-image.png";
+import { Heart } from "lucide-react";
 
 export default function ChangelogPage() {
   const sectionRef = useRef(null);
@@ -75,12 +76,15 @@ export default function ChangelogPage() {
       <main className="container mx-auto px-8 py-24">
         <div className="mx-auto space-y-40">
           {/* Header */}
-          <div className="text-center space-y-6 max-w-3xl mx-auto">
+          <div className="text-center space-y-4 max-w-3xl mx-auto">
             <h1 className="text-6xl md:leading-none font-semibold tracking-tighter bg-white bg-[radial-gradient(100%_100%_at_top_left,white,white,rgb(74,72,138,.5))] text-transparent bg-clip-text text-center pb-1">
-              Lyra's Growth
+              What's New in Lyra
             </h1>
             <p className="text-xl text-white/70">
-              New updates and improvements to Lyra.
+              All the new updates and improvements to Lyra.
+            </p>
+            <p className="flex items-center justify-center text-sm gap-1 text-white/70">
+              Made with <Heart className="w-4 h-4 text-white fill-white" /> by Arhaan keshwani
             </p>
           </div>
 
@@ -153,7 +157,7 @@ export default function ChangelogPage() {
             </article>
             <hr className="border-t border-white/20 my-12" />
 
-            <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+            {/* <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
               <div className="space-y-6">
                 <time className="block text-base text-white/50">
                   December 1, 2024
@@ -178,7 +182,7 @@ export default function ChangelogPage() {
               </div>
             </article>
 
-            <hr className="border-t border-white/20 my-12" />
+            <hr className="border-t border-white/20 my-12" /> */}
 
             <article className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
               <div className="space-y-6">
@@ -229,6 +233,7 @@ export default function ChangelogPage() {
               </div>
             </article>
           </div>
+          <hr className="border-t border-white/20 my-12" />
         </div>
         <div className="flex justify-center items-center pt-12">
           <div className="flex items-center gap-2">

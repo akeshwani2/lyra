@@ -803,33 +803,35 @@ function KanbanBoard() {
                                                             ${draggingCardId === card.id ? 'opacity-50' : ''}`}
                                                     >
                                                         {editingCardContent?.id === card.id ? (
-                                                            <input
-                                                                ref={(input) => {
-                                                                    if (input && card.content === "New Task" && editingCardContent.content === "New Task") {
-                                                                        input.focus();
-                                                                        input.select();
-                                                                    }
-                                                                }}
-                                                                type="text"
-                                                                value={editingCardContent.content}
-                                                                onChange={(e) => setEditingCardContent({ 
-                                                                    ...editingCardContent, 
-                                                                    content: e.target.value 
-                                                                })}
-                                                                onBlur={() => handleCardSave(card.id, editingCardContent.content)}
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === 'Enter') {
-                                                                        handleCardSave(card.id, editingCardContent.content);
-                                                                    }
-                                                                    if (e.key === 'Escape') {
-                                                                        setEditingCardContent(null);
-                                                                    }
-                                                                }}
-                                                                className="bg-[#1F2937] px-2 py-1 rounded-md outline-none focus:ring-1 focus:ring-purple-500 w-full"
-                                                                autoFocus
-                                                            />
+                                                            <div className="pr-16">
+                                                                <input
+                                                                    ref={(input) => {
+                                                                        if (input && card.content === "New Task" && editingCardContent.content === "New Task") {
+                                                                            input.focus();
+                                                                            input.select();
+                                                                        }
+                                                                    }}
+                                                                    type="text"
+                                                                    value={editingCardContent.content}
+                                                                    onChange={(e) => setEditingCardContent({ 
+                                                                        ...editingCardContent, 
+                                                                        content: e.target.value 
+                                                                    })}
+                                                                    onBlur={() => handleCardSave(card.id, editingCardContent.content)}
+                                                                    onKeyDown={(e) => {
+                                                                        if (e.key === 'Enter') {
+                                                                            handleCardSave(card.id, editingCardContent.content);
+                                                                        }
+                                                                        if (e.key === 'Escape') {
+                                                                            setEditingCardContent(null);
+                                                                        }
+                                                                    }}
+                                                                    className="bg-[#1F2937] px-2 py-1 rounded-md outline-none focus:ring-1 focus:ring-purple-500 w-full"
+                                                                    autoFocus
+                                                                />
+                                                            </div>
                                                         ) : (
-                                                            <div className="break-words whitespace-pre-wrap overflow-hidden">
+                                                            <div className="break-words whitespace-pre-wrap overflow-hidden pr-16">
                                                                 {card.content}
                                                             </div>
                                                         )}
@@ -918,9 +920,6 @@ function KanbanBoard() {
                         </Button>
                     </div>
                 )}
-            </div>
-            <div className="flex items-center text-xs md:text-sm opacity-50 font-semibold text-muted-foreground justify-center py-4">
-                <p>Contact us at <a className="text-white hover:text-white/80 transition-colors">lyraafy@gmail.com</a> for any feedback or support!</p>
             </div>
         </div>
     );

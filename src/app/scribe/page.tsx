@@ -549,8 +549,8 @@ const ScribePage = () => {
     localStorage.setItem("lastOpenedNoteId", note.id);
   };
 
-  const handleDeleteNote = async () => {
-    if (!currentNoteId) {
+  const handleDeleteNote = async (noteIdToDelete: string) => {
+    if (!noteIdToDelete) {
       toast.error("No note to delete");
       return;
     }
@@ -559,64 +559,34 @@ const ScribePage = () => {
     if (isSaving) return;
 
     try {
-      setIsSaving(true); // Prevent multiple clicks
+      setIsSaving(true);
 
-      // First, get the notes list
-      const notesResponse = await fetch("/api/notes");
-      const data = await notesResponse.json();
-      const allNotes = data.notes || [];
-
-      // Only proceed with confirmation if we haven't already started deleting
+      // Show confirmation dialog only once
       if (!confirm("Are you sure you want to delete this note?")) {
         setIsSaving(false);
         return;
       }
 
-      // Delete the current note
+      // Delete the note
       const deleteResponse = await fetch("/api/notes/delete", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ noteId: currentNoteId }),
+        body: JSON.stringify({ noteId: noteIdToDelete }),
       });
 
       if (!deleteResponse.ok) {
         throw new Error("Failed to delete note");
       }
 
-      // If this was the last note, reset everything
-      if (allNotes.length <= 1) {
-        resetNote();
-        localStorage.removeItem("lastOpenedNoteId");
-        if (notesHistoryRef.current) {
-          await notesHistoryRef.current.loadNotes();
-        }
-        toast.success("Note deleted successfully");
-        return;
-      }
-
-      // Find the next note to show
-      const currentIndex = allNotes.findIndex(
-        (note: Note) => note.id === currentNoteId
-      );
-      const nextNote = allNotes[currentIndex + 1] || allNotes[currentIndex - 1];
-
-      if (nextNote) {
-        setNotes(nextNote.content);
-        setTitle(nextNote.title);
-        setSavedTitle(nextNote.title);
-        setCurrentNoteId(nextNote.id);
-        setIsNoteSaved(true);
-        setIsTitleSaved(true);
-        setIsNewNote(false);
-        localStorage.setItem("lastOpenedNoteId", nextNote.id);
-      } else {
+      // Only reset if we're deleting the currently displayed note
+      if (noteIdToDelete === currentNoteId) {
         resetNote();
         localStorage.removeItem("lastOpenedNoteId");
       }
 
-      // Update the sidebar
+      // Refresh the notes list
       if (notesHistoryRef.current) {
         await notesHistoryRef.current.loadNotes();
       }
@@ -788,7 +758,7 @@ const ScribePage = () => {
       <div className="absolute inset-0 flex flex-col min-h-screen">
         {/* Header bar - adjust the right padding and user button container */}
         <div className="flex justify-between items-center w-full px-8 py-8">
-          <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text pl-2">
+          <h1 className="text-2xl sm:text-4xl pb-1 font-bold bg-white bg-[radial-gradient(100%_100%_at_top_left,white,white,rgb(74,72,138,.5))] text-transparent bg-clip-text pl-2">
             {savedTitle || "Scribe"}
           </h1>
 
@@ -1001,7 +971,7 @@ const ScribePage = () => {
                 <div className="text-md font-bold text-gray-400 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">
                   Welcome to
                 </div>
-                <span className="bg-gradient-to-r from-purple-500 to-blue-500 text-6xl mb-4 font-bold text-transparent bg-clip-text">
+                <span className="bg-white bg-[radial-gradient(100%_100%_at_top_left,white,white,rgb(74,72,138,.5))] text-transparent bg-clip-text text-6xl mb-4 font-bold">
                   Scribe
                 </span>
                 <p className="text-sm sm:text-xl text-gray-400 sm:pb-0 pt-4 [text-shadow:0_0_15px_rgba(255,255,255,0.5)]">

@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Trash2 } from 'lucide-react';
 import { Note } from '@/types';
 
+
+
 const NotesHistory = forwardRef(({ 
   onSelectNote, 
   currentNoteId,
@@ -43,38 +45,8 @@ const NotesHistory = forwardRef(({
   const handleDelete = async (noteId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     
-    if (!confirm('Are you sure you want to delete this note?')) {
-      return;
-    }
-
     try {
-      const response = await fetch('/api/notes/delete', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ noteId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete note');
-      }
-
-      const deletedIndex = notes.findIndex(note => note.id === noteId);
-      
-      if (noteId === currentNoteId) {
-        if (deletedIndex < notes.length - 1) {
-          onSelectNote(notes[deletedIndex + 1]);
-        } 
-        else if (deletedIndex > 0) {
-          onSelectNote(notes[deletedIndex - 1]);
-        } 
-        else {
-          onDeleteNote(noteId);
-        }
-      }
-
-      loadNotes();
+      onDeleteNote(noteId);
     } catch (error) {
       console.error('Error deleting note:', error);
     }

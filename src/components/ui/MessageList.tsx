@@ -43,8 +43,10 @@ const MessageList = ({messages, isLoading}: Props) => {
                                         h2: ({node, ...props}) => <h2 className="text-lg font-bold mb-2" {...props}/>,
                                         h3: ({node, ...props}) => <h3 className="text-md font-bold mb-1" {...props}/>,
                                         // Style lists
-                                        ul: ({node, ...props}) => <ul className="list-disc pl-4 mb-2" {...props}/>,
-                                        ol: ({node, ...props}) => <ol className="list-decimal pl-4 mb-2" {...props}/>,
+                                        ul: ({node, ...props}) => <ul className="list-disc pl-8 space-y-1 mb-4" {...props}/>,
+                                        ol: ({node, ...props}) => <ol className="list-decimal pl-8 space-y-1 mb-4" {...props}/>,
+                                        // Add list item styling
+                                        li: ({node, ...props}) => <li className="marker:text-white" {...props}/>,
                                         // Style code blocks
                                         code: ({node, ...props}) => (
                                             <code className="bg-gray-700 rounded px-1 py-0.5" {...props}/>

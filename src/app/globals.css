@@ -168,11 +168,19 @@
 }
 
 .prose ul {
-  @apply list-disc pl-6 mb-4;
+  list-style-type: disc !important;
+  padding-left: 1.5em !important;
 }
 
 .prose li {
-  @apply mb-2;
+  position: relative;
+  padding-left: 0.5em;
+  margin-left: 0;
+  display: list-item !important;
+}
+
+.prose li::marker {
+  color: white !important;
 }
 
 .prose p {
@@ -245,12 +253,7 @@
   padding-left: 1em;
 }
 
-.prose li::before {
-  content: "•";
-  position: absolute;
-  left: -0.5em;
-  color: #a855f7;
-}
+
 
 .prose li li {
   margin-left: 1.5em;

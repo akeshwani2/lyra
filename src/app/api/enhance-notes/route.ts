@@ -20,11 +20,9 @@ export async function POST(req: Request) {
           2. Maybe one brief example if relevant
           3. Fix any grammar issues
           
-          Do not add extra headers or sections, simply enhance the content with 2-3 lines max.
           For partial content enhancement:
           - Keep the same format/style as the input
           - Don't create new sections or headers
-          - Keep the enhancement concise (2-3 lines max)
           - Maintain the original meaning
           
           For full note enhancement:

@@ -73,7 +73,7 @@ const ChatSideBar = ({chats, chatId}: Props) => {
         <div className='w-full h-screen p-4 text-muted-foreground bg-zinc-950 flex flex-col'>
             {/* Header section */}
             <div className='flex flex-row items-center mb-6'>
-                <Link href='/' className='flex flex-row items-center'>
+                <Link href='/ai-pdf' className='flex flex-row items-center'>
                 <div className='border h-14 w-14 rounded-lg inline-flex items-center justify-center border-white/15'>
                     <LogoIcon className="w-12 h-12 text-white" />
                 </div>

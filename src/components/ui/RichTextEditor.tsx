@@ -39,9 +39,9 @@ const RichTextEditor = ({ content, onChange, noteId }: RichTextEditorProps) => {
           HTMLAttributes: {
             class: (level: number): string => {
               const classes = {
-                1: 'text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 font-semibold mt-0',
-                2: 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-600 font-semibold m-0',
-                3: 'text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-600 font-semibold mt-0',
+                1: 'text-white font-semibold mt-0',
+                2: 'text-white font-semibold m-0',
+                3: 'text-white font-semibold mt-0',
               };
               return classes[level as keyof typeof classes] || '';
             },
@@ -96,9 +96,9 @@ const RichTextEditor = ({ content, onChange, noteId }: RichTextEditorProps) => {
           editor={editor} 
           className="absolute inset-0 prose prose-invert max-w-none focus:outline-none px-6 py-4 overflow-y-auto
             [&_p]:!leading-relaxed [&_p]:!mb-1
-            [&_h1]:!mt-0 [&_h1]:!text-transparent [&_h1]:!bg-clip-text [&_h1]:!bg-gradient-to-r [&_h1]:!from-purple-400 [&_h1]:!to-pink-600 [&_h1]:!text-4xl [&_h1]:!caret-purple-400
-            [&_h2]:!m-0 [&_h2]:!p-0 [&_h2]:!text-transparent [&_h2]:!bg-clip-text [&_h2]:!bg-gradient-to-r [&_h2]:!from-blue-400 [&_h2]:!to-indigo-600 [&_h2]:!text-4xl [&_h2]:!caret-blue-400
-            [&_h3]:!text-transparent [&_h3]:!bg-clip-text [&_h3]:!bg-gradient-to-r [&_h3]:!from-teal-400 [&_h3]:!to-cyan-600 [&_h3]:!text-2xl [&_h3]:!mt-2 [&_h3]:!mb-2 [&_h3]:!caret-teal-400
+            [&_h1]:!mt-0 [&_h1]:!text-white [&_h1]:!text-4xl
+            [&_h2]:!m-0 [&_h2]:!p-0 [&_h2]:!text-white [&_h2]:!text-3xl [&_h2]:!mb-1
+            [&_h3]:!mt-0 [&_h3]:!text-white [&_h3]:!text-2xl [&_h3]:!mb-1
             scrollbar scrollbar-track-transparent scrollbar-thumb-purple-500/20 
             hover:scrollbar-thumb-purple-500/40 
             scrollbar-w-1.5 
@@ -208,7 +208,7 @@ const RichTextEditor = ({ content, onChange, noteId }: RichTextEditorProps) => {
             <Heading3 className="w-4 h-4" />
           </button>
           
-          <div className="w-py w-6 bg-purple-500/20 my-4" />
+          <div className="w-py w-6 bg-purple-500/20 my-2" />
           
           <button
             onClick={() => editor.chain().focus().toggleHighlight().run()}

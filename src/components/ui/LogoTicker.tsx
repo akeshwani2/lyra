@@ -9,6 +9,8 @@ import echoLogo from "@/assets/logo-echo.png";
 import denverlogo from "@/assets/duLogo.png";
 import berkleylogo from "@/assets/berk2-removebg-preview.png";
 import harvardlogo from "@/assets/harvardtest.png";
+import dukeLogo from "@/assets/dukelogo_white.png";
+import mitLogo from "@/assets/mit_logo_std_rgb_white.png";
 
 import { motion } from "framer-motion";
 const LogoTicker = () => {
@@ -21,36 +23,36 @@ const LogoTicker = () => {
           </div>
           <div className="flex flex-1 overflow-hidden items-center [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
             <motion.div 
-            initial={{ translateX: '-50%'}}
-            animate={{translateX: '0'}}
-            transition={{
-              duration: 30,
-              repeat: Infinity,
-              ease: 'linear'
-            }}
-              className="flex flex-none gap-14 pr-14 -translate-x-1/2 items-center"
+              initial={{ translateX: '-50%'}}
+              animate={{ translateX: '0' }}
+              transition={{
+                duration: 30,
+                repeat: Infinity,
+                ease: 'linear'
+              }}
+              className="flex flex-none items-center justify-center gap-20 pr-20"
             >
               {[
-                berkleylogo,
+                mitLogo,
+                quantumLogo,
+                dukeLogo,
+                pulseLogo,
+                denverlogo,
                 acmeLogo,
-                apexLogo,
+                mitLogo,
+                dukeLogo,
                 quantumLogo,
                 pulseLogo,
                 denverlogo,
-
-                berkleylogo,
                 acmeLogo,
-                apexLogo,
-                quantumLogo,
-                pulseLogo,
-                denverlogo,
               ].map((logo, index) => (
-                <img
-                  src={logo.src}
-                  key={`${logo.src}-${index}`}
-                  alt=""
-                  className={`w-auto ${logo === berkleylogo ? 'h-20 pt-1' : 'h-6'} my-auto`}
-                />
+                <div key={`${logo.src}-${index}`} className="flex items-center justify-center h-20">
+                  <img
+                    src={logo.src}
+                    alt=""
+                    className={`w-auto ${logo === mitLogo ? 'h-10' : 'h-8'} object-contain`}
+                  />
+                </div>
               ))}
             </motion.div>
           </div>
