@@ -114,7 +114,7 @@ export default function AiPdf() {
 
   return (
     <>
-      <UserSection />
+        <UserSection />
       <div className="flex flex-col items-center bg-zinc-950 justify-center min-h-screen">
         <h1
           className="bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text text-5xl font-bold"
@@ -166,18 +166,13 @@ export default function AiPdf() {
               </>
             ) : (
               <>
-                Upload Your First PDF
-                
-                
-                <Upload className="w-4 h-4 ml-1 cursor-default" />
+                You haven't started any chats yet
               </>
             )}
           </button>
         </div>
 
-        <div className="w-full mt-4">
-          <FileUpload ref={fileInputRef} />
-        </div>
+
       </div>
     </>
   );

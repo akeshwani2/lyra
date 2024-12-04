@@ -48,7 +48,7 @@ export const Testimonials = () => {
           Beyond Expectations.
         </h2>
         <p className="text-white/70 md:text-xl text-lg max-w-sm mx-auto text-center mt-5 tracking-tight">
-        Our revolutionary AI-powered tools are redefining how students and professionals organize, learn, and achieve their goals.
+        Our revolutionary AI-powered tools are redefining how students and professionals organize, learn, and achieve their goals
         </p>
         <div className="flex overflow-hidden mt-10 [mask-image:linear-gradient(to_right,transparent,black_20%,black_80%,transparent)]">
           <motion.div

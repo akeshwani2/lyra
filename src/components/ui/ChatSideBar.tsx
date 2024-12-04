@@ -9,6 +9,8 @@ import { dark } from '@clerk/themes'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import Image from 'next/image'
+import LogoIcon from "@/assets/logo.svg";
+
 type Props = {
     chats: DrizzleChat[],
     chatId: number,
@@ -72,9 +74,12 @@ const ChatSideBar = ({chats, chatId}: Props) => {
             {/* Header section */}
             <div className='flex flex-row items-center mb-6'>
                 <Link href='/' className='flex flex-row items-center'>
-                    <Image src='/logo.svg' alt='logo' width={48} height={48} className='items-left' />
-                    <div className='text-4xl ml-2 font-bold bg-gradient-to-r from-purple-500 to-blue-500 text-transparent bg-clip-text'>
-                        Lyra
+                <div className='border h-14 w-14 rounded-lg inline-flex items-center justify-center border-white/15'>
+                    <LogoIcon className="w-12 h-12 text-white" />
+                </div>
+
+                <div className="text-4xl ml-4 font-bold tracking-tighter bg-white bg-[radial-gradient(100%_100%_at_top_left,white,white,rgb(74,72,138,.5))] text-transparent bg-clip-text">
+                Lyra
                     </div>
                 </Link>
             </div>
@@ -89,7 +94,7 @@ const ChatSideBar = ({chats, chatId}: Props) => {
                 <div className="flex flex-col gap-6">
                     {chats.map((chat) => (
                         <Link key={chat.id} href={`/chat/${chat.id}`}>
-                            <div className={`flex items-center justify-between p-4 hover:bg-gray-800/50 rounded-lg transition-all duration-300 ${
+                            <div className={`flex items-center justify-between p-4 hover:bg-gray-800/50 bg-zinc-800/50 rounded-lg transition-all duration-300 ${
                                 chat.id === chatId 
                                     ? 'bg-gradient-to-r from-purple-500 to-blue-500 shadow-[0_0_15px_rgba(168,85,247,0.2)] border border-purple-400/30' 
                                     : ''

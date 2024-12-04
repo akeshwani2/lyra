@@ -1,7 +1,7 @@
 import { db } from '@/app/lib/db';
 import { chats } from '@/app/lib/db/schema';
 import { auth } from '@clerk/nextjs/server';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, asc } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -15,7 +15,7 @@ export async function GET() {
             .select()
             .from(chats)
             .where(eq(chats.userId, userId))
-            .orderBy(desc(chats.createdAt));
+            .orderBy(asc(chats.createdAt));
 
         if (!userChats.length) {
             return NextResponse.json({
@@ -27,15 +27,14 @@ export async function GET() {
             });
         }
 
-        const mostRecentChat = userChats[0];
-        const firstChat = userChats[userChats.length - 1];
+        const firstChat = userChats[0];
 
         return NextResponse.json({
             hasChats: true,
             firstChatId: firstChat.id,
-            mostRecentChatId: mostRecentChat.id,
-            pdfName: mostRecentChat.pdfName,
-            pdfUrl: mostRecentChat.pdfUrl,
+            mostRecentChatId: firstChat.id,
+            pdfName: firstChat.pdfName,
+            pdfUrl: firstChat.pdfUrl,
         });
     } catch (error) {
         console.error('Error in check-chats:', error);

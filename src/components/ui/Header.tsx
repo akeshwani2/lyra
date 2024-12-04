@@ -51,13 +51,9 @@ const Header = () => {
           <div>
             <div className="border h-10 w-10 rounded-lg inline-flex items-center justify-center border-white/15">
               <Link href="/">
-              <LogoIcon className="w-8 h-8" />
+                <LogoIcon className="w-8 h-8 text-white" />
               </Link>
-              
-      
-              
             </div>
-            
           </div>
           <div className="hidden md:block">
             <nav className="flex text-white/70 gap-8 text-sm">
@@ -73,7 +69,7 @@ const Header = () => {
               <Link href="/changelog" className="hover:text-white transition">
                 Changelog
               </Link>
-              <a href="/" className="hover:text-white transition">
+              <a href="/contact" className="hover:text-white transition">
                 Contact
               </a>
             </nav>
@@ -94,7 +90,7 @@ const Header = () => {
 
                 <div className="absolute inset-0 shadow-[0_0_10px_rgb(140,69,255.7)_inset] rounded-lg"></div>
               </div>
-              <span className="relative z-10">
+              <span className="relative z-10 text-white">
                 {isSignedIn ? (
                   `Welcome ${
                     user?.username || user?.firstName
@@ -134,7 +130,7 @@ const Header = () => {
               <Link href="/changelog" className="hover:text-white transition">
                 Changelog
               </Link>
-              <a href="/" className="hover:text-white transition">
+              <a href="/contact" className="hover:text-white transition">
                 Contact
               </a>
             </nav>

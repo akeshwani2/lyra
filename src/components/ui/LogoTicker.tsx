@@ -32,22 +32,17 @@ const LogoTicker = () => {
             >
               {[
                 berkleylogo,
-
                 acmeLogo,
                 apexLogo,
-                celestialLogo,
                 quantumLogo,
                 pulseLogo,
-                echoLogo,
                 denverlogo,
-                berkleylogo,
 
+                berkleylogo,
                 acmeLogo,
                 apexLogo,
-                celestialLogo,
                 quantumLogo,
                 pulseLogo,
-                echoLogo,
                 denverlogo,
               ].map((logo, index) => (
                 <img

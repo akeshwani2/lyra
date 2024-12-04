@@ -52,7 +52,7 @@ const Footer = () => {
               Changelog
             </Link>
             <a
-              href="/"
+              href="/contact"
               className="text-xs md:text-sm hover:text-white transition text-white/70"
             >
               Contact
